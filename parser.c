@@ -26,68 +26,29 @@ static int make_is_target(char c) {
     return 0;
 }
 
-void make_parser_init(struct make_parser *parser) {
-  parser->source = NULL;
-  parser->listener = NULL;
-}
-
-int make_parser_run(struct make_parser *parser) {
+static int include_stmt(struct make_parser *parser,
+                        unsigned long int i,
+                        unsigned long int *j) {
 
   int err;
-  struct make_listener *listener;
-  struct make_string *source;
   char c;
-  /* Index of the parser within
-   * the source code. */
-  unsigned long int i;
-  /* Used as a temporary index */
-  unsigned long int j;
-  struct make_string target;
-  struct make_string prerequisite;
-  struct make_string command_source;
-  struct make_command command;
+  struct make_string *source;
   struct make_string include_path;
   struct make_include_stmt include_stmt;
-
-  if (parser == NULL)
-    return -EFAULT;
+  struct make_listener *listener;
 
   listener = parser->listener;
-  if (listener == NULL)
-    return -EFAULT;
-  else if (listener->on_target == NULL)
-    return -EFAULT;
 
   source = parser->source;
-  if (source == NULL)
-    return -EFAULT;
-  else if (source->data == NULL)
-    return -EFAULT;
 
-  /* Setup the variable assignments that
-   * aren't going to change throughout the
-   * parse loop. */
+  include_path.data = NULL;
+  include_path.size = 0;
+
+  include_stmt.ignore_error = 0;
   include_stmt.path = &include_path;
-  command.source = &command_source;
-
-  /* Initialize loop indices. */
-  i = 0;
-  j = 0;
-
-  /* At this point the parser will start
-   * parsing the source.
-   *
-   * Instead of writing the code in a 'for'
-   * or 'while' loop, a goto statement was
-   * sed to reduce indentation. */
-parse_loop:
 
   /* Check to see if we can find a include
    * statement. */
-  include_stmt.ignore_error = 0;
-  /* Save a temporary index, incase this isn't
-   * an include statement */
-  j = i;
   while (i < source->size) {
     c = source->data[i];
     if (make_is_space(c)) {
@@ -102,19 +63,15 @@ parse_loop:
        * break the loop */
       if ((memcmp(&source->data[i], "include", 7) != 0)
        || (!make_is_space(source->data[i + 7]))) {
-        /* Restore the main index, since this wasn't
-         * an actual include statement.  */
-        i = j;
-        break;
+        /* This was not an include statement. */
+        return 0;
       }
       /* A 'include' keyword was found. Move passed
        * it and start parsing include paths */
       i += sizeof("include");
     } else {
-      /* Restore the main index, this is not
-       * an include statement. */
-      i = j;
-      break;
+      /* This was not an include statement */
+      return 0;
     }
 
     /* Parse actual include paths */
@@ -149,8 +106,79 @@ parse_loop:
       i++;
     }
 
-    /* Done parsing include paths. Go
-     * back to the top of the parse loop. */
+    /* Done parsing include paths. */
+    break;
+  }
+
+  /* Update the index. This tells the
+   * caller that it should continue parsing
+   * at a new index.  */
+  *j = i;
+
+  return 0;
+}
+
+void make_parser_init(struct make_parser *parser) {
+  parser->source = NULL;
+  parser->listener = NULL;
+}
+
+int make_parser_run(struct make_parser *parser) {
+
+  int err;
+  struct make_listener *listener;
+  struct make_string *source;
+  char c;
+  /* Index of the parser within
+   * the source code. */
+  unsigned long int i;
+  /* Used as a temporary index */
+  unsigned long int j;
+  struct make_string target;
+  struct make_string prerequisite;
+  struct make_string command_source;
+  struct make_command command;
+
+  if (parser == NULL)
+    return -EFAULT;
+
+  listener = parser->listener;
+  if (listener == NULL)
+    return -EFAULT;
+  else if (listener->on_target == NULL)
+    return -EFAULT;
+
+  source = parser->source;
+  if (source == NULL)
+    return -EFAULT;
+  else if (source->data == NULL)
+    return -EFAULT;
+
+  /* Setup the variable assignments that
+   * aren't going to change throughout the
+   * parse loop. */
+  command.source = &command_source;
+
+  /* Initialize loop indices. */
+  i = 0;
+  j = 0;
+
+  /* At this point the parser will start
+   * parsing the source.
+   *
+   * Instead of writing the code in a 'for'
+   * or 'while' loop, a goto statement was
+   * sed to reduce indentation. */
+parse_loop:
+
+  /* Attempt to parse an include statement.
+   * If the parse was succesfull, the function
+   * returns zero and j is > i. */
+  err = include_stmt(parser, i, &j);
+  if (err)
+    return err;
+  else if (j > i) {
+    i = j;
     goto parse_loop;
   }
 
