@@ -9,10 +9,14 @@ CFLAGS += -Iinclude
 VPATH += include/make
 
 .PHONY: all
-all: libmake.so parser-test
+all: libmake.so make parser-test
 
 libmake.so: parser.o
 	$(CC) -shared $^ -o $@
+
+make: make.o
+
+make.o: parser.h string.h listener.h
 
 parser.o: parser.c parser.h string.h listener.h
 
