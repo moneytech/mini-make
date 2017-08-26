@@ -18,6 +18,10 @@ struct make_listener {
    * is found. */
   int (*on_include_stmt)(void *user_data,
                          const struct make_include_stmt *include_stmt);
+  /** @brief Executed right before a rule is parsed. */
+  int (*on_rule_start)(void *user_data);
+  /** @brief Executed right after a rule is parsed. */
+  int (*on_rule_finish)(void *user_data);
   /** @brief Executed when a target is parsed. */
   int (*on_target)(void *user_data,
                    const struct make_string *target);
