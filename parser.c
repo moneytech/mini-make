@@ -20,6 +20,7 @@ static int make_is_space(char c) {
 
 static int make_is_target(char c) {
   if ((isalnum(c))
+   || (c == '.')
    || (c == '_')
    || (c == '-'))
     return 1;
