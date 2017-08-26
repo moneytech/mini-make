@@ -193,6 +193,16 @@ static void on_unexpected_char(void *user_data, char c) {
   printf("Unexpected character: %c\n", c);
 }
 
+static int on_rule_start(void *user_data) {
+  (void) user_data;
+  return 0;
+}
+
+static int on_rule_finish(void *user_data) {
+  (void) user_data;
+  return 0;
+}
+
 static char *read_source(const char *path, unsigned long int *source_size) {
 
   FILE *file;
@@ -264,6 +274,8 @@ int main(void) {
   listener.on_include_stmt = on_include_stmt;
   listener.on_assignment_stmt = on_assignment_stmt;
   listener.on_unexpected_char = on_unexpected_char;
+  listener.on_rule_start = on_rule_start;
+  listener.on_rule_finish = on_rule_finish;
 
   parser.source = &source;
   parser.listener = &listener;
