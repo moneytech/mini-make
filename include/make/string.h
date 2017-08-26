@@ -14,6 +14,10 @@ struct make_string {
   unsigned long int size;
 };
 
+/** @brief Creates a copy of the string. */
+int make_string_copy(const struct make_string *src,
+                     struct make_string *dst);
+
 /** @brief Checks to see if two strings are
  * equal to one another.
  * @returns One if the strings are equal,
