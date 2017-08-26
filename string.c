@@ -1,5 +1,7 @@
 #include <make/string.h>
 
+#include <string.h>
+
 int make_string_equal(const struct make_string *a,
                       const struct make_string *b) {
   if (a->size != b->size)
