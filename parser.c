@@ -249,77 +249,26 @@ static int include_stmt(struct make_parser *parser,
   return 0;
 }
 
-void make_parser_init(struct make_parser *parser) {
-  parser->source = NULL;
-  parser->listener = NULL;
-}
-
-int make_parser_run(struct make_parser *parser) {
+static int rule(struct make_parser *parser,
+                unsigned long int i,
+                unsigned long int *j) {
 
   int err;
   struct make_listener *listener;
   struct make_string *source;
   char c;
-  /* Index of the parser within
-   * the source code. */
-  unsigned long int i;
-  /* Used as a temporary index */
-  unsigned long int j;
   struct make_string target;
   struct make_string prerequisite;
   struct make_string command_source;
   struct make_command command;
 
-  if (parser == NULL)
-    return -EFAULT;
-
   listener = parser->listener;
-  if (listener == NULL)
-    return -EFAULT;
-  else if (listener->on_target == NULL)
-    return -EFAULT;
 
   source = parser->source;
-  if (source == NULL)
-    return -EFAULT;
-  else if (source->data == NULL)
-    return -EFAULT;
 
-  /* Setup the variable assignments that
-   * aren't going to change throughout the
-   * parse loop. */
-  command.source = &command_source;
-
-  /* Initialize loop indices. */
-  i = 0;
-  j = 0;
-
-  /* At this point the parser will start
-   * parsing the source.
-   *
-   * Instead of writing the code in a 'for'
-   * or 'while' loop, a goto statement was
-   * sed to reduce indentation. */
-parse_loop:
-
-  /* Attempt to parse an include statement.
-   * If the parse was succesfull, the function
-   * returns zero and j is > i. */
-  err = include_stmt(parser, i, &j);
+  err = listener->on_rule_start(listener->user_data);
   if (err)
     return err;
-  else if (j > i) {
-    i = j;
-    goto parse_loop;
-  }
-
-  err = assignment_stmt(parser, i, &j);
-  if (err)
-    return err;
-  else if (j > i) {
-    i = j;
-    goto parse_loop;
-  }
 
   /* This loop parses all of the rule's
    * targets */
@@ -393,6 +342,8 @@ parse_loop:
     command.ignore_error = 0;
     command.silent = 0;
     command.source = &command_source;
+    command_source.data = NULL;
+    command_source.size = 0;
 
     while (i < source->size) {
       c = source->data[i];
@@ -421,10 +372,55 @@ parse_loop:
       return err;
   }
 
-  /* If there's more makefile source code leftover,
-   * keep parsing the source. */
-  if (i < source->size)
-    goto parse_loop;
+  err = listener->on_rule_finish(listener->user_data);
+  if (err)
+    return err;
+
+  *j = i;
+
+  return 0;
+}
+
+void make_parser_init(struct make_parser *parser) {
+  parser->source = NULL;
+  parser->listener = NULL;
+}
+
+int make_parser_run(struct make_parser *parser) {
+
+  int err;
+  unsigned long int i;
+  unsigned long int j;
+
+  i = 0;
+  j = 0;
+
+  while (i < parser->source->size) {
+
+    err = include_stmt(parser, i, &j);
+    if (err)
+      return err;
+    else if (j > i) {
+      i = j;
+      continue;
+    }
+
+    err = assignment_stmt(parser, i, &j);
+    if (err)
+      return err;
+    else if (j > i) {
+      i = j;
+      continue;
+    }
+
+    err = rule(parser, i, &j);
+    if (err)
+      return err;
+    else if (j > i) {
+      i = j;
+      continue;
+    }
+  }
 
   return 0;
 }
