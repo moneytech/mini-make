@@ -59,7 +59,7 @@ static int on_prerequisite(void *user_data, const struct make_string *prerequisi
     assert(memcmp(prerequisite->data, "p1", 2) == 0);
   } else if (test_data->prerequisites_found == 1) {
     assert(prerequisite->size == 2);
-    assert(memcmp(prerequisite->data, "p2", 3) == 0);
+    assert(memcmp(prerequisite->data, "p2", 2) == 0);
   }
 
   test_data->prerequisites_found++;
@@ -177,9 +177,11 @@ static char *read_source(const char *path, unsigned long int *source_size) {
     return NULL;
   }
 
-  read_size = fread(source, file_pos, 1, file);
+  read_size = fread(source, 1, file_pos, file);
   if (source_size != NULL)
     *source_size = (unsigned long int) read_size;
+
+  source[read_size] = 0;
 
   fclose(file);
 
