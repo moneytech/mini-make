@@ -1,5 +1,6 @@
 #include <make/parser.h>
 
+#include <make/assignment-stmt.h>
 #include <make/command.h>
 #include <make/include-stmt.h>
 #include <make/listener.h>
@@ -15,6 +16,7 @@ struct test_data {
   unsigned long int prerequisites_found;
   unsigned long int commands_found;
   unsigned long int includes_found;
+  unsigned long int assignments_found;
 };
 
 static int on_target(void *user_data, const struct make_string *target) {
@@ -139,6 +141,53 @@ static int on_include_stmt(void *user_data, const struct make_include_stmt *incl
   return 0;
 }
 
+static int on_assignment_stmt(void *user_data, const struct make_assignment_stmt *assignment_stmt) {
+
+  struct test_data *test_data;
+
+  printf("Found an assignment statement\n");
+  printf("  Key: %.*s\n",
+         (int) assignment_stmt->key->size,
+         assignment_stmt->key->data);
+  printf("  Value: %.*s\n",
+         (int) assignment_stmt->value->size,
+         assignment_stmt->value->data);
+
+  test_data = (struct test_data *) user_data;
+
+  assert(test_data->assignments_found < 4);
+
+  if (test_data->assignments_found == 0) {
+    assert(assignment_stmt->key->size == 2);
+    assert(memcmp(assignment_stmt->key->data, "k1", 2) == 0);
+    assert(assignment_stmt->value->size == 2);
+    assert(memcmp(assignment_stmt->value->data, "v1", 2) == 0);
+    assert(assignment_stmt->operation == MAKE_OPERATION_APPEND);
+  } else if (test_data->assignments_found == 1) {
+    assert(assignment_stmt->key->size == 2);
+    assert(memcmp(assignment_stmt->key->data, "k2", 2) == 0);
+    assert(assignment_stmt->value->size == 2);
+    assert(memcmp(assignment_stmt->value->data, "v2", 2) == 0);
+    assert(assignment_stmt->operation == MAKE_OPERATION_CONDITIONAL);
+  } else if (test_data->assignments_found == 2) {
+    assert(assignment_stmt->key->size == 2);
+    assert(memcmp(assignment_stmt->key->data, "k3", 2) == 0);
+    assert(assignment_stmt->value->size == 2);
+    assert(memcmp(assignment_stmt->value->data, "v3", 2) == 0);
+    assert(assignment_stmt->operation == MAKE_OPERATION_RECURSIVE);
+  } else if (test_data->assignments_found == 3) {
+    assert(assignment_stmt->key->size == 2);
+    assert(memcmp(assignment_stmt->key->data, "k4", 2) == 0);
+    assert(assignment_stmt->value->size == 2);
+    assert(memcmp(assignment_stmt->value->data, "v4", 2) == 0);
+    assert(assignment_stmt->operation == MAKE_OPERATION_STATIC);
+  }
+
+  test_data->assignments_found++;
+
+  return 0;
+}
+
 static void on_unexpected_char(void *user_data, char c) {
   (void) user_data;
   printf("Unexpected character: %c\n", c);
@@ -200,6 +249,7 @@ int main(void) {
   test_data.prerequisites_found = 0;
   test_data.commands_found = 0;
   test_data.includes_found = 0;
+  test_data.assignments_found = 0;
 
   source.data = read_source("test.mk", &source.size);
   if (source.data == NULL) {
@@ -212,6 +262,7 @@ int main(void) {
   listener.on_prerequisite = on_prerequisite;
   listener.on_command = on_command;
   listener.on_include_stmt = on_include_stmt;
+  listener.on_assignment_stmt = on_assignment_stmt;
   listener.on_unexpected_char = on_unexpected_char;
 
   parser.source = &source;
@@ -221,6 +272,12 @@ int main(void) {
     return EXIT_FAILURE;
 
   free(source.data);
+
+  assert(test_data.targets_found == 2);
+  assert(test_data.prerequisites_found == 2);
+  assert(test_data.commands_found == 5);
+  assert(test_data.includes_found == 3);
+  assert(test_data.assignments_found == 4);
 
   return EXIT_SUCCESS;
 }

@@ -31,6 +31,8 @@ struct make_listener {
   void (*on_unexpected_char)(void *user_data, char c);
   /** @brief Executed when a rule is missing a ':' separator. */
   void (*on_missing_separator)(void *user_data);
+  /** @brief Executed when the end of file is reached unexpectedly. */
+  void (*on_unexpected_eof)(void *user_data);
 };
 
 #endif /* MAKE_LISTENER_H */
