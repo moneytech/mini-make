@@ -19,8 +19,13 @@ static int make_is_space(char c) {
     return 0;
 }
 
-static int make_is_target(char c) {
+static int make_is_filechar(char c) {
   if ((isalnum(c))
+   || (c == '(') || (c == ')')
+   || (c == '{') || (c == '}')
+   || (c == '/')
+   || (c == '\\')
+   || (c == '$')
    || (c == '.')
    || (c == '_')
    || (c == '-'))
@@ -159,6 +164,35 @@ static int assignment_stmt(struct make_parser *parser,
   return 0;
 }
 
+static int comment(struct make_parser *parser,
+                   unsigned long int i,
+                   unsigned long int *j) {
+  char c;
+  struct make_string *source;
+  source = &parser->source;
+  while (i < source->size) {
+    c = source->data[i];
+    if (make_is_space(c)) {
+      i++;
+      continue;
+    } else if (c != '#') {
+      break;
+    }
+    /* Found a comment.
+     * Move the parser passed
+     * the comment. */
+    while (i < source->size) {
+      c = source->data[i];
+      if (c == '\n')
+        break;
+      i++;
+    }
+    i++;
+  }
+  *j = i;
+  return 0;
+}
+
 static int include_stmt(struct make_parser *parser,
                         unsigned long int i,
                         unsigned long int *j) {
@@ -285,12 +319,12 @@ static int rule(struct make_parser *parser,
     } else if (c == '\n') {
       listener->on_missing_separator(listener->user_data);
       return -EINVAL;
-    } else if (make_is_target(c)) {
+    } else if (make_is_filechar(c)) {
       target.data = &source->data[i];
       target.size = 0;
       while (i < source->size) {
         c = source->data[i];
-        if (!make_is_target(c))
+        if (!make_is_filechar(c))
           break;
         target.size++;
         i++;
@@ -313,12 +347,12 @@ static int rule(struct make_parser *parser,
     } else if (make_is_space(c)) {
       i++;
       continue;
-    } else if (make_is_target(c)) {
+    } else if (make_is_filechar(c)) {
       prerequisite.data = &source->data[i];
       prerequisite.size = 0;
       while (i < source->size) {
         c = source->data[i];
-        if (!make_is_target(c))
+        if (!make_is_filechar(c))
           break;
         prerequisite.size++;
         i++;
@@ -449,6 +483,14 @@ int make_parser_run(struct make_parser *parser) {
   j = 0;
 
   while (i < parser->source.size) {
+
+    err = comment(parser, i, &j);
+    if (err)
+      return err;
+    else if (j > i) {
+      i = j;
+      continue;
+    }
 
     err = include_stmt(parser, i, &j);
     if (err)
