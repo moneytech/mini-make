@@ -206,11 +206,6 @@ static int on_assignment_stmt(void *user_data, const struct make_assignment_stmt
   return 0;
 }
 
-static void on_unexpected_char(void *user_data, char c) {
-  (void) user_data;
-  printf("Unexpected character: %c\n", c);
-}
-
 static int on_rule_start(void *user_data) {
   (void) user_data;
   return 0;
@@ -248,7 +243,6 @@ int main(void) {
   parser.listener.on_command = on_command;
   parser.listener.on_include_stmt = on_include_stmt;
   parser.listener.on_assignment_stmt = on_assignment_stmt;
-  parser.listener.on_unexpected_char = on_unexpected_char;
   parser.listener.on_rule_start = on_rule_start;
   parser.listener.on_rule_finish = on_rule_finish;
 
