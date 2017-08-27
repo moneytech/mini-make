@@ -51,6 +51,9 @@ static int make_table_new(struct make_table *table,
 void make_table_init(struct make_table *table) {
   table->entry_array = NULL;
   table->entry_count = 0;
+  make_string_init(&table->target);
+  make_string_init(&table->first_prerequisite);
+  make_string_init(&table->all_prerequisites);
 }
 
 void make_table_free(struct make_table *table) {
@@ -58,12 +61,19 @@ void make_table_free(struct make_table *table) {
   struct make_var *entry;
   for (i = 0; i < table->entry_count; i++) {
     entry = &table->entry_array[i];
-    make_string_free(&entry->key);
-    make_string_free(&entry->value);
+    make_var_free(entry);
   }
   free(table->entry_array);
   table->entry_array = 0;
   table->entry_count = 0;
+  make_string_free(&table->target);
+  make_string_free(&table->first_prerequisite);
+  make_string_free(&table->all_prerequisites);
+}
+
+int make_table_set_target(struct make_table *table,
+                          const struct make_string *target) {
+  return make_string_copy(target, &table->target);
 }
 
 int make_table_define(struct make_table *table,
@@ -83,6 +93,81 @@ int make_table_define(struct make_table *table,
   return make_table_new(table, key, value);
 }
 
+int make_table_evaluate(struct make_table *table,
+                        const struct make_string *in,
+                        struct make_string *out) {
+
+  int err;
+  char c;
+  char c2;
+  unsigned long int i;
+  struct make_string key;
+  struct make_string value;
+
+  i = 0;
+  while (i < in->size) {
+    c = in->data[i];
+    if (c == '$') {
+      i++;
+      if (i >= in->size)
+        break;
+    } else {
+      err = make_string_append_char(out, c);
+      if (err)
+        return err;
+      i++;
+      continue;
+    }
+    c = in->data[i];
+    if ((c == '{') || (c == '(')) {
+      i++;
+      if (i >= in->size)
+        break;
+      key.data = &in->data[i];
+      key.size = 0;
+      key.res = 0;
+      while (i < in->size) {
+        c2 = in->data[i];
+        if (((c == '(') && (c2 == ')'))
+         || ((c == '{') && (c2 == '}'))) {
+          i++;
+          break;
+        }
+        key.size++;
+        i++;
+      }
+      make_string_init(&value);
+      err = make_table_value_of(table, &key, &value);
+      if (err) {
+        make_string_free(&value);
+        return err;
+      }
+      err = make_string_append(out, &value);
+      if (err) {
+        make_string_free(&value);
+        return err;
+      }
+      make_string_free(&value);
+      continue;
+    } else if (c == '@') {
+      err = make_string_append(out, &table->target);
+      if (err)
+        return err;
+    } else if (c == '<') {
+      err = make_string_append(out, &table->first_prerequisite);
+      if (err)
+        return err;
+    } else if (c == '^') {
+      err = make_string_append(out, &table->all_prerequisites);
+      if (err)
+        return err;
+    }
+    i++;
+  }
+
+  return 0;
+}
+
 int make_table_update(struct make_table *table,
                       const struct make_assignment_stmt *assignment_stmt) {
   int err;
@@ -91,6 +176,29 @@ int make_table_update(struct make_table *table,
                           assignment_stmt->value);
   if (err)
     return err;
+
+  return 0;
+}
+
+int make_table_value_of(const struct make_table *table,
+                        const struct make_string *key,
+                        struct make_string *value) {
+
+  int err;
+  unsigned long int i;
+  struct make_var *entry;
+
+  for (i = 0; i < table->entry_count; i++) {
+    entry = &table->entry_array[i];
+    if (make_string_equal(&entry->key, key)) {
+      err = make_string_append(value, &entry->value);
+      if (err)
+        return err;
+      break;
+    }
+  }
+
+  /* TODO : evaluate nested references */
 
   return 0;
 }
