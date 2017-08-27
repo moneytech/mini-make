@@ -17,6 +17,9 @@ struct make_interpreter {
   /** @brief Stores all the variables
    * from the assignment statements. */
   struct make_table table;
+  /** @brief Print the commands as
+   * normal but do not run them. */
+  int just_print;
   /** @brief Set to one if the last
    * target parsed was .PHONY */
   int phony_found;

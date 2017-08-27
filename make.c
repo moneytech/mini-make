@@ -18,6 +18,7 @@ static void print_help(void) {
   printf("Usage: %s [options] [target] ...\n", argv0);
   printf("\n");
   printf("Options:\n");
+  printf("  -n, --just-print      : Prints the commands but does not run them.\n");
   printf("  -f, --file <FILE>     : Read FILE instead of default 'Makefile'.\n");
   printf("  -C, --directory <DIR> : Change directory to DIR before running makefile.\n");
   printf("  -j, --jobs <N>        : Use up to 'N' number of jobs.\n");
@@ -44,9 +45,15 @@ int main(int argc, char **argv) {
   options.filename = "Makefile";
   options.working_dir = ".";
   options.jobs = 1;
+  options.just_print = 0;
 
   for (i = 1; i < argc; i++) {
-    if ((strcmp(argv[i], "-C") == 0)
+    if ((strcmp(argv[i], "-n") == 0)
+     || (strcmp(argv[i], "--just-print") == 0)
+     || (strcmp(argv[i], "--dry-run") == 0)
+     || (strcmp(argv[i], "--recon") == 0)) {
+      options.just_print = 1;
+    } else if ((strcmp(argv[i], "-C") == 0)
      || (strcmp(argv[i], "--directory") == 0)) {
       options.working_dir = argv[i + 1];
       if (options.filename == NULL) {
@@ -90,6 +97,9 @@ int main(int argc, char **argv) {
   }
 
   make_interpreter_init(&interpreter);
+
+  if (options.just_print)
+    interpreter.just_print = 1;
 
   make_key.data = "MAKE";
   make_key.size = 4;

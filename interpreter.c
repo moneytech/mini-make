@@ -9,6 +9,7 @@
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -19,8 +20,48 @@
 #define stat _stat
 #endif
 
-static const struct make_string * make_interpreter_get_target(const struct make_interpreter *interpreter) {
+static const struct make_string * get_target(const struct make_interpreter *interpreter) {
   return &interpreter->table.target;
+}
+
+static int build_prerequisite(struct make_interpreter *interpreter,
+                              const struct make_string *prerequisite) {
+
+  int err;
+  const struct make_string *old_target;
+  struct make_string target_copy;
+
+  old_target = get_target(interpreter);
+
+  make_string_init(&target_copy);
+
+  err = make_string_copy(old_target, &target_copy);
+  if (err) {
+    make_string_free(&target_copy);
+    return err;
+  }
+
+  err = make_interpreter_set_target(interpreter, prerequisite);
+  if (err) {
+    make_string_free(&target_copy);
+    return err;
+  }
+
+  err = make_interpreter_run(interpreter);
+  if (err) {
+    make_string_free(&target_copy);
+    return err;
+  }
+
+  err = make_interpreter_set_target(interpreter, &target_copy);
+  if (err) {
+    make_string_free(&target_copy);
+    return err;
+  }
+
+  make_string_free(&target_copy);
+
+  return 0;
 }
 
 static int on_rule_start(void *data) {
@@ -83,11 +124,20 @@ static int on_prerequisite(void *data, const struct make_string *prerequisite) {
   if (interpreter->phony_found) {
     /* If the target is found in a .PHONY rule, then
      * it is always expired. */
-    target = make_interpreter_get_target(interpreter);
+    target = get_target(interpreter);
     if (make_string_equal(prerequisite, target)) {
       interpreter->target_expired = 1;
       return 0;
     }
+  }
+
+  if (!interpreter->target_found) {
+    return 0;
+  }
+
+  err = build_prerequisite(interpreter, prerequisite);
+  if (err) {
+    return err;
   }
 
   err = make_string_copy(prerequisite, &path);
@@ -104,10 +154,13 @@ static int on_prerequisite(void *data, const struct make_string *prerequisite) {
        * target as expired */
       interpreter->target_expired = 1;
     } else {
+      fprintf(interpreter->errlog,
+              "Failed to stat '%s': %s\n",
+              path.data, strerror(errno));
       free(path.data);
-      return err;
+      return -errno;
     }
-  } else if (prerequisite_stat.st_mtime > interpreter->target_mtime) {
+  } else if (prerequisite_stat.st_mtime < interpreter->target_mtime) {
     /* Prerequisite is newer than the target. */
     interpreter->target_expired = 1;
   }
@@ -149,11 +202,13 @@ static int on_command(void *data, const struct make_command *command) {
             command_str.data);
   }
 
-  err = make_job_manager_queue(&interpreter->job_manager,
-                               &command_str);
-  if (err) {
-    make_string_free(&command_str);
-    return err;
+  if (!interpreter->just_print) {
+    err = make_job_manager_queue(&interpreter->job_manager,
+                                 &command_str);
+    if (err && !command->ignore_error) {
+      make_string_free(&command_str);
+      return err;
+    }
   }
 
   make_string_free(&command_str);
@@ -258,6 +313,8 @@ void make_interpreter_init(struct make_interpreter *interpreter) {
   listener->on_unexpected_char = on_unexpected_char;
   listener->on_missing_separator = on_missing_separator;
 
+  interpreter->just_print = 0;
+
   interpreter->phony_found = 0;
 
   interpreter->target_mtime = 0;
@@ -330,12 +387,17 @@ int make_interpreter_set_target(struct make_interpreter *interpreter,
   if (err)
     return err;
 
-  err = stat(interpreter->target.data, &target_stat);
+  err = stat(interpreter->table.target.data, &target_stat);
   if (err) {
     if (errno == ENOENT)
       interpreter->target_exists = 0;
-    else
+    else {
+      fprintf(interpreter->errlog,
+              "Failed to stat '%.*s'\n", 
+              (int) target->size,
+              target->data);
       return -errno;
+    }
   } else {
     interpreter->target_exists = 1;
     interpreter->target_mtime = target_stat.st_mtime;

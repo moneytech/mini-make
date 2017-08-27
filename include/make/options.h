@@ -5,6 +5,7 @@ struct make_options {
   char *working_dir;
   char *filename;
   unsigned int jobs;
+  int just_print;
 };
 
 #endif /* MAKE_OPTIONS_H */
