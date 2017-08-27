@@ -21,6 +21,7 @@
 #include <make/command.h>
 #include <make/include-stmt.h>
 #include <make/listener.h>
+#include <make/location.h>
 #include <make/parser.h>
 #include <make/string.h>
 
@@ -325,13 +326,16 @@ static int on_include_stmt(void *data, const struct make_include_stmt *include_s
   return 0;
 }
 
-static void on_unexpected_char(void *data, char c) {
+static void on_unexpected_char(void *data, char c, const struct make_location *location) {
 
   struct make_interpreter *interpreter;
 
   interpreter = (struct make_interpreter *) data;
 
-  fprintf(interpreter->errlog, "Unexpected character '%c'\n", c);
+  fprintf(interpreter->errlog,
+          "%.*s:%lu:%lu: Unexpected character '%c'\n",
+          (int) location->path.size, location->path.data,
+          location->line, location->column, c);
 }
 
 static void on_missing_separator(void *data) {
