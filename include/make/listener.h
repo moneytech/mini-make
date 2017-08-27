@@ -26,6 +26,7 @@ extern "C" {
 struct make_assignment_stmt;
 struct make_command;
 struct make_include_stmt;
+struct make_location;
 struct make_string;
 
 struct make_listener {
@@ -54,7 +55,8 @@ struct make_listener {
   int (*on_command)(void *user_data,
                     const struct make_command *command);
   /** @brief Executed when an unexpected character is found. */
-  void (*on_unexpected_char)(void *user_data, char c);
+  void (*on_unexpected_char)(void *user_data, char c,
+                             const struct make_location *location);
   /** @brief Executed when a rule is missing a ':' separator. */
   void (*on_missing_separator)(void *user_data);
   /** @brief Executed when the end of file is reached unexpectedly. */
