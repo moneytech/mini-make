@@ -22,6 +22,7 @@
 #include <make/command.h>
 #include <make/include-stmt.h>
 #include <make/listener.h>
+#include <make/location.h>
 #include <make/string.h>
 
 #include <ctype.h>
@@ -52,6 +53,41 @@ static int make_is_filechar(char c) {
     return 1;
   else
     return 0;
+}
+
+void unexpected_char(struct make_parser *parser,
+                     unsigned long int i) {
+
+  char c;
+  unsigned long int j;
+  struct make_location location;
+  struct make_listener *listener;
+  struct make_string *source;
+  void *user_data;
+
+  source = &parser->source;
+
+  location.path = parser->path;
+  location.line = 1;
+  location.column = 1;
+
+  for (j = 0; j < i; j++) {
+    c = source->data[j];
+    if (c == '\n') {
+      location.line++;
+      location.column = 1;
+    } else {
+      location.column++;
+    }
+  }
+
+  c = source->data[i];
+
+  listener = &parser->listener;
+
+  user_data = listener->user_data;
+
+  listener->on_unexpected_char(user_data, c, &location);
 }
 
 static int assignment_stmt(struct make_parser *parser,
@@ -353,7 +389,7 @@ static int rule(struct make_parser *parser,
       if (err)
         return err;
     } else {
-      listener->on_unexpected_char(listener->user_data, c);
+      unexpected_char(parser, i);
       return -EINVAL;
     }
   }
@@ -381,7 +417,7 @@ static int rule(struct make_parser *parser,
       if (err)
         return err;
     } else {
-      listener->on_unexpected_char(listener->user_data, c);
+      unexpected_char(parser, i);
       return -EINVAL;
     }
   }
@@ -438,11 +474,13 @@ static int rule(struct make_parser *parser,
 }
 
 void make_parser_init(struct make_parser *parser) {
+  make_string_init(&parser->path);
   make_string_init(&parser->source);
   make_listener_init(&parser->listener);
 }
 
 void make_parser_free(struct make_parser *parser) {
+  make_string_free(&parser->path);
   make_string_free(&parser->source);
 }
 
@@ -455,6 +493,11 @@ int make_parser_read(struct make_parser *parser,
   int found_escape;
   FILE *file;
   long int file_pos;
+
+  err = make_string_set_asciiz(&parser->path, filename);
+  if (err) {
+    return err;
+  }
 
   file = fopen(filename, "r");
   if (file == NULL)
