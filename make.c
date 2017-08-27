@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <string.h>
 
 int main(int argc, char **argv) {
 
@@ -16,8 +17,24 @@ int main(int argc, char **argv) {
   struct make_interpreter interpreter;
   struct make_string target;
   struct make_options options;
+  struct make_string make_key;
+  struct make_string make_value;
 
   make_interpreter_init(&interpreter);
+
+  make_key.data = "MAKE";
+  make_key.size = 4;
+  make_key.res = 0;
+
+  make_value.data = argv[0];
+  make_value.size = strlen(argv[0]);
+  make_value.res = 0;
+
+  err = make_interpreter_define(&interpreter, &make_key, &make_value);
+  if (err) {
+    make_interpreter_free(&interpreter);
+    return err;
+  }
 
   options.filename = "Makefile";
   options.working_dir = ".";
