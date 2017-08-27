@@ -9,7 +9,7 @@ if ("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU")
 elseif ("${CMAKE_C_COMPILER_ID}" STREQUAL "Clang")
   set (CMAKE_C_FLAGS "-Wall -Wextra -Werror -Wfatal-errors -pedantic")
 elseif ("${CMAKE_C_COMPILER_ID}" STREQUAL "MSVC")
-  set (CMAKE_C_FLAGS "/W3 /WX")
+  set (CMAKE_C_FLAGS "/W3 /WX /D_CRT_SECURE_NO_WARNINGS")
 endif ("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU")
 
 add_library("make" STATIC
