@@ -17,6 +17,10 @@ struct make_interpreter {
   /** @brief Stores all the variables
    * from the assignment statements. */
   struct make_table table;
+  /** @brief If set, the interpreter
+   * does not print any of the commands
+   * it is running. */
+  int silent;
   /** @brief Print the commands as
    * normal but do not run them. */
   int just_print;

@@ -93,27 +93,52 @@ static int on_target(void *data, const struct make_string *target) {
   int err;
   struct make_interpreter *interpreter;
   struct make_string phony;
+  struct make_string silent;
+  struct make_string evaluated_target;
 
   interpreter = (struct make_interpreter *) data;
+
+  make_string_init(&evaluated_target);
+
+  err = make_table_evaluate(&interpreter->table,
+                            target, &evaluated_target);
+  if (err) {
+    make_string_free(&evaluated_target);
+    return err;
+  }
 
   phony.data = ".PHONY";
   phony.size = sizeof(".PHONY") - 1;
   phony.res = 0;
-  if (make_string_equal(&phony, target)) {
+  if (make_string_equal(&phony, &evaluated_target)) {
+    make_string_free(&evaluated_target);
     interpreter->phony_found = 1;
     return 0;
   }
 
-  if (!make_interpreter_has_target(interpreter)) {
-    err = make_interpreter_set_target(interpreter, target);
-    if (err)
-      return err;
+  silent.data = ".SILENT";
+  silent.size = sizeof(".SILENT") - 1;
+  silent.res = 0;
+  if (make_string_equal(&silent, &evaluated_target)) {
+    make_string_free(&evaluated_target);
+    interpreter->silent = 1;
+    return 0;
   }
 
-  if (make_string_equal(&interpreter->target, target)) {
+  if (!make_interpreter_has_target(interpreter)) {
+    err = make_interpreter_set_target(interpreter, &evaluated_target);
+    if (err) {
+      make_string_free(&evaluated_target);
+      return err;
+    }
+  }
+
+  if (make_string_equal(&interpreter->target, &evaluated_target)) {
     interpreter->target_found = 1;
     interpreter->target_found_once = 1;
   }
+
+  make_string_free(&evaluated_target);
 
   return 0;
 }
@@ -203,7 +228,7 @@ static int on_command(void *data, const struct make_command *command) {
     return err;
   }
 
-  if (!command->silent) {
+  if (!command->silent && !interpreter->silent) {
     fprintf(interpreter->outlog, "%.*s\n",
             (int) command_str.size,
             command_str.data);
@@ -321,6 +346,7 @@ void make_interpreter_init(struct make_interpreter *interpreter) {
   listener->on_missing_separator = on_missing_separator;
 
   interpreter->just_print = 0;
+  interpreter->silent = 0;
 
   interpreter->phony_found = 0;
 

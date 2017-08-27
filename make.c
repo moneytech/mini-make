@@ -18,6 +18,7 @@ static void print_help(void) {
   printf("Usage: %s [options] [target] ...\n", argv0);
   printf("\n");
   printf("Options:\n");
+  printf("  -s, --silent          : Does not print any of the commands it runs.\n");
   printf("  -n, --just-print      : Prints the commands but does not run them.\n");
   printf("  -f, --file <FILE>     : Read FILE instead of default 'Makefile'.\n");
   printf("  -C, --directory <DIR> : Change directory to DIR before running makefile.\n");
@@ -46,6 +47,7 @@ int main(int argc, char **argv) {
   options.working_dir = ".";
   options.jobs = 1;
   options.just_print = 0;
+  options.silent = 0;
 
   for (i = 1; i < argc; i++) {
     if ((strcmp(argv[i], "-n") == 0)
@@ -54,7 +56,7 @@ int main(int argc, char **argv) {
      || (strcmp(argv[i], "--recon") == 0)) {
       options.just_print = 1;
     } else if ((strcmp(argv[i], "-C") == 0)
-     || (strcmp(argv[i], "--directory") == 0)) {
+            || (strcmp(argv[i], "--directory") == 0)) {
       options.working_dir = argv[i + 1];
       if (options.filename == NULL) {
         fprintf(stderr, "No directory given for '%s'\n", argv[i]);
@@ -78,6 +80,10 @@ int main(int argc, char **argv) {
         fprintf(stderr, "Incorrect numerical value given for '%s'\n", argv[i]);
         return EXIT_FAILURE;
       }
+    } else if ((strcmp(argv[i], "-s") == 0)
+            || (strcmp(argv[i], "--silent") == 0)
+            || (strcmp(argv[i], "--quiet") == 0)) {
+      options.silent = 1;
     } else if ((strcmp(argv[i], "-h") == 0)
             || (strcmp(argv[i], "--help") == 0)) {
       print_help();
@@ -100,6 +106,9 @@ int main(int argc, char **argv) {
 
   if (options.just_print)
     interpreter.just_print = 1;
+
+  if (options.silent)
+    interpreter.silent = 1;
 
   make_key.data = "MAKE";
   make_key.size = 4;

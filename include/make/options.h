@@ -6,6 +6,7 @@ struct make_options {
   char *filename;
   unsigned int jobs;
   int just_print;
+  int silent;
 };
 
 #endif /* MAKE_OPTIONS_H */
