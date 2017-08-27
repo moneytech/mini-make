@@ -27,6 +27,7 @@ extern "C" {
 #endif
 
 struct make_parser {
+  struct make_string path;
   struct make_string source;
   struct make_listener listener;
 };
