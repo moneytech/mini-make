@@ -192,7 +192,7 @@ static int on_prerequisite(void *data, const struct make_string *prerequisite) {
       free(path.data);
       return -errno;
     }
-  } else if (prerequisite_stat.st_mtime < interpreter->target_mtime) {
+  } else if (prerequisite_stat.st_mtime > interpreter->target_mtime) {
     /* Prerequisite is newer than the target. */
     interpreter->target_expired = 1;
   }
