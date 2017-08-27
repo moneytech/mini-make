@@ -7,6 +7,7 @@
 void make_string_init(struct make_string *str) {
   str->data = NULL;
   str->size = 0;
+  str->res = 0;
 }
 
 void make_string_free(struct make_string *str) {
@@ -49,7 +50,7 @@ int make_string_res(struct make_string *dst,
     return 0;
 
   tmp = realloc(dst->data, res);
-  if (tmp == NULL)
+  if ((tmp == NULL) && (res > 0))
     return -ENOMEM;
 
   dst->data = tmp;
@@ -64,13 +65,14 @@ int make_string_set(struct make_string *dst,
 
   int err;
 
-  err = make_string_res(dst, src_size);
+  err = make_string_res(dst, src_size + 1);
   if (err)
     return err;
 
   memcpy(dst->data, src, src_size);
   dst->data[src_size] = 0;
   dst->size = src_size;
+
   return 0;
 }
 
