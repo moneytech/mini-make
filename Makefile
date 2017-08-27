@@ -11,10 +11,12 @@ VPATH += include/make
 .PHONY: all
 all: libmake.so make interpreter-test parser-test table-test
 
-libmake.so: interpreter.o parser.o string.o table.o
+libmake.so: interpreter.o listener.o parser.o string.o table.o
 	$(CC) -shared $^ -o $@
 
 interpreter.o: interpreter.c interpreter.h
+
+listener.o: listener.c listener.h
 
 make: make.c -lmake
 	$(CC) $(CFLAGS) $^ -o $@

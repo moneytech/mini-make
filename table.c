@@ -33,37 +33,13 @@ static int make_table_new(struct make_table *table,
   /* new entry */
   n_entry = &entry_array[entry_count - 1];
 
-  /* allocate key */
-  n_entry->key = malloc(sizeof(struct make_string));
-  if (n_entry->key == NULL) {
+  err = make_string_copy(key, &n_entry->key);
+  if (err)
     return -ENOMEM;
-  } else {
-    n_entry->key->data = NULL;
-    n_entry->key->size = 0;
-  }
 
-  /* allocate value */
-  n_entry->value = malloc(sizeof(struct make_string));
-  if (n_entry->value == NULL) {
-    free(n_entry->key);
-    return -ENOMEM;
-  } else {
-    n_entry->value->data = NULL;
-    n_entry->value->size = 0;
-  }
-
-  err = make_string_copy(key, n_entry->key);
+  err = make_string_copy(value, &n_entry->value);
   if (err) {
-    free(n_entry->key);
-    free(n_entry->value);
-    return -ENOMEM;
-  }
-
-  err = make_string_copy(value, n_entry->value);
-  if (err) {
-    free(n_entry->key);
-    free(n_entry->key->data);
-    free(n_entry->value);
+    free(n_entry->key.data);
     return -ENOMEM;
   }
 
@@ -82,16 +58,8 @@ void make_table_free(struct make_table *table) {
   struct make_var *entry;
   for (i = 0; i < table->entry_count; i++) {
     entry = &table->entry_array[i];
-    if (entry->key) {
-      if (entry->key->data)
-        free(entry->key->data);
-      free(entry->key);
-    }
-    if (entry->value) {
-      if (entry->value->data)
-        free(entry->value->data);
-      free(entry->value);
-    }
+    make_string_free(&entry->key);
+    make_string_free(&entry->value);
   }
   free(table->entry_array);
   table->entry_array = 0;
@@ -107,7 +75,7 @@ int make_table_define(struct make_table *table,
 
   for (i = 0; i < table->entry_count; i++) {
     entry = &table->entry_array[i];
-    if (!make_string_equal(entry->key, key))
+    if (!make_string_equal(&entry->key, key))
       continue;
     /* entry found */
   }

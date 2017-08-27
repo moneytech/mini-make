@@ -203,56 +203,10 @@ static int on_rule_finish(void *user_data) {
   return 0;
 }
 
-static char *read_source(const char *path, unsigned long int *source_size) {
-
-  FILE *file;
-  char *source;
-  long int file_pos;
-  size_t read_size;
-
-  file = fopen(path, "r");
-  if (file == NULL)
-    return NULL;
-
-  if (fseek(file, 0, SEEK_END) < 0) {
-    fclose(file);
-    return NULL;
-  }
-
-  file_pos = ftell(file);
-  if (file_pos < 0) {
-    fclose(file);
-    return NULL;
-  }
-
-  if (fseek(file, 0, SEEK_SET) < 0) {
-    fclose(file);
-    return NULL;
-  }
-
-  source = malloc(file_pos + 1);
-  if (source == NULL) {
-    fclose(file);
-    return NULL;
-  }
-
-  read_size = fread(source, 1, file_pos, file);
-  if (source_size != NULL)
-    *source_size = (unsigned long int) read_size;
-
-  source[read_size] = 0;
-
-  fclose(file);
-
-  return source;
-}
-
 int main(void) {
 
   int err;
   struct test_data test_data;
-  struct make_string source;
-  struct make_listener listener;
   struct make_parser parser;
 
   test_data.targets_found = 0;
@@ -261,29 +215,27 @@ int main(void) {
   test_data.includes_found = 0;
   test_data.assignments_found = 0;
 
-  source.data = read_source("test.mk", &source.size);
-  if (source.data == NULL) {
-    perror("Failed to read 'test.mk'");
+  err = make_parser_read(&parser, "test.mk");
+  if (err < 0) {
+    fprintf(stderr, "Failed to read 'test.mk'");
+    make_parser_free(&parser);
     return EXIT_FAILURE;
   }
 
-  listener.user_data = &test_data;
-  listener.on_target = on_target;
-  listener.on_prerequisite = on_prerequisite;
-  listener.on_command = on_command;
-  listener.on_include_stmt = on_include_stmt;
-  listener.on_assignment_stmt = on_assignment_stmt;
-  listener.on_unexpected_char = on_unexpected_char;
-  listener.on_rule_start = on_rule_start;
-  listener.on_rule_finish = on_rule_finish;
+  parser.listener.user_data = &test_data;
+  parser.listener.on_target = on_target;
+  parser.listener.on_prerequisite = on_prerequisite;
+  parser.listener.on_command = on_command;
+  parser.listener.on_include_stmt = on_include_stmt;
+  parser.listener.on_assignment_stmt = on_assignment_stmt;
+  parser.listener.on_unexpected_char = on_unexpected_char;
+  parser.listener.on_rule_start = on_rule_start;
+  parser.listener.on_rule_finish = on_rule_finish;
 
-  parser.source = &source;
-  parser.listener = &listener;
   err = make_parser_run(&parser);
-  if (err)
-    return EXIT_FAILURE;
+  assert(err == 0);
 
-  free(source.data);
+  make_parser_free(&parser);
 
   assert(test_data.targets_found == 2);
   assert(test_data.prerequisites_found == 2);

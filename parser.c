@@ -8,6 +8,7 @@
 
 #include <ctype.h>
 #include <errno.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -40,7 +41,7 @@ static int assignment_stmt(struct make_parser *parser,
   struct make_string value;
   struct make_assignment_stmt assignment_stmt;
 
-  listener = parser->listener;
+  listener = &parser->listener;
 
   key.data = NULL;
   key.size = 0;
@@ -52,7 +53,7 @@ static int assignment_stmt(struct make_parser *parser,
   assignment_stmt.key = &key;
   assignment_stmt.value = &value;
 
-  source = parser->source;
+  source = &parser->source;
 
   /* This loop parses the assignment
    * statement's key */
@@ -169,9 +170,9 @@ static int include_stmt(struct make_parser *parser,
   struct make_include_stmt include_stmt;
   struct make_listener *listener;
 
-  listener = parser->listener;
+  listener = &parser->listener;
 
-  source = parser->source;
+  source = &parser->source;
 
   include_path.data = NULL;
   include_path.size = 0;
@@ -263,9 +264,9 @@ static int rule(struct make_parser *parser,
   struct make_string command_source;
   struct make_command command;
 
-  listener = parser->listener;
+  listener = &parser->listener;
 
-  source = parser->source;
+  source = &parser->source;
 
   err = listener->on_rule_start(listener->user_data);
   if (err)
@@ -383,8 +384,59 @@ static int rule(struct make_parser *parser,
 }
 
 void make_parser_init(struct make_parser *parser) {
-  parser->source = NULL;
-  parser->listener = NULL;
+  make_string_init(&parser->source);
+  make_listener_init(&parser->listener);
+}
+
+void make_parser_free(struct make_parser *parser) {
+  make_string_free(&parser->source);
+}
+
+int make_parser_read(struct make_parser *parser,
+                     const char *filename) {
+
+  int err;
+  FILE *file;
+  long int file_pos;
+
+  file = fopen(filename, "r");
+  if (file == NULL)
+    return -ENOENT;
+
+  err = fseek(file, 0, SEEK_END);
+  if (err < 0) {
+    err = -errno;
+    fclose(file);
+    return err;
+  }
+
+  file_pos = ftell(file);
+  if (file_pos < 0) {
+    err = -errno;
+    fclose(file);
+    return err;
+  }
+
+  err = fseek(file, 0, SEEK_SET);
+  if (err < 0) {
+    err = -errno;
+    fclose(file);
+    return err;
+  }
+
+  parser->source.data = malloc(file_pos + 1);
+  if (parser->source.data == NULL) {
+    fclose(file);
+    return -ENOMEM;
+  }
+
+  parser->source.size = fread(parser->source.data, 1, file_pos, file);
+
+  parser->source.data[parser->source.size] = 0;
+
+  fclose(file);
+
+  return 0;
 }
 
 int make_parser_run(struct make_parser *parser) {
@@ -396,7 +448,7 @@ int make_parser_run(struct make_parser *parser) {
   i = 0;
   j = 0;
 
-  while (i < parser->source->size) {
+  while (i < parser->source.size) {
 
     err = include_stmt(parser, i, &j);
     if (err)

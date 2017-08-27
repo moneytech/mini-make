@@ -39,4 +39,6 @@ struct make_listener {
   void (*on_unexpected_eof)(void *user_data);
 };
 
+void make_listener_init(struct make_listener *listener);
+
 #endif /* MAKE_LISTENER_H */

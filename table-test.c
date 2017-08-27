@@ -30,10 +30,10 @@ static void test_update(void) {
   err = make_table_update(&table, &assignment_stmt);
   assert(err == 0);
   assert(table.entry_count == 1);
-  assert(table.entry_array[0].key->size == 3);
-  assert(memcmp(table.entry_array[0].key->data, "CXX", 3) == 0);
-  assert(table.entry_array[0].value->size == 3);
-  assert(memcmp(table.entry_array[0].value->data, "g++", 3) == 0);
+  assert(table.entry_array[0].key.size == 3);
+  assert(memcmp(table.entry_array[0].key.data, "CXX", 3) == 0);
+  assert(table.entry_array[0].value.size == 3);
+  assert(memcmp(table.entry_array[0].value.data, "g++", 3) == 0);
 
   make_table_free(&table);
 }
