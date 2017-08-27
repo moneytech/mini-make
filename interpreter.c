@@ -19,6 +19,10 @@
 #define stat _stat
 #endif
 
+static const struct make_string * make_interpreter_get_target(const struct make_interpreter *interpreter) {
+  return &interpreter->table.target;
+}
+
 static int on_rule_start(void *data) {
 
   struct make_interpreter *interpreter;
@@ -72,8 +76,19 @@ static int on_prerequisite(void *data, const struct make_string *prerequisite) {
   struct stat prerequisite_stat;
   struct make_interpreter *interpreter;
   struct make_string path;
+  const struct make_string *target;
 
   interpreter = (struct make_interpreter *) data;
+
+  if (interpreter->phony_found) {
+    /* If the target is found in a .PHONY rule, then
+     * it is always expired. */
+    target = make_interpreter_get_target(interpreter);
+    if (make_string_equal(prerequisite, target)) {
+      interpreter->target_expired = 1;
+      return 0;
+    }
+  }
 
   err = make_string_copy(prerequisite, &path);
   if (err)
@@ -110,9 +125,12 @@ static int on_command(void *data, const struct make_command *command) {
 
   interpreter = (struct make_interpreter *) data;
 
-  if (interpreter->target_found
-   && interpreter->target_exists
-   && !interpreter->target_expired)
+  if (!interpreter->target_found)
+    /* The target is not in this rule. */
+    return 0;
+  else if (interpreter->target_exists
+        && !interpreter->target_expired)
+    /* The target exists and it is up to date. */
     return 0;
 
   make_string_init(&command_str);
