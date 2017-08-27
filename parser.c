@@ -49,10 +49,20 @@ static int make_is_filechar(char c) {
    || (c == '\'')
    || (c == '.')
    || (c == '_')
+   || (c == '+')
    || (c == '-'))
     return 1;
   else
     return 0;
+}
+
+static int make_is_operator_char(char c) {
+  if ((c == '=')
+   || (c == '?')
+   || (c == '+')
+   || (c == ':'))
+    return 1;
+  return 0;
 }
 
 void unexpected_char(struct make_parser *parser,
@@ -96,6 +106,7 @@ static int assignment_stmt(struct make_parser *parser,
 
   int err;
   char c;
+  int escape_found;
   struct make_string *source;
   struct make_listener *listener;
   struct make_string key;
@@ -127,6 +138,8 @@ static int assignment_stmt(struct make_parser *parser,
         i++;
         continue;
       }
+    } else if (make_is_operator_char(c)) {
+        break;
     } else {
       if (key.size == 0)
         key.data = &source->data[i];
@@ -194,10 +207,31 @@ static int assignment_stmt(struct make_parser *parser,
 
   /* This loop parses the assignment
    * statement's value */
+  escape_found = 0;
   while (i < source->size) {
     c = source->data[i];
-    if (c == '\n') {
-      break;
+    if (c == '\\') {
+      if (escape_found) {
+        if (value.size == 0)
+          value.data = &source->data[i];
+        value.size++;
+        escape_found = 0;
+      } else {
+        escape_found = 1;
+        if (value.size > 0)
+          value.size++;
+      }
+      i++;
+      continue;
+    } else if (c == '\n') {
+      if (escape_found) {
+        escape_found = 0;
+        if (value.size > 0)
+          value.size++;
+        i++;
+        continue;
+      } else
+        break;
     } else if (make_is_space(c) && (value.size == 0)) {
       i++;
       continue;
@@ -346,6 +380,7 @@ static int rule(struct make_parser *parser,
                 unsigned long int *j) {
 
   int err;
+  int escape_found;
   struct make_listener *listener;
   struct make_string *source;
   char c;
@@ -395,24 +430,57 @@ static int rule(struct make_parser *parser,
   }
 
   /* This loop parses all of the rule's prerequisites */
+  escape_found = 0;
   while (i < source->size) {
     c = source->data[i];
+    if (c == '\\') {
+      if (escape_found) {
+        escape_found = 0;
+      } else {
+        escape_found = 1;
+        i++;
+        continue;
+      }
+    }
     if (c == '\n') {
-      i++;
-      break;
+      if (escape_found) {
+        escape_found = 0;
+        i++;
+        continue;
+      } else {
+        i++;
+        break;
+      }
     } else if (make_is_space(c)) {
       i++;
       continue;
     } else if (make_is_filechar(c)) {
       prerequisite.data = &source->data[i];
       prerequisite.size = 0;
+      escape_found = 0;
       while (i < source->size) {
         c = source->data[i];
+        if (c == '\n') {
+          if (escape_found) {
+            escape_found = 0;
+            i++;
+          }
+          break;
+        } else if (c == '\\') {
+          if (escape_found)
+            escape_found = 0;
+          else {
+            escape_found = 1;
+            i++;
+            continue;
+          }
+        }
         if (!make_is_filechar(c))
           break;
         prerequisite.size++;
         i++;
       }
+      escape_found = 0;
       err = listener->on_prerequisite(listener->user_data, &prerequisite);
       if (err)
         return err;
@@ -487,10 +555,7 @@ void make_parser_free(struct make_parser *parser) {
 int make_parser_read(struct make_parser *parser,
                      const char *filename) {
 
-  unsigned long int i;
   int err;
-  int c;
-  int found_escape;
   FILE *file;
   long int file_pos;
 
@@ -530,24 +595,8 @@ int make_parser_read(struct make_parser *parser,
     return -ENOMEM;
   }
 
-  found_escape = 0;
-  i = 0;
-  while (!feof(file)) {
-    c = fgetc(file);
-    if (c == EOF)
-      break;
-    else if (c == '\\')
-      found_escape = 1;
-    else if ((c == '\n') && found_escape)
-      found_escape = 0;
-    else if ((c == '\\') && found_escape)
-      found_escape = 0;
-    else {
-      parser->source.data[i] = c;
-      parser->source.size++;
-      i++;
-    }
-  }
+  parser->source.size = fread(parser->source.data,
+                              1, file_pos, file);
 
   parser->source.data[parser->source.size] = 0;
 
