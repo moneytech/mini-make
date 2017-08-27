@@ -4,6 +4,14 @@ project("make")
 
 include_directories("include")
 
+if ("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU")
+  set (CMAKE_C_FLAGS "-Wall -Wextra -Werror -Wfatal-errors -ansi -pedantic")
+elseif ("${CMAKE_C_COMPILER_ID}" STREQUAL "Clang")
+  set (CMAKE_C_FLAGS "-Wall -Wextra -Werror -Wfatal-errors -ansi -pedantic")
+elseif ("${CMAKE_C_COMPILER_ID}" STREQUAL "MSVC")
+  set (CMAKE_C_FLAGS "/W3 /WX")
+endif ("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU")
+
 add_library("make-library"
   "interpreter.c"
   "interpreter-test.c"
