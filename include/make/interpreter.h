@@ -40,7 +40,7 @@ struct make_interpreter {
    * older than it's prerequisites. */
   int target_expired;
   /** @brief Target modification time. */
-  long int target_mtime;
+  long long int target_mtime;
   /** @brief Logs error messages. */
   FILE *errlog;
   /** @brief Logs non-error messages. */
