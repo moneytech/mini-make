@@ -1,3 +1,4 @@
+#include <make/chdir.h>
 #include <make/listener.h>
 #include <make/interpreter.h>
 #include <make/options.h>
@@ -65,6 +66,13 @@ int main(int argc, char **argv) {
        * parsed in the next loop */
       break;
     }
+  }
+
+  err = make_chdir(options.working_dir);
+  if (err < 0) {
+    fprintf(stderr, "Failed to change directory to '%s'\n", options.working_dir);
+    make_interpreter_free(&interpreter);
+    return EXIT_FAILURE;
   }
 
   err = make_interpreter_read(&interpreter, options.filename);

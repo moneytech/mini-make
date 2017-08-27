@@ -13,6 +13,7 @@ elseif ("${CMAKE_C_COMPILER_ID}" STREQUAL "MSVC")
 endif ("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU")
 
 add_library("make-library"
+  "chdir.c"
   "interpreter.c"
   "interpreter-test.c"
   "job.c"
