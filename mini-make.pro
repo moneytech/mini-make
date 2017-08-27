@@ -1,5 +1,13 @@
 INCLUDEPATH += "include"
 
+gcc {
+  QMAKE_CFLAGS += -Werror -Wfatal-errors
+}
+
+win32-msvc* {
+  QMAKE_CFLAGS += /WX
+}
+
 SOURCES += "make.c"
 
 HEADERS += "include/make/assignment-stmt.h"
