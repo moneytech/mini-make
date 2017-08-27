@@ -41,3 +41,13 @@ add_make_test("parser-test" "parser-test.c")
 
 enable_testing()
 
+set (CPACK_PACKAGE_DESCRIPTION_SUMMARY "A miniature implementation of Make.")
+set (CPACK_PACKAGE_VENDOR "Taylor Holberton")
+set (CPACK_PACKAGE_VERSION_MAJOR 0)
+set (CPACK_PACKAGE_VERSION_MINOR 1)
+set (CPACK_PACKAGE_VERSION_PATCH 0)
+set (CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
+set (CPACK_PACKAGE_CONTACT "taylorcholberton@gmail.com")
+
+include(CPack)
+
