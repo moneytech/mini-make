@@ -109,7 +109,9 @@ static int on_command(void *data, const struct make_command *command) {
 
   interpreter = (struct make_interpreter *) data;
 
-  if (!interpreter->target_expired)
+  if (interpreter->target_found
+   && interpreter->target_exists
+   && !interpreter->target_expired)
     return 0;
 
   make_string_init(&command_str);
@@ -126,6 +128,13 @@ static int on_command(void *data, const struct make_command *command) {
     fprintf(interpreter->outlog, "%.*s\n",
             (int) command_str.size,
             command_str.data);
+  }
+
+  err = make_job_manager_queue(&interpreter->job_manager,
+                               &command_str);
+  if (err) {
+    make_string_free(&command_str);
+    return err;
   }
 
   make_string_free(&command_str);
@@ -182,6 +191,7 @@ void make_interpreter_init(struct make_interpreter *interpreter) {
   make_string_init(&interpreter->target);
   make_parser_init(&interpreter->parser);
   make_table_init(&interpreter->table);
+  make_job_manager_init(&interpreter->job_manager);
 
   parser = &interpreter->parser;
 
@@ -213,6 +223,13 @@ void make_interpreter_free(struct make_interpreter *interpreter) {
   make_string_free(&interpreter->target);
   make_parser_free(&interpreter->parser);
   make_table_free(&interpreter->table);
+  make_job_manager_free(&interpreter->job_manager);
+}
+
+int make_interpreter_define(struct make_interpreter *interpreter,
+                            const struct make_string *key,
+                            const struct make_string *value) {
+  return make_table_define(&interpreter->table, key, value);
 }
 
 int make_interpreter_has_target(const struct make_interpreter *interpreter) {

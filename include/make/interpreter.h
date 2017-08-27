@@ -1,6 +1,7 @@
 #ifndef MAKE_INTERPRETER_H
 #define MAKE_INTERPRETER_H
 
+#include <make/job-manager.h>
 #include <make/parser.h>
 #include <make/string.h>
 #include <make/table.h>
@@ -8,6 +9,9 @@
 #include <stdio.h>
 
 struct make_interpreter {
+  /** Contains processes started from
+   * recipes. */
+  struct make_job_manager job_manager;
   struct make_string target;
   struct make_parser parser;
   /** @brief Stores all the variables
@@ -39,6 +43,10 @@ struct make_interpreter {
 void make_interpreter_init(struct make_interpreter *interpreter);
 
 void make_interpreter_free(struct make_interpreter *interpreter);
+
+int make_interpreter_define(struct make_interpreter *interpreter,
+                            const struct make_string *key,
+                            const struct make_string *value);
 
 int make_interpreter_has_target(const struct make_interpreter *interpreter);
 
