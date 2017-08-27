@@ -1,6 +1,7 @@
 #include <make/interpreter.h>
 
 #include <make/command.h>
+#include <make/include-stmt.h>
 #include <make/listener.h>
 #include <make/parser.h>
 #include <make/string.h>
@@ -160,8 +161,40 @@ static int on_assignment_stmt(void *data, const struct make_assignment_stmt *ass
 }
 
 static int on_include_stmt(void *data, const struct make_include_stmt *include_stmt) {
-  (void) data;
-  (void) include_stmt;
+
+  int err;
+  struct make_parser new_parser;
+  struct make_string path;
+  struct make_interpreter *interpreter;
+
+  interpreter = (struct make_interpreter *) data;
+
+  make_string_init(&path);
+  err = make_string_copy(include_stmt->path, &path);
+  if (err) {
+    make_string_free(&path);
+    return err;
+  }
+  make_parser_init(&new_parser);
+  err = make_parser_read(&new_parser, path.data);
+  if (err) {
+    fprintf(interpreter->errlog,
+            "Failed to open '%s'\n",
+            path.data);
+    make_string_free(&path);
+    make_parser_free(&new_parser);
+    return err;
+  }
+  make_string_free(&path);
+
+  new_parser.listener = interpreter->parser.listener;
+  err = make_parser_run(&new_parser);
+  if (err) {
+    make_parser_free(&new_parser);
+    return err;
+  }
+  make_parser_free(&new_parser);
+
   return 0;
 }
 
