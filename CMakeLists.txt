@@ -18,7 +18,6 @@ add_library("make" STATIC
   "job.c"
   "job-manager.c"
   "listener.c"
-  "make.c"
   "parser.c"
   "string.c"
   "table.c"
