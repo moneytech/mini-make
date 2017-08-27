@@ -186,14 +186,20 @@ static int on_prerequisite(void *data, const struct make_string *prerequisite) {
     return 0;
   }
 
-  err = build_prerequisite(interpreter, prerequisite);
+  make_string_init(&path);
+
+  err = make_table_evaluate(&interpreter->table,
+                            prerequisite, &path);
   if (err) {
+    make_string_free(&path);
     return err;
   }
 
-  err = make_string_copy(prerequisite, &path);
-  if (err)
+  err = build_prerequisite(interpreter, &path);
+  if (err) {
+    make_string_free(&path);
     return err;
+  }
 
   err = stat(path.data, &prerequisite_stat);
   if (err) {
@@ -208,7 +214,7 @@ static int on_prerequisite(void *data, const struct make_string *prerequisite) {
       fprintf(interpreter->errlog,
               "Failed to stat '%s': %s\n",
               path.data, strerror(errno));
-      free(path.data);
+      make_string_free(&path);
       return -errno;
     }
   } else if (prerequisite_stat.st_mtime > interpreter->target_mtime) {
@@ -216,7 +222,7 @@ static int on_prerequisite(void *data, const struct make_string *prerequisite) {
     interpreter->target_expired = 1;
   }
 
-  free(path.data);
+  make_string_free(&path);
 
   return 0;
 }
