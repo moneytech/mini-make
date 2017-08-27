@@ -41,11 +41,13 @@ static int on_target(void *data, const struct make_string *target) {
 
   interpreter = (struct make_interpreter *) data;
 
-  if (interpreter->target.size == 0) {
+  if (!make_interpreter_has_target(interpreter)) {
     err = make_interpreter_set_target(interpreter, target);
     if (err)
       return err;
-  } else if (make_string_equal(&interpreter->target, target)) {
+  }
+
+  if (make_string_equal(&interpreter->target, target)) {
     interpreter->target_found = 1;
     interpreter->target_found_once = 1;
   }
@@ -108,8 +110,19 @@ static int on_command(void *data, const struct make_command *command) {
 }
 
 static int on_assignment_stmt(void *data, const struct make_assignment_stmt *assignment_stmt) {
-  (void) data;
-  (void) assignment_stmt;
+
+  int err;
+  struct make_table *table;
+  struct make_interpreter *interpreter;
+
+  interpreter = (struct make_interpreter *) data;
+
+  table = &interpreter->table;
+
+  err = make_table_update(table, assignment_stmt);
+  if (err)
+    return err;
+
   return 0;
 }
 
@@ -174,6 +187,13 @@ void make_interpreter_free(struct make_interpreter *interpreter) {
   make_string_free(&interpreter->target);
   make_parser_free(&interpreter->parser);
   make_table_free(&interpreter->table);
+}
+
+int make_interpreter_has_target(const struct make_interpreter *interpreter) {
+  if (interpreter->target.size == 0)
+    return 0;
+  else
+    return 1;
 }
 
 int make_interpreter_read(struct make_interpreter *interpreter,
