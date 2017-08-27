@@ -215,6 +215,8 @@ int main(void) {
   test_data.includes_found = 0;
   test_data.assignments_found = 0;
 
+  make_parser_init(&parser);
+
   err = make_parser_read(&parser, "../test.mk");
   if (err < 0) {
     fprintf(stderr, "Failed to read 'test.mk'");
