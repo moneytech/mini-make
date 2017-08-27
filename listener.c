@@ -18,11 +18,17 @@
 
 #include <make/listener.h>
 
+#include <make/location.h>
+#include <make/string.h>
+
 #include <stdio.h>
 
-static void on_unexpected_char(void *data, char c) {
+static void on_unexpected_char(void *data, char c,
+                               const struct make_location *location) {
   (void) data;
-  fprintf(stderr, "Unexpected character '%c'\n", c);
+  fprintf(stderr, "%.*s:%lu:%lu: Unexpected character '%c'\n",
+          (int) location->path.size, location->path.data,
+          location->line, location->column, c);
 }
 
 void make_listener_init(struct make_listener *listener) {
