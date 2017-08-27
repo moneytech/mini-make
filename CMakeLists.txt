@@ -12,7 +12,7 @@ elseif ("${CMAKE_C_COMPILER_ID}" STREQUAL "MSVC")
   set (CMAKE_C_FLAGS "/W3 /WX")
 endif ("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU")
 
-add_library("make"
+add_library("make" STATIC
   "chdir.c"
   "interpreter.c"
   "interpreter-test.c"
