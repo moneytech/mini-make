@@ -12,7 +12,7 @@ elseif ("${CMAKE_C_COMPILER_ID}" STREQUAL "MSVC")
   set (CMAKE_C_FLAGS "/W3 /WX")
 endif ("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU")
 
-add_library("make-library"
+add_library("make"
   "chdir.c"
   "interpreter.c"
   "interpreter-test.c"
@@ -27,17 +27,16 @@ add_library("make-library"
   "table-test.c"
   "var.c")
 
-set_target_properties("make-library" PROPERTIES OUTPUT_NAME "make")
+add_executable("mini-make" "make.c")
 
-add_executable("make-program" "make.c")
+target_link_libraries("mini-make" "make")
 
-set_target_properties("make-program" PROPERTIES OUTPUT_NAME "make")
-
-target_link_libraries("make-program" "make-library")
+install(TARGETS "mini-make"
+  RUNTIME DESTINATION "bin")
 
 function(ADD_MAKE_TEST TEST_NAME)
   add_executable(${TEST_NAME} ${ARGN})
-  target_link_libraries(${TEST_NAME} "make-library")
+  target_link_libraries(${TEST_NAME} "make")
   add_test(${TEST_NAME} ${TEST_NAME})
 endfunction(ADD_MAKE_TEST TEST_NAME)
 
