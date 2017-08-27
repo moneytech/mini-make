@@ -63,6 +63,29 @@ int make_string_equal(const struct make_string *a,
     return 1;
 }
 
+int make_string_prepend(struct make_string *dst,
+                        const struct make_string *src) {
+  int err;
+
+  err = make_string_reserve(dst, dst->size + src->size + 1);
+  if (err)
+    return err;
+
+  memmove(dst->data + src->size,
+          dst->data,
+          dst->size);
+
+  memcpy(dst->data,
+         src->data,
+         src->size);
+
+  dst->size += src->size;
+
+  dst->data[dst->size] = 0;
+
+  return 0;
+}
+
 int make_string_reserve(struct make_string *dst,
                     unsigned long int res) {
 

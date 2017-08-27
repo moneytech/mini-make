@@ -47,6 +47,11 @@ int make_string_copy(const struct make_string *src,
 int make_string_equal(const struct make_string *a,
                       const struct make_string *b);
 
+/** @brief Prepends the contents of @p src
+ * to @p dst. */
+int make_string_prepend(struct make_string *dst,
+                        const struct make_string *src);
+
 /** @brief Reserves an amount of data so that the
  * string can grow with fewer allocations. */
 int make_string_reserve(struct make_string *str,
