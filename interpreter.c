@@ -238,6 +238,10 @@ static int on_command(void *data, const struct make_command *command) {
     err = make_job_manager_queue(&interpreter->job_manager,
                                  &command_str);
     if (err && !command->ignore_error) {
+      fprintf(interpreter->errlog,
+              "Recipe failed for target '%.*s'\n",
+              (int) interpreter->table.target.size,
+              interpreter->table.target.data);
       make_string_free(&command_str);
       return err;
     }
