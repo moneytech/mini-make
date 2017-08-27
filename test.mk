@@ -8,9 +8,11 @@ k2 ?= v2
 
 k3 = v3
 
-k4 := v4
+k4 := v4 \
+	v5
 
-t1 t2: p1 p2
+t1 t2: p1\
+	p2
 	cmd1
 	-cmd2
 	@cmd3
