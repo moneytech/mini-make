@@ -15,6 +15,8 @@ endif ("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU")
 add_library("make-library"
   "interpreter.c"
   "interpreter-test.c"
+  "job.c"
+  "job-manager.c"
   "listener.c"
   "make.c"
   "parser.c"
