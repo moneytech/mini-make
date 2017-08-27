@@ -196,8 +196,8 @@ static int on_assignment_stmt(void *user_data, const struct make_assignment_stmt
   } else if (test_data->assignments_found == 3) {
     assert(assignment_stmt->key->size == 2);
     assert(memcmp(assignment_stmt->key->data, "k4", 2) == 0);
-    assert(assignment_stmt->value->size == 2);
-    assert(memcmp(assignment_stmt->value->data, "v4", 2) == 0);
+    assert(assignment_stmt->value->size == 8);
+    assert(memcmp(assignment_stmt->value->data, "v4 \\\n\tv5", 8) == 0);
     assert(assignment_stmt->operation == MAKE_OPERATION_STATIC);
   }
 
