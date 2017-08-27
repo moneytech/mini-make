@@ -26,6 +26,10 @@
 
 #include <stdio.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 struct make_interpreter {
   /** Contains processes started from
    * recipes. */
@@ -82,5 +86,9 @@ int make_interpreter_run(struct make_interpreter *interpreter);
 
 int make_interpreter_set_target(struct make_interpreter *interpreter,
                                 const struct make_string *target);
+
+#ifdef __cplusplus
+} /* extern "C" */
+#endif
 
 #endif /* MAKE_INTERPRETER_H */

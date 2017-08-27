@@ -22,6 +22,10 @@
 #include <make/listener.h>
 #include <make/string.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 struct make_parser {
   struct make_string source;
   struct make_listener listener;
@@ -35,5 +39,9 @@ int make_parser_read(struct make_parser *parser,
                      const char *filename);
 
 int make_parser_run(struct make_parser *parser);
+
+#ifdef __cplusplus
+} /* extern "C" { */
+#endif
 
 #endif /* MAKE_PARSER_H */

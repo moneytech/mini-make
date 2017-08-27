@@ -19,6 +19,10 @@
 #ifndef MAKE_COMMAND_H
 #define MAKE_COMMAND_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 struct make_string;
 
 struct make_command {
@@ -26,5 +30,9 @@ struct make_command {
   int ignore_error;
   struct make_string *source;
 };
+
+#ifdef __cplusplus
+} /* extern "C" { */
+#endif
 
 #endif /* MAKE_COMMAND_H */

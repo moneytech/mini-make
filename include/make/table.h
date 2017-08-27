@@ -21,6 +21,10 @@
 
 #include <make/string.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 struct make_assignment_stmt;
 struct make_var;
 
@@ -56,5 +60,9 @@ int make_table_update(struct make_table *table,
 int make_table_value_of(const struct make_table *table,
                         const struct make_string *key,
                         struct make_string *value);
+
+#ifdef __cplusplus
+} /* extern "C" { */
+#endif
 
 #endif /* MAKE_TABLE_H */

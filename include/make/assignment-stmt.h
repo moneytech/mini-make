@@ -21,6 +21,10 @@
 
 #include "operation.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 struct make_string;
 
 struct make_assignment_stmt {
@@ -28,6 +32,10 @@ struct make_assignment_stmt {
   struct make_string *key;
   struct make_string *value;
 };
+
+#ifdef __cplusplus
+} /* extern "C" */
+#endif
 
 #endif /* MAKE_ASSIGNMENT_STMT_H */
 

@@ -23,6 +23,10 @@
 #include <windows.h>
 #endif
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 struct make_string;
 
 struct make_job {
@@ -43,5 +47,9 @@ int make_job_start(struct make_job *job,
 
 int make_job_wait(struct make_job *job,
                   int *exit_code);
+
+#ifdef __cplusplus
+} /* extern "C" { */
+#endif
 
 #endif /* MAKE_JOB_H */

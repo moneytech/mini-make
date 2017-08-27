@@ -19,6 +19,10 @@
 #ifndef MAKE_OPTIONS_H
 #define MAKE_OPTIONS_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 struct make_options {
   char *working_dir;
   char *filename;
@@ -26,5 +30,9 @@ struct make_options {
   int just_print;
   int silent;
 };
+
+#ifdef __cplusplus
+} /* extern "C" { */
+#endif
 
 #endif /* MAKE_OPTIONS_H */

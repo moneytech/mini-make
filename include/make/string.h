@@ -19,6 +19,10 @@
 #ifndef MAKE_STRING_H
 #define MAKE_STRING_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /** @brief A simple string
  * structure.
  * */
@@ -80,5 +84,9 @@ int make_string_reserve(struct make_string *str,
 int make_string_set(struct make_string *dst,
                     const char *src,
                     unsigned long int src_size);
+
+#ifdef __cplusplus
+} /* extern "C" { */
+#endif
 
 #endif /* MAKE_STRING_H */

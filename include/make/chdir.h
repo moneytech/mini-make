@@ -19,6 +19,14 @@
 #ifndef MAKE_CHDIR_H
 #define MAKE_CHDIR_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 int make_chdir(const char *path);
+
+#ifdef __cplusplus
+} /* extern "C" { */
+#endif
 
 #endif /* MAKE_CHDIR_H */

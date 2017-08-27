@@ -21,6 +21,10 @@
 
 #include <make/string.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 struct make_var {
   struct make_string key;
   struct make_string value;
@@ -38,5 +42,9 @@ int make_var_append_value(struct make_var *var,
 
 int make_var_set_value(struct make_var *var,
                        const struct make_string *value);
+
+#ifdef __cplusplus
+} /* extern "C" { */
+#endif
 
 #endif /* MAKE_VAR_H */

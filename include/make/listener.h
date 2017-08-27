@@ -19,6 +19,10 @@
 #ifndef MAKE_LISTENER_H
 #define MAKE_LISTENER_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 struct make_assignment_stmt;
 struct make_command;
 struct make_include_stmt;
@@ -58,5 +62,9 @@ struct make_listener {
 };
 
 void make_listener_init(struct make_listener *listener);
+
+#ifdef __cplusplus
+} /* extern "C" */
+#endif
 
 #endif /* MAKE_LISTENER_H */

@@ -19,6 +19,10 @@
 #ifndef MAKE_JOB_MANAGER_H
 #define MAKE_JOB_MANAGER_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 struct make_job;
 struct make_string;
 
@@ -37,5 +41,9 @@ void make_job_manager_set_max_jobs(struct make_job_manager *job_manager,
 
 int make_job_manager_queue(struct make_job_manager *job_manager,
                            const struct make_string *cmdline);
+
+#ifdef __cplusplus
+} /* extern "C" { */
+#endif
 
 #endif /* MAKE_JOB_MANAGER_H */
