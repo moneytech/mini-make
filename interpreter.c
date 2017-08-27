@@ -23,6 +23,7 @@ static int on_rule_start(void *data) {
   struct make_interpreter *interpreter;
 
   interpreter = (struct make_interpreter *) data;
+  interpreter->phony_found = 0;
   interpreter->target_found = 0;
   interpreter->target_expired = 0;
 
@@ -38,8 +39,17 @@ static int on_target(void *data, const struct make_string *target) {
 
   int err;
   struct make_interpreter *interpreter;
+  struct make_string phony;
 
   interpreter = (struct make_interpreter *) data;
+
+  phony.data = ".PHONY";
+  phony.size = sizeof(".PHONY") - 1;
+  phony.res = 0;
+  if (make_string_equal(&phony, target)) {
+    interpreter->phony_found = 1;
+    return 0;
+  }
 
   if (!make_interpreter_has_target(interpreter)) {
     err = make_interpreter_set_target(interpreter, target);
@@ -93,6 +103,8 @@ static int on_prerequisite(void *data, const struct make_string *prerequisite) {
 
 static int on_command(void *data, const struct make_command *command) {
 
+  int err;
+  struct make_string command_str;
   struct make_interpreter *interpreter;
 
   interpreter = (struct make_interpreter *) data;
@@ -100,11 +112,23 @@ static int on_command(void *data, const struct make_command *command) {
   if (!interpreter->target_expired)
     return 0;
 
+  make_string_init(&command_str);
+
+  err = make_table_evaluate(&interpreter->table,
+                            command->source,
+                            &command_str);
+  if (err) {
+    make_string_free(&command_str);
+    return err;
+  }
+
   if (!command->silent) {
     fprintf(interpreter->outlog, "%.*s\n",
-            (int) command->source->size,
-            command->source->data);
+            (int) command_str.size,
+            command_str.data);
   }
+
+  make_string_free(&command_str);
 
   return 0;
 }
@@ -173,6 +197,8 @@ void make_interpreter_init(struct make_interpreter *interpreter) {
   listener->on_unexpected_char = on_unexpected_char;
   listener->on_missing_separator = on_missing_separator;
 
+  interpreter->phony_found = 0;
+
   interpreter->target_mtime = 0;
   interpreter->target_found = 0;
   interpreter->target_found_once = 0;
@@ -229,6 +255,10 @@ int make_interpreter_set_target(struct make_interpreter *interpreter,
   make_string_free(&interpreter->target);
 
   err = make_string_copy(target, &interpreter->target);
+  if (err)
+    return err;
+
+  err = make_table_set_target(&interpreter->table, target);
   if (err)
     return err;
 
