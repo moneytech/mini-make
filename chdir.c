@@ -10,7 +10,7 @@
 
 int make_chdir(const char *path) {
 #if defined(_WIN32)
-  if (!SetWorkingDirectory(path))
+  if (!SetCurrentDirectory(path))
     /* TODO get appropriate error code */
     return -EINVAL;
 #elif defined(__unix__)
