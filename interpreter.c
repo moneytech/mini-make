@@ -30,8 +30,12 @@ static int build_prerequisite(struct make_interpreter *interpreter,
   int err;
   const struct make_string *old_target;
   struct make_string target_copy;
+  int target_found;
+  int target_expired;
 
   old_target = get_target(interpreter);
+  target_found = interpreter->target_found;
+  target_expired = interpreter->target_expired;
 
   make_string_init(&target_copy);
 
@@ -58,6 +62,9 @@ static int build_prerequisite(struct make_interpreter *interpreter,
     make_string_free(&target_copy);
     return err;
   }
+
+  interpreter->target_found = target_found;
+  interpreter->target_expired = target_expired;
 
   make_string_free(&target_copy);
 
