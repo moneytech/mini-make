@@ -15,16 +15,13 @@ endif ("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU")
 add_library("make" STATIC
   "chdir.c"
   "interpreter.c"
-  "interpreter-test.c"
   "job.c"
   "job-manager.c"
   "listener.c"
   "make.c"
   "parser.c"
-  "parser-test.c"
   "string.c"
   "table.c"
-  "table-test.c"
   "var.c")
 
 add_executable("mini-make" "make.c")
