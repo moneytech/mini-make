@@ -28,6 +28,13 @@ void make_string_init(struct make_string *str);
  * */
 void make_string_free(struct make_string *str);
 
+/** @brief Appends the contents of @p src to @p dst. */
+int make_string_append(struct make_string *dst,
+                       const struct make_string *src);
+
+/** @brief Appends a single character to the end of @p dst. */
+int make_string_append_char(struct make_string *dst, char c);
+
 /** @brief Creates a copy of the string. */
 int make_string_copy(const struct make_string *src,
                      struct make_string *dst);

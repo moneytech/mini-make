@@ -16,6 +16,30 @@ void make_string_free(struct make_string *str) {
   str->size = 0;
 }
 
+int make_string_append_char(struct make_string *dst, char c) {
+  struct make_string src;
+  src.data = &c;
+  src.size = 1;
+  src.res = 0;
+  return make_string_append(dst, &src);
+}
+
+int make_string_append(struct make_string *dst,
+                       const struct make_string *src) {
+
+  int err;
+
+  err = make_string_reserve(dst, dst->size + src->size + 1);
+  if (err)
+    return err;
+
+  memcpy(&dst->data[dst->size], src->data, src->size);
+  dst->size += src->size;
+  dst->data[dst->size] = 0;
+
+  return 0;
+}
+
 int make_string_copy(const struct make_string *src,
                      struct make_string *dst) {
   /* allocate an extra character for
@@ -39,7 +63,7 @@ int make_string_equal(const struct make_string *a,
     return 1;
 }
 
-int make_string_res(struct make_string *dst,
+int make_string_reserve(struct make_string *dst,
                     unsigned long int res) {
 
   char *tmp;
@@ -65,7 +89,7 @@ int make_string_set(struct make_string *dst,
 
   int err;
 
-  err = make_string_res(dst, src_size + 1);
+  err = make_string_reserve(dst, src_size + 1);
   if (err)
     return err;
 
