@@ -73,6 +73,7 @@ void make_table_free(struct make_table *table) {
 
 int make_table_set_target(struct make_table *table,
                           const struct make_string *target) {
+  make_string_free(&table->target);
   return make_string_copy(target, &table->target);
 }
 
