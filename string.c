@@ -141,3 +141,9 @@ int make_string_set(struct make_string *dst,
   return 0;
 }
 
+int make_string_set_asciiz(struct make_string *dst,
+                           const char *src) {
+
+  return make_string_set(dst, src, strlen(src));
+}
+

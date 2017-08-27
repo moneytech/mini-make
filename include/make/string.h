@@ -85,6 +85,12 @@ int make_string_set(struct make_string *dst,
                     const char *src,
                     unsigned long int src_size);
 
+/** @brief Sets the contents of @p dst to
+ * that of @p src. The contents of @p src must
+ * be null-terminated. */
+int make_string_set_asciiz(struct make_string *dst,
+                           const char *src);
+
 #ifdef __cplusplus
 } /* extern "C" { */
 #endif
