@@ -26,6 +26,8 @@ static int make_is_filechar(char c) {
    || (c == '/')
    || (c == '\\')
    || (c == '$')
+   || (c == '\"')
+   || (c == '\'')
    || (c == '.')
    || (c == '_')
    || (c == '-'))
@@ -429,7 +431,10 @@ void make_parser_free(struct make_parser *parser) {
 int make_parser_read(struct make_parser *parser,
                      const char *filename) {
 
+  unsigned long int i;
   int err;
+  int c;
+  int found_escape;
   FILE *file;
   long int file_pos;
 
@@ -464,7 +469,24 @@ int make_parser_read(struct make_parser *parser,
     return -ENOMEM;
   }
 
-  parser->source.size = fread(parser->source.data, 1, file_pos, file);
+  found_escape = 0;
+  i = 0;
+  while (!feof(file)) {
+    c = fgetc(file);
+    if (c == EOF)
+      break;
+    else if (c == '\\')
+      found_escape = 1;
+    else if ((c == '\n') && found_escape)
+      found_escape = 0;
+    else if ((c == '\\') && found_escape)
+      found_escape = 0;
+    else {
+      parser->source.data[i] = c;
+      parser->source.size++;
+      i++;
+    }
+  }
 
   parser->source.data[parser->source.size] = 0;
 
