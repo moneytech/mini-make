@@ -2,6 +2,7 @@ Mini Make
 =========
 
 [![Build Status](https://travis-ci.org/tay10r/mini-make.svg?branch=master)](https://travis-ci.org/tay10r/mini-make)
+[![Build status](https://ci.appveyor.com/api/projects/status/u9fhns5iuxqmbuuw?svg=true)](https://ci.appveyor.com/project/tholberton/mini-make)
 
 Mini Make is an implementation of Make that runs on Windows and Linux.
 
