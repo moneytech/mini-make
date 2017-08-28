@@ -132,15 +132,23 @@ int main(int argc, char **argv) {
   make_key.size = 4;
   make_key.res = 0;
 
-  make_value.data = argv[0];
-  make_value.size = strlen(argv[0]);
-  make_value.res = 0;
+  make_string_init(&make_value);
+  if ((make_string_set_asciiz(&make_value, argv0) != 0)
+   || (make_string_prepend_char(&make_value, '\"') != 0)
+   || (make_string_append_char(&make_value, '\"') != 0)) {
+    make_string_free(&make_value);
+    make_interpreter_free(&interpreter);
+    return EXIT_FAILURE;
+  }
 
   err = make_interpreter_define(&interpreter, &make_key, &make_value);
   if (err) {
+    make_string_free(&make_value);
     make_interpreter_free(&interpreter);
     return err;
   }
+
+  make_string_free(&make_value);
 
   err = make_chdir(options.working_dir);
   if (err < 0) {
