@@ -104,6 +104,14 @@ int make_string_prepend(struct make_string *dst,
   return 0;
 }
 
+int make_string_prepend_char(struct make_string *dst, char c) {
+  struct make_string src;
+  src.data = &c;
+  src.size = 1;
+  src.res = 0;
+  return make_string_prepend(dst, &src);
+}
+
 int make_string_reserve(struct make_string *dst,
                     unsigned long int res) {
 

@@ -74,6 +74,9 @@ int make_string_equal(const struct make_string *a,
 int make_string_prepend(struct make_string *dst,
                         const struct make_string *src);
 
+/** Prepends a character to the contents of @p dst. */
+int make_string_prepend_char(struct make_string *dst, char c);
+
 /** @brief Reserves an amount of data so that the
  * string can grow with fewer allocations. */
 int make_string_reserve(struct make_string *str,
