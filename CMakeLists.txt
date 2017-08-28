@@ -41,6 +41,7 @@ add_make_test("parser-test" "parser-test.c")
 
 enable_testing()
 
+set (CPACK_PACKAGE_NAME "Mini Make")
 set (CPACK_PACKAGE_DESCRIPTION_SUMMARY "A miniature implementation of Make.")
 set (CPACK_PACKAGE_VENDOR "Taylor Holberton")
 set (CPACK_PACKAGE_VERSION_MAJOR 0)
