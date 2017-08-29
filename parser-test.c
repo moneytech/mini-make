@@ -1,3 +1,21 @@
+/* Copyright (C) 2017 Taylor Holberton
+ *
+ * This file is part of Mini Make.
+ *
+ * Mini Make is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Mini Make is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Mini Make.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 #include <make/parser.h>
 
 #include <make/assignment-stmt.h>
@@ -178,19 +196,14 @@ static int on_assignment_stmt(void *user_data, const struct make_assignment_stmt
   } else if (test_data->assignments_found == 3) {
     assert(assignment_stmt->key->size == 2);
     assert(memcmp(assignment_stmt->key->data, "k4", 2) == 0);
-    assert(assignment_stmt->value->size == 2);
-    assert(memcmp(assignment_stmt->value->data, "v4", 2) == 0);
+    assert(assignment_stmt->value->size == 8);
+    assert(memcmp(assignment_stmt->value->data, "v4 \\\n\tv5", 8) == 0);
     assert(assignment_stmt->operation == MAKE_OPERATION_STATIC);
   }
 
   test_data->assignments_found++;
 
   return 0;
-}
-
-static void on_unexpected_char(void *user_data, char c) {
-  (void) user_data;
-  printf("Unexpected character: %c\n", c);
 }
 
 static int on_rule_start(void *user_data) {
@@ -230,7 +243,6 @@ int main(void) {
   parser.listener.on_command = on_command;
   parser.listener.on_include_stmt = on_include_stmt;
   parser.listener.on_assignment_stmt = on_assignment_stmt;
-  parser.listener.on_unexpected_char = on_unexpected_char;
   parser.listener.on_rule_start = on_rule_start;
   parser.listener.on_rule_finish = on_rule_finish;
 

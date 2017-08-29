@@ -1,3 +1,21 @@
+/* Copyright (C) 2017 Taylor Holberton
+ *
+ * This file is part of Mini Make.
+ *
+ * Mini Make is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Mini Make is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Mini Make.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 #include <make/chdir.h>
 #include <make/listener.h>
 #include <make/interpreter.h>
@@ -25,6 +43,8 @@ static void print_help(void) {
   printf("  -j, --jobs <N>        : Use up to 'N' number of jobs.\n");
   printf("  -h, --help            : Print this help message.\n");
   printf("  -v, --version         : Print version information.\n");
+  printf("\n");
+  printf("Submit bug reports at https://github.com/tay10r/mini-make/issues/new\n");
 }
 
 static void print_version(void) {
@@ -114,15 +134,23 @@ int main(int argc, char **argv) {
   make_key.size = 4;
   make_key.res = 0;
 
-  make_value.data = argv[0];
-  make_value.size = strlen(argv[0]);
-  make_value.res = 0;
+  make_string_init(&make_value);
+  if ((make_string_set_asciiz(&make_value, argv0) != 0)
+   || (make_string_prepend_char(&make_value, '\"') != 0)
+   || (make_string_append_char(&make_value, '\"') != 0)) {
+    make_string_free(&make_value);
+    make_interpreter_free(&interpreter);
+    return EXIT_FAILURE;
+  }
 
   err = make_interpreter_define(&interpreter, &make_key, &make_value);
   if (err) {
+    make_string_free(&make_value);
     make_interpreter_free(&interpreter);
     return err;
   }
+
+  make_string_free(&make_value);
 
   err = make_chdir(options.working_dir);
   if (err < 0) {

@@ -16,33 +16,23 @@
  * along with Mini Make.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef MAKE_PARSER_H
-#define MAKE_PARSER_H
+#ifndef MAKE_LOCATION_H
+#define MAKE_LOCATION_H
 
-#include <make/listener.h>
 #include <make/string.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-struct make_parser {
+struct make_location {
   struct make_string path;
-  struct make_string source;
-  struct make_listener listener;
+  unsigned long int line;
+  unsigned long int column;
 };
-
-void make_parser_init(struct make_parser *parser);
-
-void make_parser_free(struct make_parser *parser);
-
-int make_parser_read(struct make_parser *parser,
-                     const char *filename);
-
-int make_parser_run(struct make_parser *parser);
 
 #ifdef __cplusplus
 } /* extern "C" { */
 #endif
 
-#endif /* MAKE_PARSER_H */
+#endif /* MAKE_LOCATION_H */

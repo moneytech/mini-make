@@ -1,9 +1,28 @@
+/* Copyright (C) 2017 Taylor Holberton
+ *
+ * This file is part of Mini Make.
+ *
+ * Mini Make is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Mini Make is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Mini Make.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 #include <make/parser.h>
 
 #include <make/assignment-stmt.h>
 #include <make/command.h>
 #include <make/include-stmt.h>
 #include <make/listener.h>
+#include <make/location.h>
 #include <make/string.h>
 
 #include <ctype.h>
@@ -30,10 +49,55 @@ static int make_is_filechar(char c) {
    || (c == '\'')
    || (c == '.')
    || (c == '_')
+   || (c == '+')
    || (c == '-'))
     return 1;
   else
     return 0;
+}
+
+static int make_is_operator_char(char c) {
+  if ((c == '=')
+   || (c == '?')
+   || (c == '+')
+   || (c == ':'))
+    return 1;
+  return 0;
+}
+
+void unexpected_char(struct make_parser *parser,
+                     unsigned long int i) {
+
+  char c;
+  unsigned long int j;
+  struct make_location location;
+  struct make_listener *listener;
+  struct make_string *source;
+  void *user_data;
+
+  source = &parser->source;
+
+  location.path = parser->path;
+  location.line = 1;
+  location.column = 1;
+
+  for (j = 0; j < i; j++) {
+    c = source->data[j];
+    if (c == '\n') {
+      location.line++;
+      location.column = 1;
+    } else {
+      location.column++;
+    }
+  }
+
+  c = source->data[i];
+
+  listener = &parser->listener;
+
+  user_data = listener->user_data;
+
+  listener->on_unexpected_char(user_data, c, &location);
 }
 
 static int assignment_stmt(struct make_parser *parser,
@@ -42,6 +106,7 @@ static int assignment_stmt(struct make_parser *parser,
 
   int err;
   char c;
+  int escape_found;
   struct make_string *source;
   struct make_listener *listener;
   struct make_string key;
@@ -73,6 +138,8 @@ static int assignment_stmt(struct make_parser *parser,
         i++;
         continue;
       }
+    } else if (make_is_operator_char(c)) {
+        break;
     } else {
       if (key.size == 0)
         key.data = &source->data[i];
@@ -140,10 +207,31 @@ static int assignment_stmt(struct make_parser *parser,
 
   /* This loop parses the assignment
    * statement's value */
+  escape_found = 0;
   while (i < source->size) {
     c = source->data[i];
-    if (c == '\n') {
-      break;
+    if (c == '\\') {
+      if (escape_found) {
+        if (value.size == 0)
+          value.data = &source->data[i];
+        value.size++;
+        escape_found = 0;
+      } else {
+        escape_found = 1;
+        if (value.size > 0)
+          value.size++;
+      }
+      i++;
+      continue;
+    } else if (c == '\n') {
+      if (escape_found) {
+        escape_found = 0;
+        if (value.size > 0)
+          value.size++;
+        i++;
+        continue;
+      } else
+        break;
     } else if (make_is_space(c) && (value.size == 0)) {
       i++;
       continue;
@@ -292,6 +380,7 @@ static int rule(struct make_parser *parser,
                 unsigned long int *j) {
 
   int err;
+  int escape_found;
   struct make_listener *listener;
   struct make_string *source;
   char c;
@@ -335,35 +424,68 @@ static int rule(struct make_parser *parser,
       if (err)
         return err;
     } else {
-      listener->on_unexpected_char(listener->user_data, c);
+      unexpected_char(parser, i);
       return -EINVAL;
     }
   }
 
   /* This loop parses all of the rule's prerequisites */
+  escape_found = 0;
   while (i < source->size) {
     c = source->data[i];
+    if (c == '\\') {
+      if (escape_found) {
+        escape_found = 0;
+      } else {
+        escape_found = 1;
+        i++;
+        continue;
+      }
+    }
     if (c == '\n') {
-      i++;
-      break;
+      if (escape_found) {
+        escape_found = 0;
+        i++;
+        continue;
+      } else {
+        i++;
+        break;
+      }
     } else if (make_is_space(c)) {
       i++;
       continue;
     } else if (make_is_filechar(c)) {
       prerequisite.data = &source->data[i];
       prerequisite.size = 0;
+      escape_found = 0;
       while (i < source->size) {
         c = source->data[i];
+        if (c == '\n') {
+          if (escape_found) {
+            escape_found = 0;
+            i++;
+          }
+          break;
+        } else if (c == '\\') {
+          if (escape_found)
+            escape_found = 0;
+          else {
+            escape_found = 1;
+            i++;
+            continue;
+          }
+        }
         if (!make_is_filechar(c))
           break;
         prerequisite.size++;
         i++;
       }
+      escape_found = 0;
       err = listener->on_prerequisite(listener->user_data, &prerequisite);
       if (err)
         return err;
     } else {
-      listener->on_unexpected_char(listener->user_data, c);
+      unexpected_char(parser, i);
       return -EINVAL;
     }
   }
@@ -420,23 +542,27 @@ static int rule(struct make_parser *parser,
 }
 
 void make_parser_init(struct make_parser *parser) {
+  make_string_init(&parser->path);
   make_string_init(&parser->source);
   make_listener_init(&parser->listener);
 }
 
 void make_parser_free(struct make_parser *parser) {
+  make_string_free(&parser->path);
   make_string_free(&parser->source);
 }
 
 int make_parser_read(struct make_parser *parser,
                      const char *filename) {
 
-  unsigned long int i;
   int err;
-  int c;
-  int found_escape;
   FILE *file;
   long int file_pos;
+
+  err = make_string_set_asciiz(&parser->path, filename);
+  if (err) {
+    return err;
+  }
 
   file = fopen(filename, "r");
   if (file == NULL)
@@ -469,24 +595,8 @@ int make_parser_read(struct make_parser *parser,
     return -ENOMEM;
   }
 
-  found_escape = 0;
-  i = 0;
-  while (!feof(file)) {
-    c = fgetc(file);
-    if (c == EOF)
-      break;
-    else if (c == '\\')
-      found_escape = 1;
-    else if ((c == '\n') && found_escape)
-      found_escape = 0;
-    else if ((c == '\\') && found_escape)
-      found_escape = 0;
-    else {
-      parser->source.data[i] = c;
-      parser->source.size++;
-      i++;
-    }
-  }
+  parser->source.size = fread(parser->source.data,
+                              1, file_pos, file);
 
   parser->source.data[parser->source.size] = 0;
 

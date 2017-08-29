@@ -1,8 +1,27 @@
+/* Copyright (C) 2017 Taylor Holberton
+ *
+ * This file is part of Mini Make.
+ *
+ * Mini Make is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Mini Make is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Mini Make.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 #include <make/interpreter.h>
 
 #include <make/command.h>
 #include <make/include-stmt.h>
 #include <make/listener.h>
+#include <make/location.h>
 #include <make/parser.h>
 #include <make/string.h>
 
@@ -167,14 +186,20 @@ static int on_prerequisite(void *data, const struct make_string *prerequisite) {
     return 0;
   }
 
-  err = build_prerequisite(interpreter, prerequisite);
+  make_string_init(&path);
+
+  err = make_table_evaluate(&interpreter->table,
+                            prerequisite, &path);
   if (err) {
+    make_string_free(&path);
     return err;
   }
 
-  err = make_string_copy(prerequisite, &path);
-  if (err)
+  err = build_prerequisite(interpreter, &path);
+  if (err) {
+    make_string_free(&path);
     return err;
+  }
 
   err = stat(path.data, &prerequisite_stat);
   if (err) {
@@ -189,7 +214,7 @@ static int on_prerequisite(void *data, const struct make_string *prerequisite) {
       fprintf(interpreter->errlog,
               "Failed to stat '%s': %s\n",
               path.data, strerror(errno));
-      free(path.data);
+      make_string_free(&path);
       return -errno;
     }
   } else if (prerequisite_stat.st_mtime > interpreter->target_mtime) {
@@ -197,7 +222,7 @@ static int on_prerequisite(void *data, const struct make_string *prerequisite) {
     interpreter->target_expired = 1;
   }
 
-  free(path.data);
+  make_string_free(&path);
 
   return 0;
 }
@@ -307,13 +332,16 @@ static int on_include_stmt(void *data, const struct make_include_stmt *include_s
   return 0;
 }
 
-static void on_unexpected_char(void *data, char c) {
+static void on_unexpected_char(void *data, char c, const struct make_location *location) {
 
   struct make_interpreter *interpreter;
 
   interpreter = (struct make_interpreter *) data;
 
-  fprintf(interpreter->errlog, "Unexpected character '%c'\n", c);
+  fprintf(interpreter->errlog,
+          "%.*s:%lu:%lu: Unexpected character '%c'\n",
+          (int) location->path.size, location->path.data,
+          location->line, location->column, c);
 }
 
 static void on_missing_separator(void *data) {
