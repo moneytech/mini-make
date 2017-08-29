@@ -18,7 +18,7 @@ To build the project with CMake, do this:
 ```
 mkdir build
 cd build
-cmake ../.. -DCMAKE_BUILD_TYPE=Release
+cmake .. -DCMAKE_BUILD_TYPE=Release
 cmake --build . --target all
 cmake --build . --target install
 ```
