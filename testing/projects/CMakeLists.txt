@@ -11,7 +11,7 @@ add_custom_command (OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/basic/main.exe"
   COMMENT "Running Mini Make on test project 'basic'")
 
 add_custom_command (OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/basic/Makefile"
-  COMMAND "${CMAKE_COMMAND}" "-G" "Unix Makefiles" "${CMAKE_CURRENT_SOURCE_DIR}/basic"
+  COMMAND "${CMAKE_COMMAND}" "-G" "Unix Makefiles" "${CMAKE_CURRENT_SOURCE_DIR}/basic" -DCMAKE_MAKE_PROGRAM=$<TARGET_FILE:mini-make>
   WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/basic"
   COMMENT "Generating Makefile for 'basic' test project")
 
