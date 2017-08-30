@@ -11,4 +11,5 @@ build:
 
 test_script:
   - cmd: ctest -C Debug --verbose --output-on-failure
+  - cmd: cmake --build . --target integration-test
 
