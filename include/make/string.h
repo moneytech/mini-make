@@ -19,6 +19,8 @@
 #ifndef MAKE_STRING_H
 #define MAKE_STRING_H
 
+#include <stdlib.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -33,12 +35,12 @@ struct make_string {
    * string. If the string is null-terminated,
    * then this number should NOT include the
    * null-terminating character. */
-  unsigned long int size;
+  size_t size;
   /** @brief The number of characters reserved
    * for the string. This is used to reduce the
    * amount of allocations made by the string.
    * */
-  unsigned long int res;
+  size_t res;
 };
 
 /** @brief Initializes internal members of the
@@ -80,13 +82,13 @@ int make_string_prepend_char(struct make_string *dst, char c);
 /** @brief Reserves an amount of data so that the
  * string can grow with fewer allocations. */
 int make_string_reserve(struct make_string *str,
-                        unsigned long int res);
+                        size_t res);
 
 /** @brief Sets the contents of @p dst
  * to that of @p src. */
 int make_string_set(struct make_string *dst,
                     const char *src,
-                    unsigned long int src_size);
+                    size_t src_size);
 
 /** @brief Sets the contents of @p dst to
  * that of @p src. The contents of @p src must

@@ -56,6 +56,13 @@ static int make_is_filechar(char c) {
     return 0;
 }
 
+static int make_is_prerequisite_char(char c) {
+  if (make_is_filechar(c) || (c == ':'))
+    return 1;
+  else
+    return 0;
+}
+
 static int make_is_operator_char(char c) {
   if ((c == '=')
    || (c == '?')
@@ -454,7 +461,7 @@ static int rule(struct make_parser *parser,
     } else if (make_is_space(c)) {
       i++;
       continue;
-    } else if (make_is_filechar(c)) {
+    } else if (make_is_prerequisite_char(c)) {
       prerequisite.data = &source->data[i];
       prerequisite.size = 0;
       escape_found = 0;
@@ -475,7 +482,7 @@ static int rule(struct make_parser *parser,
             continue;
           }
         }
-        if (!make_is_filechar(c))
+        if (!make_is_prerequisite_char(c))
           break;
         prerequisite.size++;
         i++;
