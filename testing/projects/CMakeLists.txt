@@ -1,11 +1,11 @@
 cmake_minimum_required(VERSION 2.6)
 
 add_custom_target("integration-test"
-  DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/basic/main.exe")
+  DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/basic/main${CMAKE_EXECUTABLE_SUFFIX}")
 
 file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/basic")
 
-add_custom_command (OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/basic/main.exe"
+add_custom_command (OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/basic/main${CMAKE_EXECUTABLE_SUFFIX}"
   DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/basic/Makefile" "mini-make"
   COMMAND "powershell" "-Command" "$<TARGET_FILE:mini-make>" -C "${CMAKE_CURRENT_BINARY_DIR}/basic"
   COMMENT "Running Mini Make on test project 'basic'")
