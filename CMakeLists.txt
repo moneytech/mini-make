@@ -39,6 +39,8 @@ endfunction(ADD_MAKE_TEST TEST_NAME)
 add_make_test("table-test" "table-test.c")
 add_make_test("parser-test" "parser-test.c")
 
+add_subdirectory("testing")
+
 enable_testing()
 
 set (CPACK_PACKAGE_NAME "Mini Make")
