@@ -43,6 +43,8 @@ static void print_help(void) {
   printf("  -j, --jobs <N>        : Use up to 'N' number of jobs.\n");
   printf("  -h, --help            : Print this help message.\n");
   printf("  -v, --version         : Print version information.\n");
+  printf("\n");
+  printf("Submit bug reports at https://github.com/tay10r/mini-make/issues/new\n");
 }
 
 static void print_version(void) {
