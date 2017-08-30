@@ -96,10 +96,11 @@ int main(int argc, char **argv) {
             || (strcmp(argv[i], "--jobs") == 0)) {
       if (i + 1 >= argc) {
           options.jobs = INT_MAX;
-      } else if (sscanf(argv[i + 1], "%u", &options.jobs) != 0) {
+      } else if (sscanf(argv[i + 1], "%u", &options.jobs) != 1) {
         fprintf(stderr, "Incorrect numerical value given for '%s'\n", argv[i]);
         return EXIT_FAILURE;
       }
+      i++;
     } else if ((strcmp(argv[i], "-s") == 0)
             || (strcmp(argv[i], "--silent") == 0)
             || (strcmp(argv[i], "--quiet") == 0)) {
@@ -120,6 +121,10 @@ int main(int argc, char **argv) {
       fprintf(stderr, "Unknown option '%s'\n", argv[i]);
       return EXIT_FAILURE;
     }
+  }
+
+  if (options.jobs > 1) {
+    fprintf(stderr, "Warning: multiple jobs are not currently supported\n");
   }
 
   make_interpreter_init(&interpreter);
