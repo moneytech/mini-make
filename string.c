@@ -113,7 +113,7 @@ int make_string_prepend_char(struct make_string *dst, char c) {
 }
 
 int make_string_reserve(struct make_string *dst,
-                    unsigned long int res) {
+                    size_t res) {
 
   char *tmp;
 
@@ -134,7 +134,7 @@ int make_string_reserve(struct make_string *dst,
 
 int make_string_set(struct make_string *dst,
                     const char *src,
-                    unsigned long int src_size) {
+                    size_t src_size) {
 
   int err;
 
