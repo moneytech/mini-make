@@ -48,7 +48,7 @@ static void print_help(void) {
 }
 
 static void print_version(void) {
-  printf("Mini Make 0.1\n");
+  printf("Mini Make 0.1.1\n");
 }
 
 int main(int argc, char **argv) {
