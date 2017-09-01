@@ -400,7 +400,7 @@ static int rule(struct make_parser *parser,
 
   source = &parser->source;
 
-  err = listener->on_rule_start(listener->user_data);
+  err = make_listener_notify_rule_start(listener);
   if (err)
     return err;
 
@@ -539,7 +539,7 @@ static int rule(struct make_parser *parser,
       return err;
   }
 
-  err = listener->on_rule_finish(listener->user_data);
+  err = make_listener_notify_rule_finish(listener);
   if (err)
     return err;
 
