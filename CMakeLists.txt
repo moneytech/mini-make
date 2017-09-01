@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 2.6)
 
 project("mini-make")
 
+add_subdirectory("documentation")
+
 include_directories("include")
 
 if ("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU")
