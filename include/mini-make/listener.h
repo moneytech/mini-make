@@ -63,7 +63,16 @@ struct make_listener {
   void (*on_unexpected_eof)(void *user_data);
 };
 
+/** @brief Initializes the listener with functions
+ * that do not do anything. None of the values (except
+ * for the data member) are initialized to NULL. */
 void make_listener_init(struct make_listener *listener);
+
+/** @brief Notifies the listener of a start of a rule. */
+int make_listener_notify_rule_start(struct make_listener *listener);
+
+/** @brief Notifies the listener of the end of a rule. */
+int make_listener_notify_rule_finish(struct make_listener *listener);
 
 #ifdef __cplusplus
 } /* extern "C" */
