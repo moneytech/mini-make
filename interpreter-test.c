@@ -16,9 +16,9 @@
  * along with Mini Make.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <make/interpreter.h>
+#include <mini-make/interpreter.h>
 
-#include <make/table.h>
+#include <mini-make/table.h>
 
 #include <stdio.h>
 #include <stdlib.h>

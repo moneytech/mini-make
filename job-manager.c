@@ -16,9 +16,9 @@
  * along with Mini Make.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <make/job-manager.h>
+#include <mini-make/job-manager.h>
 
-#include <make/job.h>
+#include <mini-make/job.h>
 
 #include <stdlib.h>
 

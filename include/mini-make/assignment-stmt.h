@@ -16,23 +16,26 @@
  * along with Mini Make.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef MAKE_LOCATION_H
-#define MAKE_LOCATION_H
+#ifndef MINI_MAKE_ASSIGNMENT_STMT_H
+#define MINI_MAKE_ASSIGNMENT_STMT_H
 
-#include <make/string.h>
+#include "operation.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-struct make_location {
-  struct make_string path;
-  unsigned long int line;
-  unsigned long int column;
+struct make_string;
+
+struct make_assignment_stmt {
+  enum make_operation operation;
+  struct make_string *key;
+  struct make_string *value;
 };
 
 #ifdef __cplusplus
-} /* extern "C" { */
+} /* extern "C" */
 #endif
 
-#endif /* MAKE_LOCATION_H */
+#endif /* MINI_MAKE_ASSIGNMENT_STMT_H */
+

@@ -16,8 +16,8 @@
  * along with Mini Make.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef MAKE_JOB_MANAGER_H
-#define MAKE_JOB_MANAGER_H
+#ifndef MINI_MAKE_JOB_MANAGER_H
+#define MINI_MAKE_JOB_MANAGER_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -46,4 +46,4 @@ int make_job_manager_queue(struct make_job_manager *job_manager,
 } /* extern "C" { */
 #endif
 
-#endif /* MAKE_JOB_MANAGER_H */
+#endif /* MINI_MAKE_JOB_MANAGER_H */

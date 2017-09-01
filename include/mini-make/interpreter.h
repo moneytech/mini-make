@@ -16,13 +16,13 @@
  * along with Mini Make.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef MAKE_INTERPRETER_H
-#define MAKE_INTERPRETER_H
+#ifndef MINI_MAKE_INTERPRETER_H
+#define MINI_MAKE_INTERPRETER_H
 
-#include <make/job-manager.h>
-#include <make/parser.h>
-#include <make/string.h>
-#include <make/table.h>
+#include <mini-make/job-manager.h>
+#include <mini-make/parser.h>
+#include <mini-make/string.h>
+#include <mini-make/table.h>
 
 #include <stdio.h>
 
@@ -91,4 +91,4 @@ int make_interpreter_set_target(struct make_interpreter *interpreter,
 } /* extern "C" */
 #endif
 
-#endif /* MAKE_INTERPRETER_H */
+#endif /* MINI_MAKE_INTERPRETER_H */

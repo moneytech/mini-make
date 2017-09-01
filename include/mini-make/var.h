@@ -16,33 +16,35 @@
  * along with Mini Make.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef MAKE_PARSER_H
-#define MAKE_PARSER_H
+#ifndef MINI_MAKE_VAR_H
+#define MINI_MAKE_VAR_H
 
-#include <make/listener.h>
-#include <make/string.h>
+#include <mini-make/string.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-struct make_parser {
-  struct make_string path;
-  struct make_string source;
-  struct make_listener listener;
+struct make_var {
+  struct make_string key;
+  struct make_string value;
 };
 
-void make_parser_init(struct make_parser *parser);
+void make_var_init(struct make_var *var);
 
-void make_parser_free(struct make_parser *parser);
+void make_var_free(struct make_var *var);
 
-int make_parser_read(struct make_parser *parser,
-                     const char *filename);
+int make_var_set_key(struct make_var *var,
+                     const struct make_string *key);
 
-int make_parser_run(struct make_parser *parser);
+int make_var_append_value(struct make_var *var,
+                          const struct make_string *value);
+
+int make_var_set_value(struct make_var *var,
+                       const struct make_string *value);
 
 #ifdef __cplusplus
 } /* extern "C" { */
 #endif
 
-#endif /* MAKE_PARSER_H */
+#endif /* MINI_MAKE_VAR_H */

@@ -8,38 +8,38 @@ win32-msvc* {
   QMAKE_CFLAGS += /WX
 }
 
-SOURCES += "make.c"
+SOURCES += "mini-make.c"
 
-HEADERS += "include/make/assignment-stmt.h"
-HEADERS += "include/make/command.h"
-HEADERS += "include/make/include-stmt.h"
-HEADERS += "include/make/options.h"
+HEADERS += "include/mini-make/assignment-stmt.h"
+HEADERS += "include/mini-make/command.h"
+HEADERS += "include/mini-make/include-stmt.h"
+HEADERS += "include/mini-make/options.h"
 
-HEADERS += "include/make/chdir.h"
+HEADERS += "include/mini-make/chdir.h"
 SOURCES += "chdir.c"
 
-HEADERS += "include/make/interpreter.h"
+HEADERS += "include/mini-make/interpreter.h"
 SOURCES += "interpreter.c"
 
-HEADERS += "include/make/job.h"
+HEADERS += "include/mini-make/job.h"
 SOURCES += "job.c"
 
-HEADERS += "include/make/job-manager.h"
+HEADERS += "include/mini-make/job-manager.h"
 SOURCES += "job-manager.c"
 
-HEADERS += "include/make/listener.h"
+HEADERS += "include/mini-make/listener.h"
 SOURCES += "listener.c"
 
-HEADERS += "include/make/parser.h"
+HEADERS += "include/mini-make/parser.h"
 SOURCES += "parser.c"
 
-HEADERS += "include/make/string.h"
+HEADERS += "include/mini-make/string.h"
 SOURCES += "string.c"
 
-HEADERS += "include/make/table.h"
+HEADERS += "include/mini-make/table.h"
 SOURCES += "table.c"
 
-HEADERS += "include/make/var.h"
+HEADERS += "include/mini-make/var.h"
 SOURCES += "var.c"
 
 TARGET = "mini-make"

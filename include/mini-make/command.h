@@ -16,8 +16,8 @@
  * along with Mini Make.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef MAKE_COMMAND_H
-#define MAKE_COMMAND_H
+#ifndef MINI_MAKE_COMMAND_H
+#define MINI_MAKE_COMMAND_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -35,4 +35,4 @@ struct make_command {
 } /* extern "C" { */
 #endif
 
-#endif /* MAKE_COMMAND_H */
+#endif /* MINI_MAKE_COMMAND_H */

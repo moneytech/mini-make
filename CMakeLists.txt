@@ -23,7 +23,7 @@ add_library("make" STATIC
   "table.c"
   "var.c")
 
-add_executable("mini-make" "make.c")
+add_executable("mini-make" "mini-make.c")
 
 target_link_libraries("mini-make" "make")
 

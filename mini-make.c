@@ -16,13 +16,13 @@
  * along with Mini Make.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <make/chdir.h>
-#include <make/listener.h>
-#include <make/interpreter.h>
-#include <make/options.h>
-#include <make/parser.h>
-#include <make/string.h>
-#include <make/table.h>
+#include <mini-make/chdir.h>
+#include <mini-make/listener.h>
+#include <mini-make/interpreter.h>
+#include <mini-make/options.h>
+#include <mini-make/parser.h>
+#include <mini-make/string.h>
+#include <mini-make/table.h>
 
 #include <limits.h>
 #include <stdio.h>

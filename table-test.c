@@ -16,11 +16,11 @@
  * along with Mini Make.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <make/table.h>
+#include <mini-make/table.h>
 
-#include <make/assignment-stmt.h>
-#include <make/string.h>
-#include <make/var.h>
+#include <mini-make/assignment-stmt.h>
+#include <mini-make/string.h>
+#include <mini-make/var.h>
 
 #include <assert.h>
 #include <stdio.h>
@@ -41,7 +41,7 @@ static void test_update(void) {
   key.size = 3;
   value.data = "g++";
   value.size = 3;
-  assignment_stmt.operation = MAKE_OPERATION_RECURSIVE;
+  assignment_stmt.operation = MINI_MAKE_OPERATION_RECURSIVE;
   assignment_stmt.key = &key;
   assignment_stmt.value = &value;
 

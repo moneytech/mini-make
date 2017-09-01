@@ -16,14 +16,14 @@
  * along with Mini Make.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <make/parser.h>
+#include <mini-make/parser.h>
 
-#include <make/assignment-stmt.h>
-#include <make/command.h>
-#include <make/include-stmt.h>
-#include <make/listener.h>
-#include <make/location.h>
-#include <make/string.h>
+#include <mini-make/assignment-stmt.h>
+#include <mini-make/command.h>
+#include <mini-make/include-stmt.h>
+#include <mini-make/listener.h>
+#include <mini-make/location.h>
+#include <mini-make/string.h>
 
 #include <ctype.h>
 #include <errno.h>
@@ -128,7 +128,7 @@ static int assignment_stmt(struct make_parser *parser,
   value.data = NULL;
   value.size = 0;
 
-  assignment_stmt.operation = MAKE_OPERATION_RECURSIVE;
+  assignment_stmt.operation = MINI_MAKE_OPERATION_RECURSIVE;
   assignment_stmt.key = &key;
   assignment_stmt.value = &value;
 
@@ -171,7 +171,7 @@ static int assignment_stmt(struct make_parser *parser,
       i++;
       continue;
     } else if (c == '=') {
-      assignment_stmt.operation = MAKE_OPERATION_RECURSIVE;
+      assignment_stmt.operation = MINI_MAKE_OPERATION_RECURSIVE;
       i++;
       break;
     } else if ((c == '+')
@@ -188,15 +188,15 @@ static int assignment_stmt(struct make_parser *parser,
          * not an assignment statement). */
         return 0;
       } else if (c == '+') {
-        assignment_stmt.operation = MAKE_OPERATION_APPEND;
+        assignment_stmt.operation = MINI_MAKE_OPERATION_APPEND;
         i++;
         break;
       } else if (c == '?') {
-        assignment_stmt.operation = MAKE_OPERATION_CONDITIONAL;
+        assignment_stmt.operation = MINI_MAKE_OPERATION_CONDITIONAL;
         i++;
         break;
       } else if (c == ':') {
-        assignment_stmt.operation = MAKE_OPERATION_STATIC;
+        assignment_stmt.operation = MINI_MAKE_OPERATION_STATIC;
         i++;
         break;
       } else {

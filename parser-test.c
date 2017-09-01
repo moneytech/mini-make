@@ -16,13 +16,13 @@
  * along with Mini Make.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <make/parser.h>
+#include <mini-make/parser.h>
 
-#include <make/assignment-stmt.h>
-#include <make/command.h>
-#include <make/include-stmt.h>
-#include <make/listener.h>
-#include <make/string.h>
+#include <mini-make/assignment-stmt.h>
+#include <mini-make/command.h>
+#include <mini-make/include-stmt.h>
+#include <mini-make/listener.h>
+#include <mini-make/string.h>
 
 #include <assert.h>
 #include <stdio.h>
@@ -180,25 +180,25 @@ static int on_assignment_stmt(void *user_data, const struct make_assignment_stmt
     assert(memcmp(assignment_stmt->key->data, "k1", 2) == 0);
     assert(assignment_stmt->value->size == 2);
     assert(memcmp(assignment_stmt->value->data, "v1", 2) == 0);
-    assert(assignment_stmt->operation == MAKE_OPERATION_APPEND);
+    assert(assignment_stmt->operation == MINI_MAKE_OPERATION_APPEND);
   } else if (test_data->assignments_found == 1) {
     assert(assignment_stmt->key->size == 2);
     assert(memcmp(assignment_stmt->key->data, "k2", 2) == 0);
     assert(assignment_stmt->value->size == 2);
     assert(memcmp(assignment_stmt->value->data, "v2", 2) == 0);
-    assert(assignment_stmt->operation == MAKE_OPERATION_CONDITIONAL);
+    assert(assignment_stmt->operation == MINI_MAKE_OPERATION_CONDITIONAL);
   } else if (test_data->assignments_found == 2) {
     assert(assignment_stmt->key->size == 2);
     assert(memcmp(assignment_stmt->key->data, "k3", 2) == 0);
     assert(assignment_stmt->value->size == 2);
     assert(memcmp(assignment_stmt->value->data, "v3", 2) == 0);
-    assert(assignment_stmt->operation == MAKE_OPERATION_RECURSIVE);
+    assert(assignment_stmt->operation == MINI_MAKE_OPERATION_RECURSIVE);
   } else if (test_data->assignments_found == 3) {
     assert(assignment_stmt->key->size == 2);
     assert(memcmp(assignment_stmt->key->data, "k4", 2) == 0);
     assert(assignment_stmt->value->size == 8);
     assert(memcmp(assignment_stmt->value->data, "v4 \\\n\tv5", 8) == 0);
-    assert(assignment_stmt->operation == MAKE_OPERATION_STATIC);
+    assert(assignment_stmt->operation == MINI_MAKE_OPERATION_STATIC);
   }
 
   test_data->assignments_found++;

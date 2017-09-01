@@ -16,40 +16,23 @@
  * along with Mini Make.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef MAKE_JOB_H
-#define MAKE_JOB_H
-
-#if defined(_WIN32)
-#include <windows.h>
-#endif
+#ifndef MINI_MAKE_OPTIONS_H
+#define MINI_MAKE_OPTIONS_H
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-struct make_string;
-
-struct make_job {
-#if defined(_WIN32)
-  PROCESS_INFORMATION process_info;
-  STARTUPINFO startup_info;
-#elif defined(__unix__)
-  int fd;
-#endif
+struct make_options {
+  char *working_dir;
+  char *filename;
+  unsigned int jobs;
+  int just_print;
+  int silent;
 };
-
-void make_job_init(struct make_job *job);
-
-void make_job_free(struct make_job *job);
-
-int make_job_start(struct make_job *job,
-                   const struct make_string *cmdline);
-
-int make_job_wait(struct make_job *job,
-                  int *exit_code);
 
 #ifdef __cplusplus
 } /* extern "C" { */
 #endif
 
-#endif /* MAKE_JOB_H */
+#endif /* MINI_MAKE_OPTIONS_H */

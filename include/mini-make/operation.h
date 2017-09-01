@@ -16,26 +16,22 @@
  * along with Mini Make.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef MAKE_ASSIGNMENT_STMT_H
-#define MAKE_ASSIGNMENT_STMT_H
-
-#include "operation.h"
+#ifndef MINI_MAKE_OPERATION_H
+#define MINI_MAKE_OPERATION_H
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-struct make_string;
-
-struct make_assignment_stmt {
-  enum make_operation operation;
-  struct make_string *key;
-  struct make_string *value;
+enum make_operation {
+  MINI_MAKE_OPERATION_APPEND,
+  MINI_MAKE_OPERATION_RECURSIVE,
+  MINI_MAKE_OPERATION_STATIC,
+  MINI_MAKE_OPERATION_CONDITIONAL
 };
 
 #ifdef __cplusplus
-} /* extern "C" */
+} /* extern "C" { */
 #endif
 
-#endif /* MAKE_ASSIGNMENT_STMT_H */
-
+#endif /* MINI_MAKE_OPERATION_H */

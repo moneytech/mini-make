@@ -16,11 +16,11 @@
  * along with Mini Make.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <make/table.h>
+#include <mini-make/table.h>
 
-#include <make/assignment-stmt.h>
-#include <make/string.h>
-#include <make/var.h>
+#include <mini-make/assignment-stmt.h>
+#include <mini-make/string.h>
+#include <mini-make/var.h>
 
 #include <errno.h>
 #include <stdlib.h>

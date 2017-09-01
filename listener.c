@@ -16,10 +16,10 @@
  * along with Mini Make.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <make/listener.h>
+#include <mini-make/listener.h>
 
-#include <make/location.h>
-#include <make/string.h>
+#include <mini-make/location.h>
+#include <mini-make/string.h>
 
 #include <stdio.h>
 

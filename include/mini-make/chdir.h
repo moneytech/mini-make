@@ -16,22 +16,17 @@
  * along with Mini Make.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef MAKE_INCLUDE_STMT_H
-#define MAKE_INCLUDE_STMT_H
+#ifndef MINI_MAKE_CHDIR_H
+#define MINI_MAKE_CHDIR_H
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-struct make_string;
-
-struct make_include_stmt {
-  int ignore_error;
-  struct make_string *path;
-};
+int make_chdir(const char *path);
 
 #ifdef __cplusplus
 } /* extern "C" { */
 #endif
 
-#endif /* MAKE_INCLUDE_STMT_H */
+#endif /* MINI_MAKE_CHDIR_H */

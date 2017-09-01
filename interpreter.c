@@ -16,14 +16,14 @@
  * along with Mini Make.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <make/interpreter.h>
+#include <mini-make/interpreter.h>
 
-#include <make/command.h>
-#include <make/include-stmt.h>
-#include <make/listener.h>
-#include <make/location.h>
-#include <make/parser.h>
-#include <make/string.h>
+#include <mini-make/command.h>
+#include <mini-make/include-stmt.h>
+#include <mini-make/listener.h>
+#include <mini-make/location.h>
+#include <mini-make/parser.h>
+#include <mini-make/string.h>
 
 #include <errno.h>
 #include <stdio.h>
