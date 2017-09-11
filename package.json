@@ -1,0 +1,7 @@
+{
+  "package": "mini-make",
+  "version": "0.1.1",
+  "description": "A miniature implementation of GNU Make",
+  "repo": "tay10r/mini-make",
+  "install": "make install"
+}
