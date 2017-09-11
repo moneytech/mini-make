@@ -1,1 +1,9 @@
-build/*
+/build/*
+*.o
+*.a
+*.so
+/mini-make
+*.obj
+*.lib
+*.dll
+*.exe
