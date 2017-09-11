@@ -16,10 +16,8 @@
  * along with Mini Make.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef MAKE_ASSIGNMENT_STMT_H
-#define MAKE_ASSIGNMENT_STMT_H
-
-#include "operation.h"
+#ifndef MINI_MAKE_INCLUDE_STMT_H
+#define MINI_MAKE_INCLUDE_STMT_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -27,15 +25,13 @@ extern "C" {
 
 struct make_string;
 
-struct make_assignment_stmt {
-  enum make_operation operation;
-  struct make_string *key;
-  struct make_string *value;
+struct make_include_stmt {
+  int ignore_error;
+  struct make_string *path;
 };
 
 #ifdef __cplusplus
-} /* extern "C" */
+} /* extern "C" { */
 #endif
 
-#endif /* MAKE_ASSIGNMENT_STMT_H */
-
+#endif /* MINI_MAKE_INCLUDE_STMT_H */

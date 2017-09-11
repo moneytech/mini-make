@@ -16,22 +16,22 @@
  * along with Mini Make.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef MAKE_INCLUDE_STMT_H
-#define MAKE_INCLUDE_STMT_H
+#ifndef MINI_MAKE_OPERATION_H
+#define MINI_MAKE_OPERATION_H
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-struct make_string;
-
-struct make_include_stmt {
-  int ignore_error;
-  struct make_string *path;
+enum make_operation {
+  MINI_MAKE_OPERATION_APPEND,
+  MINI_MAKE_OPERATION_RECURSIVE,
+  MINI_MAKE_OPERATION_STATIC,
+  MINI_MAKE_OPERATION_CONDITIONAL
 };
 
 #ifdef __cplusplus
 } /* extern "C" { */
 #endif
 
-#endif /* MAKE_INCLUDE_STMT_H */
+#endif /* MINI_MAKE_OPERATION_H */

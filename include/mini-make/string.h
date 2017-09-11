@@ -16,8 +16,8 @@
  * along with Mini Make.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef MAKE_STRING_H
-#define MAKE_STRING_H
+#ifndef MINI_MAKE_STRING_H
+#define MINI_MAKE_STRING_H
 
 #include <stdlib.h>
 
@@ -100,4 +100,4 @@ int make_string_set_asciiz(struct make_string *dst,
 } /* extern "C" { */
 #endif
 
-#endif /* MAKE_STRING_H */
+#endif /* MINI_MAKE_STRING_H */

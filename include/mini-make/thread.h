@@ -16,33 +16,32 @@
  * along with Mini Make.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef MAKE_PARSER_H
-#define MAKE_PARSER_H
-
-#include <make/listener.h>
-#include <make/string.h>
+#ifndef MINI_MAKE_THREAD_H
+#define MINI_MAKE_THREAD_H
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-struct make_parser {
-  struct make_string path;
-  struct make_string source;
-  struct make_listener listener;
-};
+struct make_thread;
+struct make_thread_callback;
 
-void make_parser_init(struct make_parser *parser);
+/** @brief Creates a thread, using the function pointer
+ * and data in @p callback.
+ * @returns If this function fails, a null pointer is returned.*/
+struct make_thread *make_thread_create(struct make_thread_callback *callback);
 
-void make_parser_free(struct make_parser *parser);
+/** @brief Destroys a thread. If the thread is still running,
+ * it is canceled and the memory is deallocated. */
+void make_thread_destroy(struct make_thread *thread);
 
-int make_parser_read(struct make_parser *parser,
-                     const char *filename);
-
-int make_parser_run(struct make_parser *parser);
+/** @brief Waits for the thread to exit. If this function
+ * exits successfully, @ref make_thread_destroy does not
+ * need to be called. */
+int make_thread_join(struct make_thread *thread, void **result);
 
 #ifdef __cplusplus
 } /* extern "C" { */
 #endif
 
-#endif /* MAKE_PARSER_H */
+#endif /* MINI_MAKE_THREAD_H */

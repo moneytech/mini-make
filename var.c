@@ -16,7 +16,7 @@
  * along with Mini Make.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <make/var.h>
+#include <mini-make/var.h>
 
 void make_var_init(struct make_var *var) {
   make_string_init(&var->key);

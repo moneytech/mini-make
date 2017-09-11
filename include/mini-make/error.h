@@ -16,21 +16,19 @@
  * along with Mini Make.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <mini-make/interpreter.h>
+#ifndef MINI_MAKE_ERROR_H
+#define MINI_MAKE_ERROR_H
 
-#include <mini-make/table.h>
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-#include <stdio.h>
-#include <stdlib.h>
+extern const int make_success;
 
-int main(void) {
+extern const int make_failure;
 
-  struct make_table table;
+#ifdef __cplusplus
+} /* extern "C" { */
+#endif
 
-  make_table_init(&table);
-
-  make_table_free(&table);
-
-  return EXIT_SUCCESS;
-}
-
+#endif /* MINI_MAKE_ERROR_H */

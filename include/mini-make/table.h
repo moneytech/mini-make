@@ -16,10 +16,10 @@
  * along with Mini Make.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef MAKE_TABLE_H
-#define MAKE_TABLE_H
+#ifndef MINI_MAKE_TABLE_H
+#define MINI_MAKE_TABLE_H
 
-#include <make/string.h>
+#include <mini-make/string.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -65,4 +65,4 @@ int make_table_value_of(const struct make_table *table,
 } /* extern "C" { */
 #endif
 
-#endif /* MAKE_TABLE_H */
+#endif /* MINI_MAKE_TABLE_H */

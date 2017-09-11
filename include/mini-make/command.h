@@ -16,21 +16,23 @@
  * along with Mini Make.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <mini-make/interpreter.h>
+#ifndef MINI_MAKE_COMMAND_H
+#define MINI_MAKE_COMMAND_H
 
-#include <mini-make/table.h>
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-#include <stdio.h>
-#include <stdlib.h>
+struct make_string;
 
-int main(void) {
+struct make_command {
+  int silent;
+  int ignore_error;
+  struct make_string *source;
+};
 
-  struct make_table table;
+#ifdef __cplusplus
+} /* extern "C" { */
+#endif
 
-  make_table_init(&table);
-
-  make_table_free(&table);
-
-  return EXIT_SUCCESS;
-}
-
+#endif /* MINI_MAKE_COMMAND_H */

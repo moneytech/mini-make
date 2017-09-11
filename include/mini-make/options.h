@@ -16,8 +16,8 @@
  * along with Mini Make.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef MAKE_OPTIONS_H
-#define MAKE_OPTIONS_H
+#ifndef MINI_MAKE_OPTIONS_H
+#define MINI_MAKE_OPTIONS_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -35,4 +35,4 @@ struct make_options {
 } /* extern "C" { */
 #endif
 
-#endif /* MAKE_OPTIONS_H */
+#endif /* MINI_MAKE_OPTIONS_H */

@@ -16,17 +16,26 @@
  * along with Mini Make.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef MAKE_CHDIR_H
-#define MAKE_CHDIR_H
+#ifndef MINI_MAKE_ASSIGNMENT_STMT_H
+#define MINI_MAKE_ASSIGNMENT_STMT_H
+
+#include "operation.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-int make_chdir(const char *path);
+struct make_string;
+
+struct make_assignment_stmt {
+  enum make_operation operation;
+  struct make_string *key;
+  struct make_string *value;
+};
 
 #ifdef __cplusplus
-} /* extern "C" { */
+} /* extern "C" */
 #endif
 
-#endif /* MAKE_CHDIR_H */
+#endif /* MINI_MAKE_ASSIGNMENT_STMT_H */
+

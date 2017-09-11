@@ -16,14 +16,14 @@
  * along with Mini Make.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <make/parser.h>
+#include <mini-make/parser.h>
 
-#include <make/assignment-stmt.h>
-#include <make/command.h>
-#include <make/include-stmt.h>
-#include <make/listener.h>
-#include <make/location.h>
-#include <make/string.h>
+#include <mini-make/assignment-stmt.h>
+#include <mini-make/command.h>
+#include <mini-make/include-stmt.h>
+#include <mini-make/listener.h>
+#include <mini-make/location.h>
+#include <mini-make/string.h>
 
 #include <ctype.h>
 #include <errno.h>
@@ -72,39 +72,60 @@ static int make_is_operator_char(char c) {
   return 0;
 }
 
-void unexpected_char(struct make_parser *parser,
-                     unsigned long int i) {
+static void get_location(const struct make_parser *parser,
+                         unsigned long int i,
+                         struct make_location *location) {
 
   char c;
   unsigned long int j;
-  struct make_location location;
-  struct make_listener *listener;
-  struct make_string *source;
-  void *user_data;
+  const struct make_string *source;
 
   source = &parser->source;
 
-  location.path = parser->path;
-  location.line = 1;
-  location.column = 1;
+  location->path = parser->path;
+  location->line = 1;
+  location->column = 1;
 
   for (j = 0; j < i; j++) {
     c = source->data[j];
     if (c == '\n') {
-      location.line++;
-      location.column = 1;
+      location->line++;
+      location->column = 1;
     } else {
-      location.column++;
+      location->column++;
     }
   }
+}
 
+static void unexpected_char(struct make_parser *parser,
+                            unsigned long int i) {
+  struct make_location location;
+  struct make_listener *listener;
+  struct make_string *source;
+  void *user_data;
+  char c;
+
+  get_location(parser, i, &location);
+
+  source = &parser->source;
   c = source->data[i];
 
   listener = &parser->listener;
-
   user_data = listener->user_data;
-
   listener->on_unexpected_char(user_data, c, &location);
+}
+
+static void missing_separator(struct make_parser *parser,
+                              unsigned long int i) {
+  struct make_location location;
+  struct make_listener *listener;
+  void *user_data;
+
+  get_location(parser, i, &location);
+
+  listener = &parser->listener;
+  user_data = listener->user_data;
+  listener->on_missing_separator(user_data, &location);
 }
 
 static int assignment_stmt(struct make_parser *parser,
@@ -128,7 +149,7 @@ static int assignment_stmt(struct make_parser *parser,
   value.data = NULL;
   value.size = 0;
 
-  assignment_stmt.operation = MAKE_OPERATION_RECURSIVE;
+  assignment_stmt.operation = MINI_MAKE_OPERATION_RECURSIVE;
   assignment_stmt.key = &key;
   assignment_stmt.value = &value;
 
@@ -171,7 +192,7 @@ static int assignment_stmt(struct make_parser *parser,
       i++;
       continue;
     } else if (c == '=') {
-      assignment_stmt.operation = MAKE_OPERATION_RECURSIVE;
+      assignment_stmt.operation = MINI_MAKE_OPERATION_RECURSIVE;
       i++;
       break;
     } else if ((c == '+')
@@ -188,15 +209,15 @@ static int assignment_stmt(struct make_parser *parser,
          * not an assignment statement). */
         return 0;
       } else if (c == '+') {
-        assignment_stmt.operation = MAKE_OPERATION_APPEND;
+        assignment_stmt.operation = MINI_MAKE_OPERATION_APPEND;
         i++;
         break;
       } else if (c == '?') {
-        assignment_stmt.operation = MAKE_OPERATION_CONDITIONAL;
+        assignment_stmt.operation = MINI_MAKE_OPERATION_CONDITIONAL;
         i++;
         break;
       } else if (c == ':') {
-        assignment_stmt.operation = MAKE_OPERATION_STATIC;
+        assignment_stmt.operation = MINI_MAKE_OPERATION_STATIC;
         i++;
         break;
       } else {
@@ -400,7 +421,7 @@ static int rule(struct make_parser *parser,
 
   source = &parser->source;
 
-  err = listener->on_rule_start(listener->user_data);
+  err = make_listener_notify_rule_start(listener);
   if (err)
     return err;
 
@@ -408,15 +429,15 @@ static int rule(struct make_parser *parser,
    * targets */
   while (i < source->size) {
     c = source->data[i];
-    if (make_is_space(c)) {
+    if (c == '\n') {
+      missing_separator(parser, i);
+      return -EINVAL;
+    } else if (make_is_space(c)) {
       i++;
       continue;
     } else if (c == ':') {
       i++;
       break;
-    } else if (c == '\n') {
-      listener->on_missing_separator(listener->user_data);
-      return -EINVAL;
     } else if (make_is_filechar(c)) {
       target.data = &source->data[i];
       target.size = 0;
@@ -539,7 +560,7 @@ static int rule(struct make_parser *parser,
       return err;
   }
 
-  err = listener->on_rule_finish(listener->user_data);
+  err = make_listener_notify_rule_finish(listener);
   if (err)
     return err;
 

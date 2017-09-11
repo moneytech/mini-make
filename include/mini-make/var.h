@@ -16,34 +16,35 @@
  * along with Mini Make.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef MAKE_JOB_MANAGER_H
-#define MAKE_JOB_MANAGER_H
+#ifndef MINI_MAKE_VAR_H
+#define MINI_MAKE_VAR_H
+
+#include <mini-make/string.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-struct make_job;
-struct make_string;
-
-struct make_job_manager {
-  struct make_job *job_array;
-  unsigned long int job_count;
-  unsigned long int job_max;
+struct make_var {
+  struct make_string key;
+  struct make_string value;
 };
 
-void make_job_manager_init(struct make_job_manager *job_manager);
+void make_var_init(struct make_var *var);
 
-void make_job_manager_free(struct make_job_manager *job_manager);
+void make_var_free(struct make_var *var);
 
-void make_job_manager_set_max_jobs(struct make_job_manager *job_manager,
-                                   unsigned long int max);
+int make_var_set_key(struct make_var *var,
+                     const struct make_string *key);
 
-int make_job_manager_queue(struct make_job_manager *job_manager,
-                           const struct make_string *cmdline);
+int make_var_append_value(struct make_var *var,
+                          const struct make_string *value);
+
+int make_var_set_value(struct make_var *var,
+                       const struct make_string *value);
 
 #ifdef __cplusplus
 } /* extern "C" { */
 #endif
 
-#endif /* MAKE_JOB_MANAGER_H */
+#endif /* MINI_MAKE_VAR_H */

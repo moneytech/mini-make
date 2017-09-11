@@ -16,7 +16,7 @@
  * along with Mini Make.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <make/string.h>
+#include <mini-make/string.h>
 
 #include <errno.h>
 #include <stdlib.h>

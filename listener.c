@@ -16,12 +16,14 @@
  * along with Mini Make.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <make/listener.h>
+#include <mini-make/listener.h>
 
-#include <make/location.h>
-#include <make/string.h>
+#include <mini-make/error.h>
+#include <mini-make/location.h>
+#include <mini-make/string.h>
 
 #include <stdio.h>
+#include <string.h>
 
 static void on_unexpected_char(void *data, char c,
                                const struct make_location *location) {
@@ -31,7 +33,30 @@ static void on_unexpected_char(void *data, char c,
           location->line, location->column, c);
 }
 
+static void on_missing_separator(void *data, const struct make_location *location) {
+  (void) data;
+  fprintf(stderr, "%.*s:%lu:%lu: Missing ':' separator\n",
+          (int) location->path.size, location->path.data,
+          location->line, location->column);
+}
+
 void make_listener_init(struct make_listener *listener) {
+  memset(listener, 0, sizeof(*listener));
   listener->on_unexpected_char = on_unexpected_char;
+  listener->on_missing_separator = on_missing_separator;
+}
+
+int make_listener_notify_rule_start(struct make_listener *listener) {
+  if (listener->on_rule_start != NULL)
+    return listener->on_rule_start(listener->user_data);
+  else
+    return make_success;
+}
+
+int make_listener_notify_rule_finish(struct make_listener *listener) {
+  if (listener->on_rule_finish)
+    return listener->on_rule_finish(listener->user_data);
+  else
+    return make_success;
 }
 

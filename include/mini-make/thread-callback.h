@@ -16,35 +16,26 @@
  * along with Mini Make.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef MAKE_VAR_H
-#define MAKE_VAR_H
-
-#include <make/string.h>
+#ifndef MAKE_THREAD_CALLBACK_H
+#define MAKE_THREAD_CALLBACK_H
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-struct make_var {
-  struct make_string key;
-  struct make_string value;
+/** Used for describing what a thread
+ * is going to do. */
+struct make_thread_callback {
+  /** @brief The pointer to pass to the
+   * function that the thread starts on. */
+  void *data;
+  /** @brief The function to start the
+   * new thread with. */
+  void *(*function)(void *data);
 };
-
-void make_var_init(struct make_var *var);
-
-void make_var_free(struct make_var *var);
-
-int make_var_set_key(struct make_var *var,
-                     const struct make_string *key);
-
-int make_var_append_value(struct make_var *var,
-                          const struct make_string *value);
-
-int make_var_set_value(struct make_var *var,
-                       const struct make_string *value);
 
 #ifdef __cplusplus
 } /* extern "C" { */
 #endif
 
-#endif /* MAKE_VAR_H */
+#endif /* MAKE_THREAD_CALLBACK_H */

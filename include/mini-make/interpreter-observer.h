@@ -16,25 +16,29 @@
  * along with Mini Make.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <mini-make/chdir.h>
+#ifndef MINI_MAKE_INTERPRETER_OBSERVER_H
+#define MINI_MAKE_INTERPRETER_OBSERVER_H
 
-#include <errno.h>
-
-#if defined(_WIN32)
-#include <windows.h>
-#elif defined(__unix__)
-#include <unistd.h>
+#ifdef __cplusplus
+extern "C" {
 #endif
 
-int make_chdir(const char *path) {
-#if defined(_WIN32)
-  if (!SetCurrentDirectory(path))
-    /* TODO get appropriate error code */
-    return -EINVAL;
-#elif defined(__unix__)
-  if (chdir(path) < 0)
-    return -errno;
-#endif
-  return 0;
-}
+struct mmk_string;
+struct mmk_command;
 
+struct mmk_interpreter_observer {
+  /** @brief Data to pass to the observer callbacks. */
+  void *data;
+  /** @brief Called when a target is determined to not exist. */
+  int (*on_target_nonexistent)(void *, const struct mmk_string *target);
+  /** @brief Called when a target is discovered to be expired.
+   * A target is considered to be expired when a prerequisite is found
+   * that is newer than the target. */
+  int (*on_target_expired)(void *, const struct mmk_string *target);
+};
+
+#ifdef __cplusplus
+} /* extern "C" { */
+#endif
+
+#endif /* MINI_MAKE_INTERPRETER_OBSERVER_H */
