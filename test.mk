@@ -18,3 +18,9 @@ t1 t2: p1\
 	@cmd3
 	-@cmd4
 	@-cmd5
+
+t3:
+	cmd6
+
+t4
+

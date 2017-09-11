@@ -25,6 +25,7 @@
 #include <mini-make/string.h>
 
 #include <assert.h>
+#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -35,6 +36,7 @@ struct test_data {
   unsigned long int commands_found;
   unsigned long int includes_found;
   unsigned long int assignments_found;
+  unsigned long int missing_separator_found;
 };
 
 static int on_target(void *user_data, const struct make_string *target) {
@@ -47,7 +49,7 @@ static int on_target(void *user_data, const struct make_string *target) {
 
   test_data = (struct test_data *)(user_data);
 
-  assert(test_data->targets_found < 2);
+  assert(test_data->targets_found < 4);
 
   if (test_data->targets_found == 0) {
     assert(target->size == 2);
@@ -55,6 +57,12 @@ static int on_target(void *user_data, const struct make_string *target) {
   } else if (test_data->targets_found == 1) {
     assert(target->size == 2);
     assert(memcmp(target->data, "t2", 2) == 0);
+  } else if (test_data->targets_found == 2) {
+    assert(target->size == 2);
+    assert(memcmp(target->data, "t3", 2) == 0);
+  } else if (test_data->targets_found == 3) {
+    assert(target->size == 2);
+    assert(memcmp(target->data, "t4", 2) == 0);
   }
 
   test_data->targets_found++;
@@ -122,6 +130,11 @@ static int on_command(void *user_data, const struct make_command *command) {
     assert(command->silent == 1);
     assert(command->source->size == 4);
     assert(memcmp(command->source->data, "cmd5", 4) == 0);
+  } else if (test_data->commands_found == 5) {
+    assert(command->ignore_error == 0);
+    assert(command->silent == 0);
+    assert(command->source->size == 4);
+    assert(memcmp(command->source->data, "cmd6", 4) == 0);
   }
 
   test_data->commands_found++;
@@ -216,6 +229,16 @@ static int on_rule_finish(void *user_data) {
   return 0;
 }
 
+static void on_missing_separator(void *user_data) {
+
+  struct test_data *test_data;
+
+  test_data = (struct test_data *) user_data;
+  test_data->missing_separator_found++;
+
+  (void) user_data;
+}
+
 int main(void) {
 
   int err;
@@ -227,6 +250,7 @@ int main(void) {
   test_data.commands_found = 0;
   test_data.includes_found = 0;
   test_data.assignments_found = 0;
+  test_data.missing_separator_found = 0;
 
   make_parser_init(&parser);
 
@@ -245,17 +269,19 @@ int main(void) {
   parser.listener.on_assignment_stmt = on_assignment_stmt;
   parser.listener.on_rule_start = on_rule_start;
   parser.listener.on_rule_finish = on_rule_finish;
+  parser.listener.on_missing_separator = on_missing_separator;
 
   err = make_parser_run(&parser);
-  assert(err == 0);
+  assert(err == -EINVAL);
 
   make_parser_free(&parser);
 
-  assert(test_data.targets_found == 2);
+  assert(test_data.targets_found == 4);
   assert(test_data.prerequisites_found == 2);
-  assert(test_data.commands_found == 5);
+  assert(test_data.commands_found == 6);
   assert(test_data.includes_found == 3);
   assert(test_data.assignments_found == 4);
+  assert(test_data.missing_separator_found == 1);
 
   return EXIT_SUCCESS;
 }

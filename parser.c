@@ -408,15 +408,15 @@ static int rule(struct make_parser *parser,
    * targets */
   while (i < source->size) {
     c = source->data[i];
-    if (make_is_space(c)) {
+    if (c == '\n') {
+      listener->on_missing_separator(listener->user_data);
+      return -EINVAL;
+    } else if (make_is_space(c)) {
       i++;
       continue;
     } else if (c == ':') {
       i++;
       break;
-    } else if (c == '\n') {
-      listener->on_missing_separator(listener->user_data);
-      return -EINVAL;
     } else if (make_is_filechar(c)) {
       target.data = &source->data[i];
       target.size = 0;
