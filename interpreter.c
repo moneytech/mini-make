@@ -344,13 +344,15 @@ static void on_unexpected_char(void *data, char c, const struct make_location *l
           location->line, location->column, c);
 }
 
-static void on_missing_separator(void *data) {
+static void on_missing_separator(void *data, const struct make_location *location) {
 
   struct make_interpreter *interpreter;
 
   interpreter = (struct make_interpreter *) data;
 
-  fprintf(interpreter->errlog, "Missing separator\n");
+  fprintf(interpreter->errlog, "%.*s:%lu:%lu: Missing ':' separator\n",
+          (int) location->path.size, location->path.data,
+          location->line, location->column);
 }
 
 void make_interpreter_init(struct make_interpreter *interpreter) {

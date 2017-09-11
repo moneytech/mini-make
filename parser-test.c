@@ -22,6 +22,7 @@
 #include <mini-make/command.h>
 #include <mini-make/include-stmt.h>
 #include <mini-make/listener.h>
+#include <mini-make/location.h>
 #include <mini-make/string.h>
 
 #include <assert.h>
@@ -229,13 +230,22 @@ static int on_rule_finish(void *user_data) {
   return 0;
 }
 
-static void on_missing_separator(void *user_data) {
+static void on_missing_separator(void *user_data, const struct make_location *location) {
 
   struct test_data *test_data;
 
   test_data = (struct test_data *) user_data;
+
+  if (test_data->missing_separator_found == 0) {
+    assert(location->line == 25);
+    assert(location->column == 3);
+    assert(location->path.size == 10);
+    assert(memcmp(location->path.data, "../test.mk", 10) == 0);
+  }
+
   test_data->missing_separator_found++;
 
+  (void) location;
   (void) user_data;
 }
 

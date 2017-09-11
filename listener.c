@@ -33,9 +33,17 @@ static void on_unexpected_char(void *data, char c,
           location->line, location->column, c);
 }
 
+static void on_missing_separator(void *data, const struct make_location *location) {
+  (void) data;
+  fprintf(stderr, "%.*s:%lu:%lu: Missing ':' separator\n",
+          (int) location->path.size, location->path.data,
+          location->line, location->column);
+}
+
 void make_listener_init(struct make_listener *listener) {
   memset(listener, 0, sizeof(*listener));
   listener->on_unexpected_char = on_unexpected_char;
+  listener->on_missing_separator = on_missing_separator;
 }
 
 int make_listener_notify_rule_start(struct make_listener *listener) {

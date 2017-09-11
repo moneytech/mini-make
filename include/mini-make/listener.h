@@ -58,7 +58,8 @@ struct make_listener {
   void (*on_unexpected_char)(void *user_data, char c,
                              const struct make_location *location);
   /** @brief Executed when a rule is missing a ':' separator. */
-  void (*on_missing_separator)(void *user_data);
+  void (*on_missing_separator)(void *user_data,
+                               const struct make_location *location);
   /** @brief Executed when the end of file is reached unexpectedly. */
   void (*on_unexpected_eof)(void *user_data);
 };

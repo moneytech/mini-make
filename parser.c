@@ -72,39 +72,60 @@ static int make_is_operator_char(char c) {
   return 0;
 }
 
-void unexpected_char(struct make_parser *parser,
-                     unsigned long int i) {
+static void get_location(const struct make_parser *parser,
+                         unsigned long int i,
+                         struct make_location *location) {
 
   char c;
   unsigned long int j;
-  struct make_location location;
-  struct make_listener *listener;
-  struct make_string *source;
-  void *user_data;
+  const struct make_string *source;
 
   source = &parser->source;
 
-  location.path = parser->path;
-  location.line = 1;
-  location.column = 1;
+  location->path = parser->path;
+  location->line = 1;
+  location->column = 1;
 
   for (j = 0; j < i; j++) {
     c = source->data[j];
     if (c == '\n') {
-      location.line++;
-      location.column = 1;
+      location->line++;
+      location->column = 1;
     } else {
-      location.column++;
+      location->column++;
     }
   }
+}
 
+static void unexpected_char(struct make_parser *parser,
+                            unsigned long int i) {
+  struct make_location location;
+  struct make_listener *listener;
+  struct make_string *source;
+  void *user_data;
+  char c;
+
+  get_location(parser, i, &location);
+
+  source = &parser->source;
   c = source->data[i];
 
   listener = &parser->listener;
-
   user_data = listener->user_data;
-
   listener->on_unexpected_char(user_data, c, &location);
+}
+
+static void missing_separator(struct make_parser *parser,
+                              unsigned long int i) {
+  struct make_location location;
+  struct make_listener *listener;
+  void *user_data;
+
+  get_location(parser, i, &location);
+
+  listener = &parser->listener;
+  user_data = listener->user_data;
+  listener->on_missing_separator(user_data, &location);
 }
 
 static int assignment_stmt(struct make_parser *parser,
@@ -409,7 +430,7 @@ static int rule(struct make_parser *parser,
   while (i < source->size) {
     c = source->data[i];
     if (c == '\n') {
-      listener->on_missing_separator(listener->user_data);
+      missing_separator(parser, i);
       return -EINVAL;
     } else if (make_is_space(c)) {
       i++;
