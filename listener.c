@@ -25,12 +25,57 @@
 #include <stdio.h>
 #include <string.h>
 
+static int on_assignment_stmt(void *data, const struct make_assignment_stmt *assignment_stmt) {
+  (void) data;
+  (void) assignment_stmt;
+  return make_success;
+}
+
+static int on_include_stmt(void *data, const struct make_include_stmt *include_stmt) {
+  (void) data;
+  (void) include_stmt;
+  return make_success;
+}
+
+static int on_rule_start(void *data) {
+  (void) data;
+  return make_success;
+}
+
+static int on_rule_finish(void *data) {
+  (void) data;
+  return make_success;
+}
+
+static int on_target(void *data, const struct make_string *target) {
+  (void) data;
+  (void) target;
+  return make_success;
+}
+
+static int on_prerequisite(void *data, const struct make_string *prerequisite) {
+  (void) data;
+  (void) prerequisite;
+  return make_success;
+}
+
+static int on_command(void *data, const struct make_command *command) {
+  (void) data;
+  (void) command;
+  return make_success;
+}
+
 static void on_unexpected_char(void *data, char c,
                                const struct make_location *location) {
   (void) data;
   fprintf(stderr, "%.*s:%lu:%lu: Unexpected character '%c'\n",
           (int) location->path.size, location->path.data,
           location->line, location->column, c);
+}
+
+static void on_unexpected_eof(void *data) {
+  fprintf(stderr, "Unexpected end-of-file reached\n");
+  (void) data;
 }
 
 static void on_missing_separator(void *data, const struct make_location *location) {
@@ -42,7 +87,15 @@ static void on_missing_separator(void *data, const struct make_location *locatio
 
 void make_listener_init(struct make_listener *listener) {
   memset(listener, 0, sizeof(*listener));
+  listener->on_assignment_stmt = on_assignment_stmt;
+  listener->on_include_stmt = on_include_stmt;
+  listener->on_rule_start = on_rule_start;
+  listener->on_rule_finish = on_rule_finish;
+  listener->on_target = on_target;
+  listener->on_prerequisite = on_prerequisite;
+  listener->on_command = on_command;
   listener->on_unexpected_char = on_unexpected_char;
+  listener->on_unexpected_eof = on_unexpected_eof;
   listener->on_missing_separator = on_missing_separator;
 }
 

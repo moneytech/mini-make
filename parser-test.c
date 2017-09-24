@@ -32,6 +32,7 @@
 #include <string.h>
 
 struct test_data {
+  const char *makefile_path;
   unsigned long int targets_found;
   unsigned long int prerequisites_found;
   unsigned long int commands_found;
@@ -239,8 +240,8 @@ static void on_missing_separator(void *user_data, const struct make_location *lo
   if (test_data->missing_separator_found == 0) {
     assert(location->line == 25);
     assert(location->column == 3);
-    assert(location->path.size == 10);
-    assert(memcmp(location->path.data, "../test.mk", 10) == 0);
+    assert(location->path.size == strlen(test_data->makefile_path));
+    assert(strcmp(location->path.data, test_data->makefile_path) == 0);
   }
 
   test_data->missing_separator_found++;
@@ -249,12 +250,33 @@ static void on_missing_separator(void *user_data, const struct make_location *lo
   (void) user_data;
 }
 
-int main(void) {
+int main(int argc, const char **argv) {
 
   int err;
   struct test_data test_data;
   struct make_parser parser;
+  const char *makefile_path;
+  int i;
 
+  makefile_path = NULL;
+
+  for (i = 1; i < argc; i++) {
+    if (strcmp(argv[i], "--makefile") == 0) {
+      makefile_path = argv[i + 1];
+      i++;
+    } else if (strcmp(argv[i], "--help") == 0) {
+      fprintf(stdout, "Options:\n");
+      fprintf(stdout, "  --makefile <FILE> : Specify the path of the makefile used for the test.\n");
+    } else {
+      fprintf(stderr, "Unknown argument: '%s'\n", argv[i]);
+      return EXIT_FAILURE;
+    }
+  }
+
+  if (makefile_path == NULL)
+    makefile_path = "../test.mk";
+
+  test_data.makefile_path = makefile_path;
   test_data.targets_found = 0;
   test_data.prerequisites_found = 0;
   test_data.commands_found = 0;
@@ -264,9 +286,9 @@ int main(void) {
 
   make_parser_init(&parser);
 
-  err = make_parser_read(&parser, "../test.mk");
+  err = make_parser_read(&parser, makefile_path);
   if (err < 0) {
-    fprintf(stderr, "Failed to read 'test.mk'");
+    fprintf(stderr, "Failed to read '%s'\n", makefile_path);
     make_parser_free(&parser);
     return EXIT_FAILURE;
   }

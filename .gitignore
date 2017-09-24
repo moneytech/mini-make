@@ -1,3 +1,5 @@
+/*-test
+/examples/list-targets
 /build/*
 *.o
 *.a

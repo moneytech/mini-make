@@ -45,3 +45,46 @@ cd build
 cmake .. -DCMAKE_MAKE_PROGRAM=mini-make
 mini-make
 ```
+
+### Library Usage
+
+You can use `libmake` to write code that uses makefiles.
+
+It's pretty easy to integrate with CMake projects.
+
+In `CMakeLists.txt`, you can find it with `find_package`.
+
+```
+cmake_minimum_required(VERSION 2.6)
+
+find_package(MiniMake REQUIRED)
+
+add_executable("makefile-examiner" "makefile-examiner.c")
+
+target_link_libraries("makefile-examiner" "make")
+```
+
+Note that the include directories are automatically passed to the
+`makefile_examiner` target.
+
+The `main.c` file might look like this:
+
+```
+#include <mini-make/parser.h>
+
+int main(void) {
+
+  struct make_parser parser;
+
+  make_parser_init(&parser);
+
+  /* examine the makefile */
+
+  make_parser_free(&parser);
+
+  return 0;
+}
+```
+
+You can check out examples in the `examples` directory.
+
