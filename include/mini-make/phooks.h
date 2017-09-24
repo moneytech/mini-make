@@ -67,16 +67,20 @@ struct make_phooks {
   void (*on_unexpected_eof)(void *user_data);
 };
 
-/** @brief Initializes the phooks with functions
+/** @brief Initializes the hooks with functions
  * that do not do anything. None of the values (except
  * for the data member) are initialized to NULL. */
 void make_phooks_init(struct make_phooks *phooks);
 
-/** @brief Notifies the phooks of a start of a rule. */
+/** @brief Notifies the hooks of a start of a rule. */
 int make_phooks_notify_rule_start(struct make_phooks *phooks);
 
-/** @brief Notifies the phooks of the end of a rule. */
+/** @brief Notifies the hooks of the end of a rule. */
 int make_phooks_notify_rule_finish(struct make_phooks *phooks);
+
+/** @brief Notifies the hooks of a comment. */
+int make_phooks_notify_comment(struct make_phooks *phooks,
+                               const struct make_string *comment);
 
 #ifdef __cplusplus
 } /* extern "C" */

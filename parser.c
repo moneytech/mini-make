@@ -317,7 +317,7 @@ static int comment(struct make_parser *parser,
       i++;
     }
 
-    err = parser->listener.on_comment(parser->listener.user_data, &comment);
+    err = make_phooks_notify_comment(&parser->hooks, &comment);
     if (err != make_success)
       return err;
 

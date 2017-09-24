@@ -94,6 +94,7 @@ static void on_missing_separator(void *data, const struct make_location *locatio
 void make_phooks_init(struct make_phooks *phooks) {
   memset(phooks, 0, sizeof(*phooks));
   phooks->on_assignment_stmt = on_assignment_stmt;
+  phooks->on_comment = on_comment;
   phooks->on_include_stmt = on_include_stmt;
   phooks->on_rule_start = on_rule_start;
   phooks->on_rule_finish = on_rule_finish;
@@ -115,6 +116,14 @@ int make_phooks_notify_rule_start(struct make_phooks *phooks) {
 int make_phooks_notify_rule_finish(struct make_phooks *phooks) {
   if (phooks->on_rule_finish)
     return phooks->on_rule_finish(phooks->data);
+  else
+    return make_success;
+}
+
+int make_phooks_notify_comment(struct make_phooks *phooks,
+                               const struct make_string *comment) {
+  if (phooks->on_comment != NULL)
+    return phooks->on_comment(phooks->data, comment);
   else
     return make_success;
 }

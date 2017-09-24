@@ -106,8 +106,8 @@ static int spell_check(const char *path) {
 
   make_parser_init(&parser);
 
-  parser.listener.user_data = &checker;
-  parser.listener.on_comment = on_comment;
+  parser.hooks.data = &checker;
+  parser.hooks.on_comment = on_comment;
 
   err = make_parser_read(&parser, path);
   if (err) {
