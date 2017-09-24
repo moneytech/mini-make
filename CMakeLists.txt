@@ -53,6 +53,8 @@ add_library("make" STATIC
   "${INCDIR}/string.h"
   "${SRCDIR}/table.c"
   "${INCDIR}/table.h"
+  "${SRCDIR}/target.c"
+  "${INCDIR}/target.h"
   "${EXTDIR}/thread.c"
   "${INCDIR}/thread.h"
   "${INCDIR}/thread-callback.h"

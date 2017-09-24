@@ -45,6 +45,9 @@ SOURCES += "string.c"
 HEADERS += "include/mini-make/table.h"
 SOURCES += "table.c"
 
+HEADERS += "include/mini-make/target.h"
+SOURCES += "target.c"
+
 HEADERS += "include/mini-make/var.h"
 SOURCES += "var.c"
 
