@@ -16,7 +16,7 @@
  * along with Mini Make.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <mini-make/listener.h>
+#include <mini-make/phooks.h>
 
 #include <mini-make/error.h>
 #include <mini-make/location.h>
@@ -85,30 +85,30 @@ static void on_missing_separator(void *data, const struct make_location *locatio
           location->line, location->column);
 }
 
-void make_listener_init(struct make_listener *listener) {
-  memset(listener, 0, sizeof(*listener));
-  listener->on_assignment_stmt = on_assignment_stmt;
-  listener->on_include_stmt = on_include_stmt;
-  listener->on_rule_start = on_rule_start;
-  listener->on_rule_finish = on_rule_finish;
-  listener->on_target = on_target;
-  listener->on_prerequisite = on_prerequisite;
-  listener->on_command = on_command;
-  listener->on_unexpected_char = on_unexpected_char;
-  listener->on_unexpected_eof = on_unexpected_eof;
-  listener->on_missing_separator = on_missing_separator;
+void make_phooks_init(struct make_phooks *phooks) {
+  memset(phooks, 0, sizeof(*phooks));
+  phooks->on_assignment_stmt = on_assignment_stmt;
+  phooks->on_include_stmt = on_include_stmt;
+  phooks->on_rule_start = on_rule_start;
+  phooks->on_rule_finish = on_rule_finish;
+  phooks->on_target = on_target;
+  phooks->on_prerequisite = on_prerequisite;
+  phooks->on_command = on_command;
+  phooks->on_unexpected_char = on_unexpected_char;
+  phooks->on_unexpected_eof = on_unexpected_eof;
+  phooks->on_missing_separator = on_missing_separator;
 }
 
-int make_listener_notify_rule_start(struct make_listener *listener) {
-  if (listener->on_rule_start != NULL)
-    return listener->on_rule_start(listener->user_data);
+int make_phooks_notify_rule_start(struct make_phooks *phooks) {
+  if (phooks->on_rule_start != NULL)
+    return phooks->on_rule_start(phooks->data);
   else
     return make_success;
 }
 
-int make_listener_notify_rule_finish(struct make_listener *listener) {
-  if (listener->on_rule_finish)
-    return listener->on_rule_finish(listener->user_data);
+int make_phooks_notify_rule_finish(struct make_phooks *phooks) {
+  if (phooks->on_rule_finish)
+    return phooks->on_rule_finish(phooks->data);
   else
     return make_success;
 }

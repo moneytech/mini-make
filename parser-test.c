@@ -293,15 +293,15 @@ int main(int argc, const char **argv) {
     return EXIT_FAILURE;
   }
 
-  parser.listener.user_data = &test_data;
-  parser.listener.on_target = on_target;
-  parser.listener.on_prerequisite = on_prerequisite;
-  parser.listener.on_command = on_command;
-  parser.listener.on_include_stmt = on_include_stmt;
-  parser.listener.on_assignment_stmt = on_assignment_stmt;
-  parser.listener.on_rule_start = on_rule_start;
-  parser.listener.on_rule_finish = on_rule_finish;
-  parser.listener.on_missing_separator = on_missing_separator;
+  parser.hooks.data = &test_data;
+  parser.hooks.on_target = on_target;
+  parser.hooks.on_prerequisite = on_prerequisite;
+  parser.hooks.on_command = on_command;
+  parser.hooks.on_include_stmt = on_include_stmt;
+  parser.hooks.on_assignment_stmt = on_assignment_stmt;
+  parser.hooks.on_rule_start = on_rule_start;
+  parser.hooks.on_rule_finish = on_rule_finish;
+  parser.hooks.on_missing_separator = on_missing_separator;
 
   err = make_parser_run(&parser);
   assert(err == -EINVAL);

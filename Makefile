@@ -43,7 +43,7 @@ libmake.a: chdir.o \
            interpreter-test.o \
            job.o \
            job-manager.o \
-           listener.o \
+           phooks.o \
            mini-make.o \
            parser.o \
            parser-test.o \
@@ -65,7 +65,7 @@ job.o: job.c
 
 job-manager.o: job-manager.c
 
-listener.o: listener.c
+phooks.o: phooks.c
 
 mini-make.o: mini-make.c
 

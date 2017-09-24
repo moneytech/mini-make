@@ -18,7 +18,7 @@ static int list_targets_of(const char *path) {
 
   make_parser_init(&parser);
 
-  parser.listener.on_target = on_target;
+  parser.hooks.on_target = on_target;
 
   err = make_parser_read(&parser, path);
   if (err) {

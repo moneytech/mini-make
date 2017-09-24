@@ -30,8 +30,8 @@ SOURCES += "job.c"
 HEADERS += "include/mini-make/job-manager.h"
 SOURCES += "job-manager.c"
 
-HEADERS += "include/mini-make/listener.h"
-SOURCES += "listener.c"
+HEADERS += "include/mini-make/phooks.h"
+SOURCES += "phooks.c"
 
 HEADERS += "include/mini-make/parser.h"
 SOURCES += "parser.c"

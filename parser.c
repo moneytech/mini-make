@@ -21,8 +21,8 @@
 #include <mini-make/assignment-stmt.h>
 #include <mini-make/command.h>
 #include <mini-make/include-stmt.h>
-#include <mini-make/listener.h>
 #include <mini-make/location.h>
+#include <mini-make/phooks.h>
 #include <mini-make/string.h>
 
 #include <ctype.h>
@@ -100,9 +100,9 @@ static void get_location(const struct make_parser *parser,
 static void unexpected_char(struct make_parser *parser,
                             unsigned long int i) {
   struct make_location location;
-  struct make_listener *listener;
+  struct make_phooks *phooks;
   struct make_string *source;
-  void *user_data;
+  void *data;
   char c;
 
   get_location(parser, i, &location);
@@ -110,22 +110,22 @@ static void unexpected_char(struct make_parser *parser,
   source = &parser->source;
   c = source->data[i];
 
-  listener = &parser->listener;
-  user_data = listener->user_data;
-  listener->on_unexpected_char(user_data, c, &location);
+  phooks = &parser->hooks;
+  data = phooks->data;
+  phooks->on_unexpected_char(data, c, &location);
 }
 
 static void missing_separator(struct make_parser *parser,
                               unsigned long int i) {
   struct make_location location;
-  struct make_listener *listener;
-  void *user_data;
+  struct make_phooks *phooks;
+  void *data;
 
   get_location(parser, i, &location);
 
-  listener = &parser->listener;
-  user_data = listener->user_data;
-  listener->on_missing_separator(user_data, &location);
+  phooks = &parser->hooks;
+  data = phooks->data;
+  phooks->on_missing_separator(data, &location);
 }
 
 static int assignment_stmt(struct make_parser *parser,
@@ -136,12 +136,12 @@ static int assignment_stmt(struct make_parser *parser,
   char c;
   int escape_found;
   struct make_string *source;
-  struct make_listener *listener;
+  struct make_phooks *phooks;
   struct make_string key;
   struct make_string value;
   struct make_assignment_stmt assignment_stmt;
 
-  listener = &parser->listener;
+  phooks = &parser->hooks;
 
   key.data = NULL;
   key.size = 0;
@@ -201,7 +201,7 @@ static int assignment_stmt(struct make_parser *parser,
       i++;
       if (i >= source->size) {
         /* Unexpected end of file. */
-        listener->on_unexpected_eof(listener->user_data);
+        phooks->on_unexpected_eof(phooks->data);
         return -EINVAL;
       } else if (source->data[i] != '=') {
         /* If a '=' wasn't following then this
@@ -273,7 +273,7 @@ static int assignment_stmt(struct make_parser *parser,
 
   /* TODO : Get rid of trailing space */
 
-  err = listener->on_assignment_stmt(listener->user_data, &assignment_stmt);
+  err = phooks->on_assignment_stmt(phooks->data, &assignment_stmt);
   if (err)
     return err;
 
@@ -320,9 +320,9 @@ static int include_stmt(struct make_parser *parser,
   struct make_string *source;
   struct make_string include_path;
   struct make_include_stmt include_stmt;
-  struct make_listener *listener;
+  struct make_phooks *phooks;
 
-  listener = &parser->listener;
+  phooks = &parser->hooks;
 
   source = &parser->source;
 
@@ -366,7 +366,7 @@ static int include_stmt(struct make_parser *parser,
       c = source->data[i];
       if (c == '\n') {
         if (include_path.size > 0) {
-          err = listener->on_include_stmt(listener->user_data, &include_stmt);
+          err = phooks->on_include_stmt(phooks->data, &include_stmt);
           if (err)
             return err;
           /* This may not be necessary,
@@ -377,7 +377,7 @@ static int include_stmt(struct make_parser *parser,
         break;
       } else if (make_is_space(c)) {
         if (include_path.size > 0) {
-          err = listener->on_include_stmt(listener->user_data, &include_stmt);
+          err = phooks->on_include_stmt(phooks->data, &include_stmt);
           if (err)
             return err;
           include_path.data = NULL;
@@ -409,7 +409,7 @@ static int rule(struct make_parser *parser,
 
   int err;
   int escape_found;
-  struct make_listener *listener;
+  struct make_phooks *phooks;
   struct make_string *source;
   char c;
   struct make_string target;
@@ -417,11 +417,11 @@ static int rule(struct make_parser *parser,
   struct make_string command_source;
   struct make_command command;
 
-  listener = &parser->listener;
+  phooks = &parser->hooks;
 
   source = &parser->source;
 
-  err = make_listener_notify_rule_start(listener);
+  err = make_phooks_notify_rule_start(phooks);
   if (err)
     return err;
 
@@ -448,7 +448,7 @@ static int rule(struct make_parser *parser,
         target.size++;
         i++;
       }
-      err = listener->on_target(listener->user_data, &target);
+      err = phooks->on_target(phooks->data, &target);
       if (err)
         return err;
     } else {
@@ -509,7 +509,7 @@ static int rule(struct make_parser *parser,
         i++;
       }
       escape_found = 0;
-      err = listener->on_prerequisite(listener->user_data, &prerequisite);
+      err = phooks->on_prerequisite(phooks->data, &prerequisite);
       if (err)
         return err;
     } else {
@@ -555,12 +555,12 @@ static int rule(struct make_parser *parser,
       i++;
     }
 
-    err = listener->on_command(listener->user_data, &command);
+    err = phooks->on_command(phooks->data, &command);
     if (err)
       return err;
   }
 
-  err = make_listener_notify_rule_finish(listener);
+  err = make_phooks_notify_rule_finish(phooks);
   if (err)
     return err;
 
@@ -572,7 +572,7 @@ static int rule(struct make_parser *parser,
 void make_parser_init(struct make_parser *parser) {
   make_string_init(&parser->path);
   make_string_init(&parser->source);
-  make_listener_init(&parser->listener);
+  make_phooks_init(&parser->hooks);
 }
 
 void make_parser_free(struct make_parser *parser) {

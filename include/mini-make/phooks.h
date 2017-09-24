@@ -16,8 +16,8 @@
  * along with Mini Make.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef MAKE_LISTENER_H
-#define MAKE_LISTENER_H
+#ifndef MAKE_PHOOKS_H
+#define MAKE_PHOOKS_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -29,10 +29,11 @@ struct make_include_stmt;
 struct make_location;
 struct make_string;
 
-struct make_listener {
+/** @brief Makefile parser hooks. */
+struct make_phooks {
   /** @brief Used for passing custom data to the
    * callback functions. */
-  void *user_data;
+  void *data;
   /** @brief Executed when an assignment statement
    * is found. */
   int (*on_assignment_stmt)(void *user_data,
@@ -64,19 +65,19 @@ struct make_listener {
   void (*on_unexpected_eof)(void *user_data);
 };
 
-/** @brief Initializes the listener with functions
+/** @brief Initializes the phooks with functions
  * that do not do anything. None of the values (except
  * for the data member) are initialized to NULL. */
-void make_listener_init(struct make_listener *listener);
+void make_phooks_init(struct make_phooks *phooks);
 
-/** @brief Notifies the listener of a start of a rule. */
-int make_listener_notify_rule_start(struct make_listener *listener);
+/** @brief Notifies the phooks of a start of a rule. */
+int make_phooks_notify_rule_start(struct make_phooks *phooks);
 
-/** @brief Notifies the listener of the end of a rule. */
-int make_listener_notify_rule_finish(struct make_listener *listener);
+/** @brief Notifies the phooks of the end of a rule. */
+int make_phooks_notify_rule_finish(struct make_phooks *phooks);
 
 #ifdef __cplusplus
 } /* extern "C" */
 #endif
 
-#endif /* MAKE_LISTENER_H */
+#endif /* MAKE_PHOOKS_H */

@@ -20,7 +20,7 @@
 
 #include <mini-make/command.h>
 #include <mini-make/include-stmt.h>
-#include <mini-make/listener.h>
+#include <mini-make/phooks.h>
 #include <mini-make/location.h>
 #include <mini-make/parser.h>
 #include <mini-make/string.h>
@@ -321,7 +321,7 @@ static int on_include_stmt(void *data, const struct make_include_stmt *include_s
   }
   make_string_free(&path);
 
-  new_parser.listener = interpreter->parser.listener;
+  new_parser.hooks = interpreter->parser.hooks;
   err = make_parser_run(&new_parser);
   if (err) {
     make_parser_free(&new_parser);
@@ -358,7 +358,7 @@ static void on_missing_separator(void *data, const struct make_location *locatio
 void make_interpreter_init(struct make_interpreter *interpreter) {
 
   struct make_parser *parser;
-  struct make_listener *listener;
+  struct make_phooks *phooks;
 
   make_string_init(&interpreter->target);
   make_parser_init(&interpreter->parser);
@@ -367,17 +367,17 @@ void make_interpreter_init(struct make_interpreter *interpreter) {
 
   parser = &interpreter->parser;
 
-  listener = &parser->listener;
-  listener->user_data = interpreter;
-  listener->on_rule_start = on_rule_start;
-  listener->on_rule_finish = on_rule_finish;
-  listener->on_target = on_target;
-  listener->on_prerequisite = on_prerequisite;
-  listener->on_command = on_command;
-  listener->on_assignment_stmt = on_assignment_stmt;
-  listener->on_include_stmt = on_include_stmt;
-  listener->on_unexpected_char = on_unexpected_char;
-  listener->on_missing_separator = on_missing_separator;
+  phooks = &parser->hooks;
+  phooks->data = interpreter;
+  phooks->on_rule_start = on_rule_start;
+  phooks->on_rule_finish = on_rule_finish;
+  phooks->on_target = on_target;
+  phooks->on_prerequisite = on_prerequisite;
+  phooks->on_command = on_command;
+  phooks->on_assignment_stmt = on_assignment_stmt;
+  phooks->on_include_stmt = on_include_stmt;
+  phooks->on_unexpected_char = on_unexpected_char;
+  phooks->on_missing_separator = on_missing_separator;
 
   interpreter->just_print = 0;
   interpreter->silent = 0;
