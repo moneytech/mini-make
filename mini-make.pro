@@ -18,6 +18,9 @@ HEADERS += "include/mini-make/options.h"
 HEADERS += "include/mini-make/chdir.h"
 SOURCES += "chdir.c"
 
+HEADERS += "include/mini-make/error.h"
+SOURCES += "error.c"
+
 HEADERS += "include/mini-make/interpreter.h"
 SOURCES += "interpreter.c"
 
