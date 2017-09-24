@@ -39,6 +39,14 @@ void make_job_manager_free(struct make_job_manager *job_manager);
 void make_job_manager_set_max_jobs(struct make_job_manager *job_manager,
                                    unsigned long int max);
 
+/** @brief Waits for one job to finish.
+ * If there are no jobs running, function exits successfully. */
+int make_job_manager_wait_for_one(struct make_job_manager *job_manager);
+
+/** @brief Waits for all jobs to finish.
+ * If there are no jobs running, function exits successfully. */
+int make_job_manager_wait_for_all(struct make_job_manager *job_manager);
+
 int make_job_manager_queue(struct make_job_manager *job_manager,
                            const struct make_string *cmdline);
 
