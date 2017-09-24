@@ -32,7 +32,7 @@ const struct make_string *make_target_get_path(const struct make_target *target)
   return &target->path;
 }
 
-int make_string_set_path(struct make_target *target, const struct make_string *path) {
+int make_target_set_path(struct make_target *target, const struct make_string *path) {
 
   int err;
 

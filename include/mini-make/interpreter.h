@@ -19,10 +19,12 @@
 #ifndef MINI_MAKE_INTERPRETER_H
 #define MINI_MAKE_INTERPRETER_H
 
+#include <mini-make/ihooks.h>
 #include <mini-make/job-manager.h>
 #include <mini-make/parser.h>
 #include <mini-make/string.h>
 #include <mini-make/table.h>
+#include <mini-make/target.h>
 
 #include <stdio.h>
 
@@ -31,10 +33,14 @@ extern "C" {
 #endif
 
 struct make_interpreter {
+  /** Interpreter hooks. */
+  struct make_ihooks hooks;
   /** Contains processes started from
    * recipes. */
   struct make_job_manager job_manager;
-  struct make_string target;
+  /** @brief The target that the interpreter
+   * is building. */
+  struct make_target target;
   struct make_parser parser;
   /** @brief Stores all the variables
    * from the assignment statements. */
@@ -83,6 +89,9 @@ int make_interpreter_read(struct make_interpreter *interpreter,
                           const char *filename);
 
 int make_interpreter_run(struct make_interpreter *interpreter);
+
+void make_interpreter_set_hooks(struct make_interpreter *interpreter,
+                                const struct make_ihooks *hooks);
 
 int make_interpreter_set_target(struct make_interpreter *interpreter,
                                 const struct make_string *target);

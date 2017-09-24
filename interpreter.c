@@ -152,7 +152,7 @@ static int on_target(void *data, const struct make_string *target) {
     }
   }
 
-  if (make_string_equal(&interpreter->target, &evaluated_target)) {
+  if (make_string_equal(&interpreter->target.path, &evaluated_target)) {
     interpreter->target_found = 1;
     interpreter->target_found_once = 1;
   }
@@ -360,7 +360,8 @@ void make_interpreter_init(struct make_interpreter *interpreter) {
   struct make_parser *parser;
   struct make_phooks *phooks;
 
-  make_string_init(&interpreter->target);
+  make_ihooks_init(&interpreter->hooks);
+  make_target_init(&interpreter->target);
   make_parser_init(&interpreter->parser);
   make_table_init(&interpreter->table);
   make_job_manager_init(&interpreter->job_manager);
@@ -395,7 +396,7 @@ void make_interpreter_init(struct make_interpreter *interpreter) {
 }
 
 void make_interpreter_free(struct make_interpreter *interpreter) {
-  make_string_free(&interpreter->target);
+  make_target_free(&interpreter->target);
   make_parser_free(&interpreter->parser);
   make_table_free(&interpreter->table);
   make_job_manager_free(&interpreter->job_manager);
@@ -408,7 +409,7 @@ int make_interpreter_define(struct make_interpreter *interpreter,
 }
 
 int make_interpreter_has_target(const struct make_interpreter *interpreter) {
-  if (interpreter->target.size == 0)
+  if (interpreter->target.path.size == 0)
     return 0;
   else
     return 1;
@@ -435,44 +436,54 @@ int make_interpreter_run(struct make_interpreter *interpreter) {
    && !interpreter->target_exists) {
     fprintf(interpreter->errlog,
             "No rule to make target '%s'\n",
-            interpreter->target.data);
+            interpreter->target.path.data);
     return -EINVAL;
   }
 
   return 0;
 }
 
+void make_interpreter_set_hooks(struct make_interpreter *interpreter,
+                                const struct make_ihooks *hooks) {
+  interpreter->hooks = *hooks;
+}
+
 int make_interpreter_set_target(struct make_interpreter *interpreter,
-                                const struct make_string *target) {
+                                const struct make_string *target_path) {
 
   int err;
   struct stat target_stat;
 
-  make_string_free(&interpreter->target);
+  make_target_free(&interpreter->target);
+  make_target_init(&interpreter->target);
 
-  err = make_string_copy(target, &interpreter->target);
+  err = make_target_set_path(&interpreter->target, target_path);
   if (err)
     return err;
 
-  err = make_table_set_target(&interpreter->table, target);
+  err = make_table_set_target(&interpreter->table, target_path);
   if (err)
     return err;
 
-  err = stat(interpreter->table.target.data, &target_stat);
+  err = stat(interpreter->target.path.data, &target_stat);
   if (err) {
     if (errno == ENOENT)
       interpreter->target_exists = 0;
     else {
       fprintf(interpreter->errlog,
               "Failed to stat '%.*s'\n", 
-              (int) target->size,
-              target->data);
+              (int) interpreter->target.path.size,
+              interpreter->target.path.data);
       return -errno;
     }
   } else {
     interpreter->target_exists = 1;
     interpreter->target_mtime = target_stat.st_mtime;
   }
+
+  err = make_ihooks_notify_target(&interpreter->hooks, &interpreter->target);
+  if (err)
+    return err;
 
   return 0;
 }
