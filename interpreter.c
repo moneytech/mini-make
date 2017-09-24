@@ -427,6 +427,10 @@ int make_interpreter_run(struct make_interpreter *interpreter) {
   if (err)
     return err;
 
+  err = make_job_manager_wait_for_all(&interpreter->job_manager);
+  if (err)
+    return err;
+
   if (!interpreter->target_found_once
    && !interpreter->target_exists) {
     fprintf(interpreter->errlog,
