@@ -31,6 +31,12 @@ static int on_assignment_stmt(void *data, const struct make_assignment_stmt *ass
   return make_success;
 }
 
+static int on_comment(void *data, const struct make_string *comment) {
+  (void) data;
+  (void) comment;
+  return make_success;
+}
+
 static int on_include_stmt(void *data, const struct make_include_stmt *include_stmt) {
   (void) data;
   (void) include_stmt;
@@ -88,6 +94,7 @@ static void on_missing_separator(void *data, const struct make_location *locatio
 void make_listener_init(struct make_listener *listener) {
   memset(listener, 0, sizeof(*listener));
   listener->on_assignment_stmt = on_assignment_stmt;
+  listener->on_comment = on_comment;
   listener->on_include_stmt = on_include_stmt;
   listener->on_rule_start = on_rule_start;
   listener->on_rule_finish = on_rule_finish;

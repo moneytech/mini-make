@@ -37,6 +37,8 @@ struct make_listener {
    * is found. */
   int (*on_assignment_stmt)(void *user_data,
                             const struct make_assignment_stmt *assignment_stmt);
+  /** @brief Executed when a comment is found. */
+  int (*on_comment)(void *user_data, const struct make_string *comment);
   /** @brief Executed when an include statement
    * is found. */
   int (*on_include_stmt)(void *user_data,
