@@ -31,6 +31,12 @@ static int on_assignment_stmt(void *data, const struct make_assignment_stmt *ass
   return make_success;
 }
 
+static int on_comment(void *data, const struct make_string *comment) {
+  (void) data;
+  (void) comment;
+  return make_success;
+}
+
 static int on_include_stmt(void *data, const struct make_include_stmt *include_stmt) {
   (void) data;
   (void) include_stmt;

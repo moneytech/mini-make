@@ -20,6 +20,7 @@
 
 #include <mini-make/assignment-stmt.h>
 #include <mini-make/command.h>
+#include <mini-make/error.h>
 #include <mini-make/include-stmt.h>
 #include <mini-make/location.h>
 #include <mini-make/phooks.h>
@@ -285,10 +286,17 @@ static int assignment_stmt(struct make_parser *parser,
 static int comment(struct make_parser *parser,
                    unsigned long int i,
                    unsigned long int *j) {
+
+  int err;
   char c;
   struct make_string *source;
+  struct make_string comment;
+
   source = &parser->source;
   while (i < source->size) {
+
+    make_string_init(&comment);
+
     c = source->data[i];
     if (make_is_space(c)) {
       i++;
@@ -296,15 +304,23 @@ static int comment(struct make_parser *parser,
     } else if (c != '#') {
       break;
     }
-    /* Found a comment.
-     * Move the parser passed
-     * the comment. */
+
+    /* Found a comment. */
+
+    comment.data = &source->data[i];
+
     while (i < source->size) {
       c = source->data[i];
       if (c == '\n')
         break;
+      comment.size++;
       i++;
     }
+
+    err = parser->listener.on_comment(parser->listener.user_data, &comment);
+    if (err != make_success)
+      return err;
+
     i++;
   }
   *j = i;
