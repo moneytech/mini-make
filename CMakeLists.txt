@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.6)
 
 project("mini-make" C)
 
-include_directories("include")
+add_subdirectory("examples")
 
 if ("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU")
   set (CMAKE_C_FLAGS "-Wall -Wextra -Werror -Wfatal-errors")
@@ -51,6 +51,8 @@ add_library("make" STATIC
   "${INCDIR}/thread-callback.h"
   "${SRCDIR}/var.c"
   "${INCDIR}/var.h")
+
+target_include_directories("make" PUBLIC "${PROJECT_SOURCE_DIR}/include")
 
 add_executable("mini-make" "mini-make.c")
 
