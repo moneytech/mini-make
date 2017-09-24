@@ -5,6 +5,10 @@ CC = gcc
 CFLAGS = -Wall -Wextra -Werror -Wfatal-errors
 CFLAGS += -Iinclude
 
+tests += interpreter-test
+tests += parser-test
+tests += table-test
+
 .PHONY: all
 all: mini-make
 
@@ -15,7 +19,10 @@ clean:
 	$(RM) mini-make
 
 .PHONY: test
-test:
+test: $(tests)
+	./interpreter-test
+	./parser-test --makefile test.mk
+	./table-test
 
 .PHONY: install
 install: mini-make
@@ -66,4 +73,10 @@ table.o: table.c
 table-test.o: table-test.c
 
 var.o: var.c
+
+interpreter-test: interpreter-test.o -lmake
+
+parser-test: parser-test.o -lmake
+
+table-test: table-test.o -lmake
 
