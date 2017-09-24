@@ -18,9 +18,36 @@
 
 #include <mini-make/ihooks.h>
 
+#include <mini-make/error.h>
+
 #include <stdlib.h>
 
 void make_ihooks_init(struct make_ihooks *ihooks) {
   ihooks->data = NULL;
+}
+
+int make_ihooks_notify_target(struct make_ihooks *ihooks,
+                              const struct make_target *target) {
+  if (ihooks->on_target != NULL)
+    return ihooks->on_target(ihooks->data, target);
+  else
+    return make_success;
+}
+
+int make_ihooks_notify_target_expired(struct make_ihooks *ihooks,
+                                      const struct make_target *target) {
+  if (ihooks->on_target != NULL)
+    return ihooks->on_target_expired(ihooks->data, target);
+  else
+    return make_success;
+}
+
+int make_ihooks_notify_command(struct make_ihooks *ihooks,
+                               const struct make_target *target,
+                               const struct make_command *command) {
+  if (ihooks->on_target != NULL)
+    return ihooks->on_command(ihooks->data, target, command);
+  else
+    return make_success;
 }
 

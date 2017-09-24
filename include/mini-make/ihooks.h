@@ -23,14 +23,39 @@
 extern "C" {
 #endif
 
+struct make_command;
+struct make_target;
+
 /** @brief Makefile interpreter hooks. */
 struct make_ihooks {
   /** @brief Used for passing custom data to the
    * callback functions. */
   void *data;
+  /** @brief Called when the interpreter begins building a target. */
+  int (*on_target)(void *data, const struct make_target *target);
+  /** @brief Called when a target has been determined to be expired. */
+  int (*on_target_expired)(void *data, const struct make_target *target);
+  /** @brief Called when the interpreter determines a command should run. */
+  int (*on_command)(void *data,
+                    const struct make_target *target,
+                    const struct make_command *command);
 };
 
+/** Initializes all hooks. */
 void make_ihooks_init(struct make_ihooks *ihooks);
+
+/** Notifies hooks that the interpreter is building a new target. */
+int make_ihooks_notify_target(struct make_ihooks *ihooks,
+                              const struct make_target *target);
+
+/** Notifies hooks that the target is expired. */
+int make_ihooks_notify_target_expired(struct make_ihooks *ihooks,
+                                      const struct make_target *target);
+
+/** Notifies hooks that a command should be run. */
+int mkae_ihooks_notify_command(struct make_ihooks *ihooks,
+                               const struct make_target *target,
+                               const struct make_command *command);
 
 #ifdef __cplusplus
 } /* extern "C" */
