@@ -2,6 +2,11 @@ cmake_minimum_required(VERSION 2.6)
 
 project("mini-make" C)
 
+set (MINI_MAKE_VERSION "0.2.0")
+set (MINI_MAKE_VERISON_MAJOR 0)
+set (MINI_MAKE_VERSION_MINOR 2)
+set (MINI_MAKE_VERSION_PATCH 0)
+
 add_subdirectory("examples")
 
 if ("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU")
@@ -90,15 +95,31 @@ enable_testing()
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/MiniMakeConfig.cmake.in"
   "${CMAKE_CURRENT_BINARY_DIR}/MiniMakeConfig.cmake" @ONLY)
 
-install(FILES "${CMAKE_CURRENT_BINARY_DIR}/MiniMakeConfig.cmake"
-  DESTINATION "lib/mini-make")
+configure_file("${CMAKE_CURRENT_SOURCE_DIR}/MiniMakeConfigVersion.cmake.in"
+  "${CMAKE_CURRENT_BINARY_DIR}/MiniMakeConfigVersion.cmake" @ONLY)
+
+if (WIN32)
+  install(FILES
+      "${CMAKE_CURRENT_BINARY_DIR}/MiniMakeConfig.cmake"
+      "${CMAKE_CURRENT_BINARY_DIR}/MiniMakeConfigVersion.cmake"
+    DESTINATION
+      "cmake")
+endif (WIN32)
+
+if (UNIX)
+  install(FILES
+      "${CMAKE_CURRENT_BINARY_DIR}/MiniMakeConfig.cmake"
+      "${CMAKE_CURRENT_BINARY_DIR}/MiniMakeConfigVersion.cmake"
+    DESTINATION
+      "share/MiniMake/cmake")
+endif (UNIX)
 
 set (CPACK_PACKAGE_NAME "Mini Make")
 set (CPACK_PACKAGE_DESCRIPTION_SUMMARY "A miniature implementation of Make.")
 set (CPACK_PACKAGE_VENDOR "Taylor Holberton")
-set (CPACK_PACKAGE_VERSION_MAJOR 0)
-set (CPACK_PACKAGE_VERSION_MINOR 1)
-set (CPACK_PACKAGE_VERSION_PATCH 1)
+set (CPACK_PACKAGE_VERSION_MAJOR ${MINI_MAKE_VERSION_MAJOR})
+set (CPACK_PACKAGE_VERSION_MINOR ${MINI_MAKE_VERSION_MINOR})
+set (CPACK_PACKAGE_VERSION_PATCH ${MINI_MAKE_VERSION_PATCH})
 set (CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
 set (CPACK_PACKAGE_CONTACT "taylorcholberton@gmail.com")
 
