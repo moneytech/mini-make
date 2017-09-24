@@ -123,11 +123,12 @@ int main(int argc, char **argv) {
     }
   }
 
+  make_interpreter_init(&interpreter);
+
   if (options.jobs > 1) {
     fprintf(stderr, "Warning: multiple jobs are not currently supported\n");
+    interpreter.job_manager.job_max = options.jobs;
   }
-
-  make_interpreter_init(&interpreter);
 
   if (options.just_print)
     interpreter.just_print = 1;
