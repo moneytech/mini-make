@@ -51,19 +51,31 @@ add_library("make" STATIC
   "${INCDIR}/thread-callback.h"
   "${SRCDIR}/var.c"
   "${INCDIR}/var.h")
-
-target_include_directories("make" PUBLIC "${PROJECT_SOURCE_DIR}/include")
+target_include_directories("make" INTERFACE "${CMAKE_INSTALL_PREFIX}/include")
+target_include_directories("make" PRIVATE "include")
 
 add_executable("mini-make" "mini-make.c")
-
+target_include_directories("mini-make" PRIVATE "include")
 target_link_libraries("mini-make" "make")
 
-install(TARGETS "mini-make"
-  RUNTIME DESTINATION "bin")
+install(DIRECTORY "include/mini-make"
+  DESTINATION "include"
+  FILES_MATCHING PATTERN "*.h")
+
+install(TARGETS "mini-make" "make"
+  EXPORT "MiniMakeTargets"
+  RUNTIME DESTINATION "bin"
+  LIBRARY DESTINATION "lib"
+  ARCHIVE DESTINATION "lib"
+  PUBLIC_HEADER DESTINATION "include/mini-make")
+
+install(EXPORT "MiniMakeTargets"
+  DESTINATION "lib/mini-make")
 
 function(ADD_MAKE_TEST TEST_NAME)
   add_executable(${TEST_NAME} ${ARGN})
   target_link_libraries(${TEST_NAME} "make")
+  target_include_directories(${TEST_NAME} PRIVATE "include")
   add_test(${TEST_NAME} ${TEST_NAME})
 endfunction(ADD_MAKE_TEST TEST_NAME)
 
@@ -74,6 +86,12 @@ add_make_test("interpreter-test" "interpreter-test.c")
 add_subdirectory("testing")
 
 enable_testing()
+
+configure_file("${CMAKE_CURRENT_SOURCE_DIR}/MiniMakeConfig.cmake.in"
+  "${CMAKE_CURRENT_BINARY_DIR}/MiniMakeConfig.cmake" @ONLY)
+
+install(FILES "${CMAKE_CURRENT_BINARY_DIR}/MiniMakeConfig.cmake"
+  DESTINATION "lib/mini-make")
 
 set (CPACK_PACKAGE_NAME "Mini Make")
 set (CPACK_PACKAGE_DESCRIPTION_SUMMARY "A miniature implementation of Make.")
