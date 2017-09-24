@@ -24,6 +24,9 @@ SOURCES += "error.c"
 HEADERS += "include/mini-make/interpreter.h"
 SOURCES += "interpreter.c"
 
+HEADERS += "include/mini-make/ihooks.h"
+SOURCES += "ihooks.c"
+
 HEADERS += "include/mini-make/job.h"
 SOURCES += "job.c"
 

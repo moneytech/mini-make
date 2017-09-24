@@ -40,16 +40,14 @@ mini-make: mini-make.o libmake.a
 libmake.a: chdir.o \
            error.o \
            interpreter.o \
-           interpreter-test.o \
+           ihooks.o \
            job.o \
            job-manager.o \
            phooks.o \
            mini-make.o \
            parser.o \
-           parser-test.o \
            string.o \
            table.o \
-           table-test.o \
            var.o
 	$(AR) $(ARFLAGS) $@ $^
 
@@ -58,6 +56,8 @@ chdir.o: chdir.c
 error.o: error.c
 
 interpreter.o: interpreter.c
+
+ihooks.o: ihooks.c
 
 interpreter-test.o: interpreter-test.c
 

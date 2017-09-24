@@ -39,6 +39,8 @@ add_library("make" STATIC
   "${INCDIR}/error.h"
   "${SRCDIR}/interpreter.c"
   "${INCDIR}/interpreter.h"
+  "${SRCDIR}/ihooks.c"
+  "${INCDIR}/ihooks.h"
   "${SRCDIR}/job.c"
   "${INCDIR}/job.h"
   "${SRCDIR}/job-manager.c"
