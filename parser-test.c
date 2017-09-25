@@ -20,6 +20,7 @@
 
 #include <mini-make/assignment-stmt.h>
 #include <mini-make/command.h>
+#include <mini-make/error.h>
 #include <mini-make/include-stmt.h>
 #include <mini-make/listener.h>
 #include <mini-make/location.h>
@@ -30,6 +31,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+#ifndef TESTING_DIR
+#define TESTING_DIR "testing"
+#endif
 
 struct test_data {
   const char *makefile_path;
@@ -274,7 +279,7 @@ int main(int argc, const char **argv) {
   }
 
   if (makefile_path == NULL)
-    makefile_path = "../test.mk";
+    makefile_path = TESTING_DIR "/makefiles/test1/Makefile";
 
   test_data.makefile_path = makefile_path;
   test_data.targets_found = 0;
@@ -304,7 +309,7 @@ int main(int argc, const char **argv) {
   parser.hooks.on_missing_separator = on_missing_separator;
 
   err = make_parser_run(&parser);
-  assert(err == -EINVAL);
+  assert(err == make_failure);
 
   make_parser_free(&parser);
 
