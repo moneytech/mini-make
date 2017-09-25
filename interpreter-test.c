@@ -49,10 +49,18 @@ static int on_target(void *data_ptr, const struct make_target *target) {
     assert(target->path.size == 2);
     assert(memcmp(target->path.data, "p1", 2) == 0);
   } else if (data->targets_found == 2) {
+    /* t1 */
+    assert(target->path.size == 2);
+    assert(memcmp(target->path.data, "t1", 2) == 0);
+  } else if (data->targets_found == 3) {
     /* p2 */
     assert(target->path.size == 2);
     printf("%.*s\n", (int) target->path.size, target->path.data);
     assert(memcmp(target->path.data, "p2", 2) == 0);
+  } else if (data->targets_found == 4) {
+    /* t1 */
+    assert(target->path.size == 2);
+    assert(memcmp(target->path.data, "t1", 2) == 0);
   } else {
     return make_failure;
   }
@@ -85,15 +93,17 @@ int main(void) {
 
   make_interpreter_init(&interpreter);
 
+  interpreter.just_print = 1;
+
   make_interpreter_set_hooks(&interpreter, &hooks);
 
   err = make_interpreter_read(&interpreter, makefile_name);
   assert(err == make_success);
 
   err = make_interpreter_run(&interpreter);
-  assert(err == make_failure);
+  assert(err == make_success);
 
-  assert(data.targets_found == 3);
+  assert(data.targets_found == 5);
 
   make_interpreter_free(&interpreter);
 
