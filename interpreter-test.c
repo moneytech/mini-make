@@ -18,18 +18,84 @@
 
 #include <mini-make/interpreter.h>
 
-#include <mini-make/table.h>
+#include <mini-make/chdir.h>
+#include <mini-make/error.h>
 
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+
+#ifndef TESTING_DIR
+#define TESTING_DIR "testing"
+#endif
+
+struct test_data {
+  int targets_found;
+};
+
+static int on_target(void *data_ptr, const struct make_target *target) {
+
+  struct test_data *data;
+
+  data = (struct test_data *) data_ptr;
+
+  if (data->targets_found == 0) {
+    /* t1 */
+    assert(target->path.size == 2);
+    assert(memcmp(target->path.data, "t1", 2) == 0);
+  } else if (data->targets_found == 1) {
+    /* p1 */
+    assert(target->path.size == 2);
+    assert(memcmp(target->path.data, "p1", 2) == 0);
+  } else if (data->targets_found == 2) {
+    /* p2 */
+    assert(target->path.size == 2);
+    printf("%.*s\n", (int) target->path.size, target->path.data);
+    assert(memcmp(target->path.data, "p2", 2) == 0);
+  } else {
+    return make_failure;
+  }
+
+  data->targets_found++;
+
+  return make_success;
+}
 
 int main(void) {
 
-  struct make_table table;
+  int err;
+  const char *makefile_name = "Makefile";
+  const char *makefile_dir = TESTING_DIR "/makefiles/test2";
+  struct test_data data;
+  struct make_ihooks hooks;
+  struct make_interpreter interpreter;
 
-  make_table_init(&table);
+  err = make_chdir(makefile_dir);
+  if (err) {
+    fprintf(stderr, "Failed to change directory to '%s': %s\n", makefile_dir, strerror(-err));
+    return EXIT_FAILURE;
+  }
 
-  make_table_free(&table);
+  data.targets_found = 0;
+
+  make_ihooks_init(&hooks);
+  hooks.data = &data;
+  hooks.on_target = on_target;
+
+  make_interpreter_init(&interpreter);
+
+  make_interpreter_set_hooks(&interpreter, &hooks);
+
+  err = make_interpreter_read(&interpreter, makefile_name);
+  assert(err == make_success);
+
+  err = make_interpreter_run(&interpreter);
+  assert(err == make_failure);
+
+  assert(data.targets_found == 3);
+
+  make_interpreter_free(&interpreter);
 
   return EXIT_SUCCESS;
 }
