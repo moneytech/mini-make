@@ -85,6 +85,8 @@ function(ADD_MAKE_TEST TEST_NAME)
   add_executable(${TEST_NAME} ${ARGN})
   target_link_libraries(${TEST_NAME} "make")
   target_include_directories(${TEST_NAME} PRIVATE "include")
+  target_compile_definitions(${TEST_NAME} PRIVATE
+    "-DTESTING_DIR=\"${PROJECT_SOURCE_DIR}/testing\"")
   add_test(${TEST_NAME} ${TEST_NAME})
 endfunction(ADD_MAKE_TEST TEST_NAME)
 
