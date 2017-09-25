@@ -24,6 +24,9 @@
 
 void make_ihooks_init(struct make_ihooks *ihooks) {
   ihooks->data = NULL;
+  ihooks->on_target = NULL;
+  ihooks->on_target_expired = NULL;
+  ihooks->on_command = NULL;
 }
 
 int make_ihooks_notify_target(struct make_ihooks *ihooks,
