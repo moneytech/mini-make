@@ -33,6 +33,8 @@ set (SRCDIR "${CMAKE_CURRENT_SOURCE_DIR}")
 set (INCDIR "${CMAKE_CURRENT_SOURCE_DIR}/include/mini-make")
 
 add_library("make" STATIC
+  "${SRCDIR}/buffer.c"
+  "${INCDIR}/buffer.h"
   "${SRCDIR}/chdir.c"
   "${INCDIR}/chdir.h"
   "${SRCDIR}/error.c"
@@ -49,6 +51,8 @@ add_library("make" STATIC
   "${INCDIR}/phooks.h"
   "${SRCDIR}/parser.c"
   "${INCDIR}/parser.h"
+  "${SRCDIR}/protocol.c"
+  "${INCDIR}/protocol.h"
   "${SRCDIR}/string.c"
   "${INCDIR}/string.h"
   "${SRCDIR}/table.c"
