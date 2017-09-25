@@ -19,6 +19,7 @@
 #include <mini-make/interpreter.h>
 
 #include <mini-make/command.h>
+#include <mini-make/error.h>
 #include <mini-make/include-stmt.h>
 #include <mini-make/phooks.h>
 #include <mini-make/location.h>
@@ -312,12 +313,20 @@ static int on_include_stmt(void *data, const struct make_include_stmt *include_s
   make_parser_init(&new_parser);
   err = make_parser_read(&new_parser, path.data);
   if (err) {
-    fprintf(interpreter->errlog,
-            "Failed to open '%s'\n",
-            path.data);
-    make_string_free(&path);
-    make_parser_free(&new_parser);
-    return err;
+    if (include_stmt->ignore_error) {
+      /* This include file may be skipped if it doesn't
+       * exist. */
+      make_string_free(&path);
+      make_parser_free(&new_parser);
+      return make_success;
+    } else {
+      fprintf(interpreter->errlog,
+              "Failed to open '%s'\n",
+              path.data);
+      make_string_free(&path);
+      make_parser_free(&new_parser);
+      return err;
+    }
   }
   make_string_free(&path);
 
