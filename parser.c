@@ -179,7 +179,7 @@ static int assignment_stmt(struct make_parser *parser,
 
   if (key.size == 0)
     /* A key was not found */
-    return 0;
+    return make_success;
 
   /* This loop parses the assignment
    * statement's opertion */
@@ -188,7 +188,7 @@ static int assignment_stmt(struct make_parser *parser,
     if (c == '\n') {
       /* If a newline is found here, then
        * this is not an assignment statement. */
-      return 0;
+      return make_success;
     } else if (make_is_space(c)) {
       i++;
       continue;
@@ -203,12 +203,12 @@ static int assignment_stmt(struct make_parser *parser,
       if (i >= source->size) {
         /* Unexpected end of file. */
         phooks->on_unexpected_eof(phooks->data);
-        return -EINVAL;
+        return make_failure;
       } else if (source->data[i] != '=') {
         /* If a '=' wasn't following then this
          * is not an operation (and therefore,
          * not an assignment statement). */
-        return 0;
+        return make_success;
       } else if (c == '+') {
         assignment_stmt.operation = MINI_MAKE_OPERATION_APPEND;
         i++;
@@ -223,14 +223,14 @@ static int assignment_stmt(struct make_parser *parser,
         break;
       } else {
         /* Unreachable */
-        return -EINVAL;
+        return make_failure;
       }
 
     } else {
       /* Unexpected character, this is
        * must not be an assignment
        * statement. */
-      return 0;
+      return make_success;
     }
   }
 
@@ -280,7 +280,7 @@ static int assignment_stmt(struct make_parser *parser,
 
   *j = i;
 
-  return 0;
+  return make_success;
 }
 
 static int comment(struct make_parser *parser,
@@ -324,7 +324,7 @@ static int comment(struct make_parser *parser,
     i++;
   }
   *j = i;
-  return 0;
+  return make_success;
 }
 
 static int include_stmt(struct make_parser *parser,
@@ -365,14 +365,14 @@ static int include_stmt(struct make_parser *parser,
       if ((memcmp(&source->data[i], "include", 7) != 0)
        || (!make_is_space(source->data[i + 7]))) {
         /* This was not an include statement. */
-        return 0;
+        return make_success;
       }
       /* A 'include' keyword was found. Move passed
        * it and start parsing include paths */
       i += sizeof("include");
     } else {
       /* This was not an include statement */
-      return 0;
+      return make_success;
     }
 
     /* Parse actual include paths */
@@ -416,7 +416,7 @@ static int include_stmt(struct make_parser *parser,
    * at a new index.  */
   *j = i;
 
-  return 0;
+  return make_success;
 }
 
 static int rule(struct make_parser *parser,
@@ -447,7 +447,7 @@ static int rule(struct make_parser *parser,
     c = source->data[i];
     if (c == '\n') {
       missing_separator(parser, i);
-      return -EINVAL;
+      return make_failure;
     } else if (make_is_space(c)) {
       i++;
       continue;
@@ -469,7 +469,7 @@ static int rule(struct make_parser *parser,
         return err;
     } else {
       unexpected_char(parser, i);
-      return -EINVAL;
+      return make_failure;
     }
   }
 
@@ -530,7 +530,7 @@ static int rule(struct make_parser *parser,
         return err;
     } else {
       unexpected_char(parser, i);
-      return -EINVAL;
+      return make_failure;
     }
   }
 
@@ -582,7 +582,7 @@ static int rule(struct make_parser *parser,
 
   *j = i;
 
-  return 0;
+  return make_success;
 }
 
 void make_parser_init(struct make_parser *parser) {
@@ -610,33 +610,30 @@ int make_parser_read(struct make_parser *parser,
 
   file = fopen(filename, "r");
   if (file == NULL)
-    return -ENOENT;
+    return make_failure;
 
   err = fseek(file, 0, SEEK_END);
   if (err < 0) {
-    err = -errno;
     fclose(file);
-    return err;
+    return make_failure;
   }
 
   file_pos = ftell(file);
   if (file_pos < 0) {
-    err = -errno;
     fclose(file);
-    return err;
+    return make_failure;
   }
 
   err = fseek(file, 0, SEEK_SET);
   if (err < 0) {
-    err = -errno;
     fclose(file);
-    return err;
+    return make_failure;
   }
 
   parser->source.data = malloc(file_pos + 1);
   if (parser->source.data == NULL) {
     fclose(file);
-    return -ENOMEM;
+    return make_failure;
   }
 
   parser->source.size = fread(parser->source.data,
@@ -646,7 +643,7 @@ int make_parser_read(struct make_parser *parser,
 
   fclose(file);
 
-  return 0;
+  return make_success;
 }
 
 int make_parser_run(struct make_parser *parser) {
@@ -693,6 +690,6 @@ int make_parser_run(struct make_parser *parser) {
     }
   }
 
-  return 0;
+  return make_success;
 }
 
