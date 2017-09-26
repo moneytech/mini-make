@@ -30,6 +30,8 @@ struct make_buffer;
 struct make_protocol {
   /** @brief Protocol implementation data. */
   void *data;
+  /** @brief Releases resources allocated by protocol. */
+  void (*done)(void *protocol_data);
   /** @brief The callback function that receives the request. */
   int (*request)(void *protocol_data,
                  const struct make_buffer *buffer);
@@ -40,11 +42,16 @@ struct make_protocol {
 
 void make_protocol_init(struct make_protocol *protocol);
 
+void make_protocol_done(struct make_protocol *protocol);
+
 int make_protocol_request(struct make_protocol *protocol,
                           const struct make_buffer *buffer);
 
 int make_protocol_reply(struct make_protocol *protocol,
                         struct make_buffer *buffer);
+
+int make_protocol_set_version(struct make_protocol *protocol,
+                              unsigned int version);
 
 #ifdef __cplusplus
 } /* extern "C" { */

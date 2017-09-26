@@ -22,10 +22,18 @@
 
 #include <stdlib.h>
 
+#include "protocol-0.h"
+
 void make_protocol_init(struct make_protocol *protocol) {
   protocol->data = NULL;
+  protocol->done = NULL;
   protocol->request = NULL;
   protocol->reply = NULL;
+}
+
+void make_protocol_done(struct make_protocol *protocol) {
+  if (protocol->done != NULL)
+    protocol->done(protocol->data);
 }
 
 int make_protocol_request(struct make_protocol *protocol,
@@ -44,5 +52,16 @@ int make_protocol_reply(struct make_protocol *protocol,
     return make_failure;
   else
     return protocol->reply(protocol->data, reply);
+}
+
+int make_protocol_set_version(struct make_protocol *protocol,
+                              unsigned int version) {
+  switch (version) {
+    case 0:
+      return make_protocol_0(protocol);
+    default:
+      return make_failure;
+  }
+  return make_success;
 }
 

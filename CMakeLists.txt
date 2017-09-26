@@ -53,6 +53,8 @@ add_library("make" STATIC
   "${INCDIR}/parser.h"
   "${SRCDIR}/protocol.c"
   "${INCDIR}/protocol.h"
+  "${SRCDIR}/protocol-0.c"
+  "${SRCDIR}/protocol-0.h"
   "${SRCDIR}/string.c"
   "${INCDIR}/string.h"
   "${SRCDIR}/table.c"
