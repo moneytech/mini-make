@@ -7,6 +7,9 @@ set (MINI_MAKE_VERISON_MAJOR 0)
 set (MINI_MAKE_VERSION_MINOR 2)
 set (MINI_MAKE_VERSION_PATCH 0)
 
+list (APPEND CMAKE_MODULE_PATH
+  "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+
 add_subdirectory("examples")
 
 if ("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU")
@@ -55,6 +58,10 @@ add_library("make" STATIC
   "${INCDIR}/protocol.h"
   "${SRCDIR}/protocol-0.c"
   "${SRCDIR}/protocol-0.h"
+  "${EXTDIR}/client.c"
+  "${INCDIR}/client.h"
+  "${EXTDIR}/server.c"
+  "${INCDIR}/server.h"
   "${SRCDIR}/string.c"
   "${INCDIR}/string.h"
   "${SRCDIR}/table.c"
@@ -72,6 +79,10 @@ target_include_directories("make" PRIVATE "include")
 add_executable("mini-make" "mini-make.c")
 target_include_directories("mini-make" PRIVATE "include")
 target_link_libraries("mini-make" "make")
+
+add_executable("mini-make-server" "mini-make-server.c")
+target_include_directories("mini-make-server" PRIVATE "include")
+target_link_libraries("mini-make-server" "make" ${UV_LIBRARIES})
 
 install(DIRECTORY "include/mini-make"
   DESTINATION "include"
