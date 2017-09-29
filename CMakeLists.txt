@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 2.6)
 
+cmake_policy(SET CMP0054 NEW)
+
 project("mini-make" C)
 
 set (MINI_MAKE_VERSION "0.2.0")

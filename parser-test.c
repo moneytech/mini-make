@@ -22,7 +22,7 @@
 #include <mini-make/command.h>
 #include <mini-make/error.h>
 #include <mini-make/include-stmt.h>
-#include <mini-make/listener.h>
+#include <mini-make/phooks.h>
 #include <mini-make/location.h>
 #include <mini-make/string.h>
 

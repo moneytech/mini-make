@@ -17,7 +17,6 @@
  */
 
 #include <mini-make/chdir.h>
-#include <mini-make/listener.h>
 #include <mini-make/interpreter.h>
 #include <mini-make/options.h>
 #include <mini-make/parser.h>
