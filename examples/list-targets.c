@@ -44,12 +44,17 @@ int main(int argc, const char **argv) {
   int i;
   int err;
 
+  if (argc == 1) {
+    fprintf(stderr, "No files specified.\n");
+    return EXIT_FAILURE;
+  }
+
   for (i = 1; i < argc; i++) {
     err = list_targets_of(argv[i]);
     if (err)
-      return err;
+      return EXIT_FAILURE;
   }
 
-  return 0;
+  return EXIT_SUCCESS;
 }
 
