@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.6)
 
 cmake_policy(SET CMP0054 NEW)
 
-project("mini-make" C)
+project("mini-make")
 
 set (MINI_MAKE_VERSION "0.2.0")
 set (MINI_MAKE_VERISON_MAJOR 0)
@@ -85,6 +85,17 @@ target_link_libraries("mini-make" "make")
 add_executable("mini-make-server" "mini-make-server.c")
 target_include_directories("mini-make-server" PRIVATE "include")
 target_link_libraries("mini-make-server" "make" ${UV_LIBRARIES})
+
+find_package(Qt5Widgets)
+if (Qt5Widgets_FOUND)
+  set (CMAKE_AUTOMOC ON)
+  set (CMAKE_INCLUDE_CURRENT_DIR ON)
+  add_executable("mini-make-gui" WIN32
+    "mini-make-gui.hpp"
+    "mini-make-gui.cpp")
+  target_include_directories("mini-make-gui" PRIVATE "include")
+  target_link_libraries("mini-make-gui" "make" Qt5::Widgets)
+endif (Qt5Widgets_FOUND)
 
 install(DIRECTORY "include/mini-make"
   DESTINATION "include"
