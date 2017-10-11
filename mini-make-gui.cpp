@@ -294,13 +294,13 @@ void CentralWidget::createButtons() {
 void CentralWidget::createLayout() {
   layout = new QGridLayout(this);
   // row, column, row span, column span
-  layout->addWidget(variablesWidget, 0, 0, 1, 4);
-  layout->addWidget(targetsWidget,   1, 0, 1, 4);
-  layout->addWidget(terminalWidget,  0, 4, 2, 4);
-  layout->addWidget(buildButton,     2, 0);
-  layout->addWidget(cleanButton,     2, 1);
-  layout->addWidget(testButton,      2, 2);
-  layout->addWidget(installButton,   2, 3);
+  layout->addWidget(variablesWidget, 0, 0, 1, 6);
+  layout->addWidget(targetsWidget,   1, 0, 1, 6);
+  layout->addWidget(terminalWidget,  0, 6, 2, 4);
+  layout->addWidget(buildButton,     2, 1);
+  layout->addWidget(cleanButton,     2, 2);
+  layout->addWidget(testButton,      2, 3);
+  layout->addWidget(installButton,   2, 4);
   setLayout(layout);
 }
 
