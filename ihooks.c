@@ -48,7 +48,7 @@ int make_ihooks_notify_target_expired(struct make_ihooks *ihooks,
 int make_ihooks_notify_command(struct make_ihooks *ihooks,
                                const struct make_target *target,
                                const struct make_command *command) {
-  if (ihooks->on_target != NULL)
+  if (ihooks->on_command != NULL)
     return ihooks->on_command(ihooks->data, target, command);
   else
     return make_success;
