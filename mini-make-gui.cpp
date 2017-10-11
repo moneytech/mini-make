@@ -23,6 +23,7 @@
 #include <mini-make/ihooks.h>
 #include <mini-make/interpreter.h>
 
+#include <QClipboard>
 #include <QKeySequence>
 
 #include <iostream>
@@ -67,14 +68,108 @@ int main(int argc, char **argv) {
 
 namespace mini_make {
 
+AboutWidget::AboutWidget(QWidget *parent) : QWidget(parent) {
+  setWindowTitle("Mini Make - About");
+  createTextEdit();
+  createButtons();
+  createLayout();
+}
+AboutWidget::~AboutWidget() {
+
+}
+void AboutWidget::createButtons() {
+  okayButton = new QPushButton(this);
+  okayButton->setText(tr("Okay"));
+  connect(okayButton, &QPushButton::clicked,
+          this, &AboutWidget::onOkayClicked);
+
+  copyButton = new QPushButton(this);
+  copyButton->setText(tr("Copy"));
+  connect(copyButton, &QPushButton::clicked,
+          this, &AboutWidget::onCopyClicked);
+}
+void AboutWidget::createTextEdit() {
+
+  QString html;
+
+  html += "Mini Make GUI<br>";
+
+  html += "Version: ";
+#ifdef MINI_MAKE_VERSION
+  html += MINI_MAKE_VERSION;
+#else
+  html += "Unknown";
+#endif
+  html += "<br>";
+
+  html += "Architecture: ";
+#ifdef MINI_MAKE_ARCHITECTURE
+  html += MINI_MAKE_ARCHITECTURE;
+#else
+  html += "Unknown";
+#endif
+  html += "<br>";
+
+  html += "Build System: ";
+#ifdef MINI_MAKE_BUILD_SYSTEM
+  html += MINI_MAKE_BUILD_SYSTEM;
+#else
+  html += "Unknown";
+#endif
+  html += "<br>";
+
+  html += "C Compiler: ";
+#ifdef MINI_MAKE_C_COMPILER
+  html += MINI_MAKE_C_COMPILER;
+#else
+  html += "Unknown";
+#endif
+  html += "<br>";
+
+  html += "C++ Compiler: ";
+#ifdef MINI_MAKE_CXX_COMPILER
+  html += MINI_MAKE_CXX_COMPILER;
+#else
+  html += "Unknown";
+#endif
+  html += "<br>";
+
+  textEdit = new QTextEdit(this);
+  textEdit->setReadOnly(true);
+  textEdit->setHtml(html);
+}
+void AboutWidget::createLayout() {
+  layout = new QGridLayout(this);
+  layout->addWidget(textEdit,   0, 0, 1, 2);
+  layout->addWidget(okayButton, 1, 0, 1, 1);
+  layout->addWidget(copyButton, 1, 1, 1, 1);
+  setLayout(layout);
+}
+void AboutWidget::onOkayClicked() {
+  close();
+}
+void AboutWidget::onCopyClicked() {
+  QClipboard *clipboardPtr = QApplication::clipboard();
+  clipboardPtr->setText(textEdit->toPlainText());
+}
+
 MenuBar::MenuBar(QWidget *parent) : QMenuBar(parent) {
+  createAboutWidget();
   createFileMenu();
+  createHelpMenu();
 }
 MenuBar::~MenuBar() {
 
 }
 void MenuBar::onExitClicked() {
   emit exitRequested();
+}
+void MenuBar::onAboutClicked() {
+  aboutWidget->show();
+}
+void MenuBar::createAboutWidget() {
+  /* don't use a parent widget */
+  aboutWidget = new AboutWidget();
 }
 void MenuBar::createFileMenu() {
 
@@ -84,6 +179,14 @@ void MenuBar::createFileMenu() {
                       QKeySequence(Qt::CTRL + Qt::Key_Q));
 
   addMenu(fileMenu);
+}
+void MenuBar::createHelpMenu() {
+
+  helpMenu = new QMenu(this);
+  helpMenu->setTitle("Help");
+  helpMenu->addAction("About", this, &MenuBar::onAboutClicked);
+
+  addMenu(helpMenu);
 }
 
 TerminalWidget::TerminalWidget(QWidget *parent) : QTextEdit(parent) {

@@ -94,6 +94,11 @@ if (Qt5Widgets_FOUND)
     "mini-make-gui.hpp"
     "mini-make-gui.cpp")
   target_include_directories("mini-make-gui" PRIVATE "include")
+  target_compile_definitions("mini-make-gui" PRIVATE
+                             -DMINI_MAKE_VERSION=\"${MINI_MAKE_VERSION}\"
+                             -DMINI_MAKE_BUILD_SYSTEM=\"CMake\"
+                             -DMINI_MAKE_C_COMPILER=\"${CMAKE_C_COMPILER_ID}\"
+                             -DMINI_MAKE_CXX_COMPILER=\"${CMAKE_CXX_COMPILER_ID}\")
   target_link_libraries("mini-make-gui" "make" Qt5::Widgets)
 endif (Qt5Widgets_FOUND)
 

@@ -20,15 +20,35 @@
 #define MINI_MAKE_GUI_HPP
 
 #include <QApplication>
-#include <QHeaderView>
 #include <QGridLayout>
+#include <QHeaderView>
 #include <QMainWindow>
 #include <QMenuBar>
+#include <QMessageBox>
 #include <QPushButton>
 #include <QTableWidget>
 #include <QTextEdit>
 
 namespace mini_make {
+
+class AboutWidget final : public QWidget {
+  Q_OBJECT
+public:
+  AboutWidget(QWidget *parent = nullptr);
+  ~AboutWidget();
+protected:
+  void createButtons();
+  void createLayout();
+  void createTextEdit();
+protected slots:
+  void onOkayClicked();
+  void onCopyClicked();
+private:
+  QGridLayout *layout;
+  QTextEdit *textEdit;
+  QPushButton *okayButton;
+  QPushButton *copyButton;
+};
 
 class MenuBar final : public QMenuBar {
   Q_OBJECT
@@ -38,11 +58,16 @@ public:
 signals:
   void exitRequested();
 protected:
+  void createAboutWidget();
   void createFileMenu();
+  void createHelpMenu();
 protected slots:
   void onExitClicked();
+  void onAboutClicked();
 private:
+  AboutWidget *aboutWidget;
   QMenu *fileMenu;
+  QMenu *helpMenu;
 };
 
 class TerminalWidget final : public QTextEdit {
