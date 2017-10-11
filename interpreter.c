@@ -228,9 +228,10 @@ static int on_prerequisite(void *data, const struct make_string *prerequisite) {
   return 0;
 }
 
-static int on_command(void *data, const struct make_command *command) {
+static int on_command(void *data, const struct make_command *command_in) {
 
   int err;
+  struct make_command command;
   struct make_string command_str;
   struct make_interpreter *interpreter;
 
@@ -247,14 +248,23 @@ static int on_command(void *data, const struct make_command *command) {
   make_string_init(&command_str);
 
   err = make_table_evaluate(&interpreter->table,
-                            command->source,
+                            command_in->source,
                             &command_str);
   if (err) {
     make_string_free(&command_str);
     return err;
   }
 
-  if (!command->silent && !interpreter->silent) {
+  command = *command_in;
+  command.source = &command_str;
+
+  err = make_ihooks_notify_command(&interpreter->hooks, &interpreter->target, &command);
+  if (err != make_success) {
+    make_string_free(&command_str);
+    return err;
+  }
+
+  if (!command.silent && !interpreter->silent) {
     fprintf(interpreter->outlog, "%.*s\n",
             (int) command_str.size,
             command_str.data);
@@ -263,7 +273,7 @@ static int on_command(void *data, const struct make_command *command) {
   if (!interpreter->just_print) {
     err = make_job_manager_queue(&interpreter->job_manager,
                                  &command_str);
-    if (err && !command->ignore_error) {
+    if (err && !command.ignore_error) {
       fprintf(interpreter->errlog,
               "Recipe failed for target '%.*s'\n",
               (int) interpreter->table.target.size,
