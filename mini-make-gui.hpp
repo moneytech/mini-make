@@ -23,11 +23,27 @@
 #include <QHeaderView>
 #include <QGridLayout>
 #include <QMainWindow>
+#include <QMenuBar>
 #include <QPushButton>
 #include <QTableWidget>
 #include <QTextEdit>
 
 namespace mini_make {
+
+class MenuBar final : public QMenuBar {
+  Q_OBJECT
+public:
+  MenuBar(QWidget *parent = nullptr);
+  ~MenuBar();
+signals:
+  void exitRequested();
+protected:
+  void createFileMenu();
+protected slots:
+  void onExitClicked();
+private:
+  QMenu *fileMenu;
+};
 
 class TerminalWidget final : public QTextEdit {
   Q_OBJECT
@@ -94,10 +110,13 @@ signals:
   void buildRequested();
 protected:
   void createCentralWidget();
+  void createMenuBar();
 protected slots:
   void onBuildRequested();
+  void onExitRequested();
 private:
   CentralWidget *centralWidget;
+  MenuBar *menuBar;
 };
 
 class Controller final : public QObject {

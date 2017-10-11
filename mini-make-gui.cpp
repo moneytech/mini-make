@@ -23,6 +23,8 @@
 #include <mini-make/ihooks.h>
 #include <mini-make/interpreter.h>
 
+#include <QKeySequence>
+
 #include <iostream>
 
 namespace {
@@ -64,6 +66,25 @@ int main(int argc, char **argv) {
 }
 
 namespace mini_make {
+
+MenuBar::MenuBar(QWidget *parent) : QMenuBar(parent) {
+  createFileMenu();
+}
+MenuBar::~MenuBar() {
+
+}
+void MenuBar::onExitClicked() {
+  emit exitRequested();
+}
+void MenuBar::createFileMenu() {
+
+  fileMenu = new QMenu(this);
+  fileMenu->setTitle("File");
+  fileMenu->addAction("Exit", this, &MenuBar::onExitClicked,
+                      QKeySequence(Qt::CTRL + Qt::Key_Q));
+
+  addMenu(fileMenu);
+}
 
 TerminalWidget::TerminalWidget(QWidget *parent) : QTextEdit(parent) {
   setReadOnly(true);
@@ -183,6 +204,7 @@ void CentralWidget::createLayout() {
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
   setWindowTitle("Mini Make");
   createCentralWidget();
+  createMenuBar();
 }
 MainWindow::~MainWindow() {
 
@@ -201,6 +223,15 @@ void MainWindow::createCentralWidget() {
   connect(centralWidget, &CentralWidget::buildRequested,
           this, &MainWindow::onBuildRequested);
   setCentralWidget(centralWidget);
+}
+void MainWindow::createMenuBar() {
+  menuBar = new MenuBar(this);
+  connect(menuBar, &MenuBar::exitRequested,
+          this, &MainWindow::onExitRequested);
+  setMenuBar(menuBar);
+}
+void MainWindow::onExitRequested() {
+  close();
 }
 
 Controller::Controller() {
