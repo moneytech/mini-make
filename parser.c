@@ -571,8 +571,8 @@ static int rule(struct make_parser *parser,
       i++;
     }
 
-    err = phooks->on_command(phooks->data, &command);
-    if (err)
+    err = make_phooks_notify_command(phooks, &command);
+    if (err != make_success)
       return err;
   }
 
