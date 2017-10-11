@@ -34,6 +34,7 @@ class TerminalWidget final : public QTextEdit {
 public:
   TerminalWidget(QWidget *parent = nullptr);
   ~TerminalWidget();
+  void addCommand(const QString &command);
 };
 
 class VariablesWidget final : public QTableWidget {
@@ -59,6 +60,7 @@ class CentralWidget final : public QWidget {
 public:
   CentralWidget(QWidget *parent = nullptr);
   ~CentralWidget();
+  void addCommand(const QString &command);
   void addTarget(const QString &targetName);
 signals:
   void buildRequested();
@@ -86,6 +88,7 @@ class MainWindow final : public QMainWindow {
 public:
   MainWindow(QWidget *parent = nullptr);
   ~MainWindow();
+  void addCommand(const QString &command);
   void addTarget(const QString &targetName);
 signals:
   void buildRequested();
@@ -102,6 +105,7 @@ class Controller final : public QObject {
 public:
   Controller();
   ~Controller();
+  void addCommand(const QString &command);
   void addTarget(const QString &targetName);
 public slots:
   void onBuildRequested();

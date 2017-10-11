@@ -18,6 +18,7 @@
 
 #include "mini-make-gui.hpp"
 
+#include <mini-make/command.h>
 #include <mini-make/error.h>
 #include <mini-make/ihooks.h>
 #include <mini-make/interpreter.h>
@@ -26,11 +27,27 @@
 
 namespace {
 
-int onTarget(void *controllerPtr, const make_target *target) {
+int onTarget(void *controllerPtr,
+             const make_target *target) {
 
   auto controller = (mini_make::Controller *) controllerPtr;
 
   controller->addTarget(target->path.data);
+
+  return make_success;
+}
+
+int onCommand(void *controllerPtr,
+              const make_target *target,
+              const make_command *command) {
+
+  (void) target;
+
+  std::cout << "COMMAND: " << command->source->data << std::endl;
+
+  auto controller = (mini_make::Controller *) controllerPtr;
+
+  controller->addCommand(command->source->data);
 
   return make_success;
 }
@@ -50,10 +67,14 @@ namespace mini_make {
 
 TerminalWidget::TerminalWidget(QWidget *parent) : QTextEdit(parent) {
   setReadOnly(true);
-  setText("Makefile output goes here");
+  setLineWrapMode(QTextEdit::NoWrap);
+  setPlaceholderText("Makefile output goes here.");
 }
 TerminalWidget::~TerminalWidget() {
 
+}
+void TerminalWidget::addCommand(const QString &command) {
+  setPlainText(toPlainText() + "\n" + command);
 }
 
 VariablesWidget::VariablesWidget(QWidget *parent) : QTableWidget(parent) {
@@ -115,6 +136,9 @@ CentralWidget::~CentralWidget() {
 void CentralWidget::addTarget(const QString &targetName) {
   targetsWidget->addTarget(targetName);
 }
+void CentralWidget::addCommand(const QString &command) {
+  terminalWidget->addCommand(command);
+}
 void CentralWidget::onBuildButtonClicked() {
   emit buildRequested();
 }
@@ -166,6 +190,9 @@ MainWindow::~MainWindow() {
 void MainWindow::addTarget(const QString &targetName) {
   centralWidget->addTarget(targetName);
 }
+void MainWindow::addCommand(const QString &command) {
+  centralWidget->addCommand(command);
+}
 void MainWindow::onBuildRequested() {
   emit buildRequested();
 }
@@ -191,12 +218,16 @@ Controller::~Controller() {
 void Controller::addTarget(const QString &targetName) {
   mainWindow->addTarget(targetName);
 }
+void Controller::addCommand(const QString &command) {
+  mainWindow->addCommand(command);
+}
 void Controller::onBuildRequested() {
 
   make_ihooks hooks;
   make_ihooks_init(&hooks);
   hooks.data = this;
   hooks.on_target = onTarget;
+  hooks.on_command = onCommand;
 
   make_interpreter interpreter;
 
