@@ -53,7 +53,7 @@ int make_ihooks_notify_target_expired(struct make_ihooks *ihooks,
                                       const struct make_target *target);
 
 /** Notifies hooks that a command should be run. */
-int mkae_ihooks_notify_command(struct make_ihooks *ihooks,
+int make_ihooks_notify_command(struct make_ihooks *ihooks,
                                const struct make_target *target,
                                const struct make_command *command);
 
