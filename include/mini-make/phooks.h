@@ -78,6 +78,10 @@ int make_phooks_notify_rule_start(struct make_phooks *phooks);
 /** @brief Notifies the hooks of the end of a rule. */
 int make_phooks_notify_rule_finish(struct make_phooks *phooks);
 
+/** @brief Notifies the hooks that a command was parsed. */
+int make_phooks_notify_command(struct make_phooks *phooks,
+                               const struct make_command *command);
+
 /** @brief Notifies the hooks of a comment. */
 int make_phooks_notify_comment(struct make_phooks *phooks,
                                const struct make_string *comment);

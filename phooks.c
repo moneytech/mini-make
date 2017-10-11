@@ -120,6 +120,14 @@ int make_phooks_notify_rule_finish(struct make_phooks *phooks) {
     return make_success;
 }
 
+int make_phooks_notify_command(struct make_phooks *phooks,
+                               const struct make_command *command) {
+  if (phooks->on_command != NULL)
+    return phooks->on_command(phooks->data, command);
+  else
+    return make_success;
+}
+
 int make_phooks_notify_comment(struct make_phooks *phooks,
                                const struct make_string *comment) {
   if (phooks->on_comment != NULL)
