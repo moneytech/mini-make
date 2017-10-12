@@ -35,3 +35,14 @@ void make_tree_done(struct make_tree *tree) {
   tree->node_count = 0;
 }
 
+struct make_node *make_tree_get_node(struct make_tree *tree, size_t index) {
+  if (index >= tree->node_count)
+    return NULL;
+  else
+    return &tree->node_array[index];
+}
+
+size_t make_tree_get_node_count(const struct make_tree *tree) {
+  return tree->node_count;
+}
+

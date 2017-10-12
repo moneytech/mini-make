@@ -39,6 +39,10 @@ void make_tree_init(struct make_tree *tree);
 
 void make_tree_free(struct make_tree *tree);
 
+struct make_node *make_tree_get_node(struct make_tree *tree, size_t index);
+
+size_t make_tree_get_node_count(const struct make_tree *tree);
+
 #ifdef __cplusplus
 } /* extern "C" { */
 #endif
