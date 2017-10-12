@@ -39,6 +39,8 @@ set (SRCDIR "${CMAKE_CURRENT_SOURCE_DIR}")
 set (INCDIR "${CMAKE_CURRENT_SOURCE_DIR}/include/mini-make")
 
 add_library("make" STATIC
+  "${EXTDIR}/buffer-io.c"
+  "${EXTDIR}/buffer-io.h"
   "${SRCDIR}/buffer.c"
   "${INCDIR}/buffer.h"
   "${SRCDIR}/chdir.c"
@@ -89,7 +91,7 @@ target_link_libraries("mini-make" "make")
 
 add_executable("mini-make-server" "mini-make-server.c")
 target_include_directories("mini-make-server" PRIVATE "include")
-target_link_libraries("mini-make-server" "make" ${UV_LIBRARIES})
+target_link_libraries("mini-make-server" "make")
 
 find_package(Qt5Widgets)
 if (Qt5Widgets_FOUND)
