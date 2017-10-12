@@ -198,7 +198,7 @@ TerminalWidget::~TerminalWidget() {
 
 }
 void TerminalWidget::addCommand(const QString &command) {
-  setPlainText(toPlainText() + "\n" + command);
+  setPlainText(toPlainText() + command + "\n");
 }
 
 VariablesWidget::VariablesWidget(QWidget *parent) : QTableWidget(parent) {
