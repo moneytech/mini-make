@@ -208,9 +208,14 @@ VariablesWidget::VariablesWidget(QWidget *parent) : QTableWidget(parent) {
   headers << "Value";
   setHorizontalHeaderLabels(headers);
   horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+  variableCount = 0;
 }
 VariablesWidget::~VariablesWidget() {
 
+}
+void VariablesWidget::addVariable() {
+  setRowCount(variableCount + 1);
+  variableCount++;
 }
 
 TargetsWidget::TargetsWidget(QWidget *parent) : QTableWidget(parent) {
@@ -242,6 +247,7 @@ void TargetsWidget::addTarget(const QString &targetName) {
     setRowCount(targetCount + 1);
     QTableWidgetItem *tableWidgetItem = new QTableWidgetItem();
     tableWidgetItem->setText(targetName);
+    tableWidgetItem->setFlags(tableWidgetItem->flags() ^ Qt::ItemIsEditable);
     setItem(targetCount, 0, tableWidgetItem);
     targetCount++;
   }
@@ -265,6 +271,12 @@ void CentralWidget::addCommand(const QString &command) {
 }
 void CentralWidget::onBuildButtonClicked() {
   emit buildRequested();
+}
+void CentralWidget::onAddVariableButtonClicked() {
+  variablesWidget->addVariable();
+}
+void CentralWidget::onDelVariableButtonClicked() {
+
 }
 void CentralWidget::createTargetsWidget() {
   targetsWidget = new TargetsWidget(this);
@@ -290,17 +302,27 @@ void CentralWidget::createButtons() {
 
   installButton = new QPushButton(this);
   installButton->setText(QObject::tr("Install"));
+
+  addVariableButton = new QPushButton(this);
+  addVariableButton->setText(QObject::tr("Add Variable"));
+  connect(addVariableButton, &QPushButton::clicked,
+          this, &CentralWidget::onAddVariableButtonClicked);
+
+  delVariableButton = new QPushButton(this);
+  delVariableButton->setText(QObject::tr("Delete Variable"));
 }
 void CentralWidget::createLayout() {
   layout = new QGridLayout(this);
   // row, column, row span, column span
-  layout->addWidget(variablesWidget, 0, 0, 1, 6);
-  layout->addWidget(targetsWidget,   1, 0, 1, 6);
-  layout->addWidget(terminalWidget,  0, 6, 2, 4);
-  layout->addWidget(buildButton,     2, 1);
-  layout->addWidget(cleanButton,     2, 2);
-  layout->addWidget(testButton,      2, 3);
-  layout->addWidget(installButton,   2, 4);
+  layout->addWidget(variablesWidget,   0, 0, 1, 6);
+  layout->addWidget(targetsWidget,     2, 0, 1, 6);
+  layout->addWidget(terminalWidget,    0, 6, 4, 4);
+  layout->addWidget(addVariableButton, 1, 2);
+  layout->addWidget(delVariableButton, 1, 3);
+  layout->addWidget(buildButton,       3, 1);
+  layout->addWidget(cleanButton,       3, 2);
+  layout->addWidget(testButton,        3, 3);
+  layout->addWidget(installButton,     3, 4);
   setLayout(layout);
 }
 

@@ -83,6 +83,9 @@ class VariablesWidget final : public QTableWidget {
 public:
   VariablesWidget(QWidget *parent = nullptr);
   ~VariablesWidget();
+  void addVariable();
+private:
+  unsigned int variableCount;
 };
 
 class TargetsWidget final : public QTableWidget {
@@ -113,11 +116,15 @@ protected:
   void createLayout();
 protected slots:
   void onBuildButtonClicked();
+  void onAddVariableButtonClicked();
+  void onDelVariableButtonClicked();
 private:
   QPushButton *buildButton;
   QPushButton *cleanButton;
   QPushButton *testButton;
   QPushButton *installButton;
+  QPushButton *addVariableButton;
+  QPushButton *delVariableButton;
   QGridLayout *layout;
   TargetsWidget *targetsWidget;
   VariablesWidget *variablesWidget;
