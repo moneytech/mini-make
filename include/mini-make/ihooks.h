@@ -16,8 +16,8 @@
  * along with Mini Make.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef MAKE_IHOOKS_H
-#define MAKE_IHOOKS_H
+#ifndef MINI_MAKE_IHOOKS_H
+#define MINI_MAKE_IHOOKS_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -31,14 +31,14 @@ struct make_ihooks {
   /** @brief Used for passing custom data to the
    * callback functions. */
   void *data;
-  /** @brief Called when the interpreter begins building a target. */
-  int (*on_target)(void *data, const struct make_target *target);
-  /** @brief Called when a target has been determined to be expired. */
-  int (*on_target_expired)(void *data, const struct make_target *target);
   /** @brief Called when the interpreter determines a command should run. */
   int (*on_command)(void *data,
                     const struct make_target *target,
                     const struct make_command *command);
+  /** @brief Called when the interpreter begins building a target. */
+  int (*on_target)(void *data, const struct make_target *target);
+  /** @brief Called when a target has been determined to be expired. */
+  int (*on_target_expired)(void *data, const struct make_target *target);
 };
 
 /** Initializes all hooks. */
@@ -61,4 +61,4 @@ int make_ihooks_notify_command(struct make_ihooks *ihooks,
 } /* extern "C" */
 #endif
 
-#endif /* MAKE_IHOOKS_H */
+#endif /* MINI_MAKE_IHOOKS_H */
