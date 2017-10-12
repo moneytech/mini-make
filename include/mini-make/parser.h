@@ -16,6 +16,16 @@
  * along with Mini Make.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/** @file parser.h
+ * @brief Contains functions and
+ * declarations related to the parser.
+ * */
+
+/** @defgroup make-parser Make Parser
+ * @brief Contains functions and
+ * declarations related to the parser.
+ * */
+
 #ifndef MINI_MAKE_PARSER_H
 #define MINI_MAKE_PARSER_H
 
@@ -26,9 +36,13 @@
 extern "C" {
 #endif
 
+struct make_tree;
+
 /** @brief Used for parsing makefiles. This
  * structure is used by the interpreter to run
- * a makefile. */
+ * a makefile.
+ * @ingroup make-parser
+ * */
 struct make_parser {
   /** @brief The file name (or path) of the
    * makefile that is being parsed. */
@@ -41,23 +55,38 @@ struct make_parser {
   struct make_phooks hooks;
 };
 
-/** @brief Initializes the contents of the parser. */
+/** @brief Initializes the contents of the parser.
+ * @ingroup make-parser
+ * */
 void make_parser_init(struct make_parser *parser);
 
 /** @brief Releases all resources allocated by the
  * parser. */
 void make_parser_free(struct make_parser *parser);
 
+/** @brief Constructs a makefile AST from the
+ * makefile source.
+ * @ingroup make-parser
+ * */
+int make_parser_build_tree(struct make_parser *parser,
+                           struct make_tree *tree);
+
 /** @brief Reads the contents of @filename and
- * sets the path of the file. */
+ * sets the path of the file.
+ * @ingroup make-parser
+ * */
 int make_parser_read(struct make_parser *parser,
                      const char *filename);
 
-/** @brief Parses the makefile source. */
+/** @brief Parses the makefile source.
+ * @ingroup make-parser
+ * */
 int make_parser_run(struct make_parser *parser);
 
 /** @brief Sets the parser hooks. This function
- * will not set a hook if it is set to NULL. */
+ * will not set a hook if it is set to NULL.
+ * @ingroup make-parser
+ * */
 void make_parser_set_hooks(struct make_parser *parser,
                            const struct make_phooks *hooks);
 

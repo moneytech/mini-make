@@ -12,6 +12,7 @@ set (MINI_MAKE_VERSION_PATCH 0)
 list (APPEND CMAKE_MODULE_PATH
   "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
+add_subdirectory("documentation")
 add_subdirectory("examples")
 
 if ("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU")
