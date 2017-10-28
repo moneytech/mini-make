@@ -16,6 +16,13 @@
  * along with Mini Make.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/** @file buffer.h */
+
+/** @defgroup make-buffer Make Buffer
+ * @brief Used for storing elements of a resizeable
+ * array.
+ * */
+
 #ifndef MINI_MAKE_BUFFER_H
 #define MINI_MAKE_BUFFER_H
 
@@ -25,22 +32,58 @@
 extern "C" {
 #endif
 
-/** @brief A general purpose buffer. */
+/** @brief A general purpose buffer.
+ * @ingroup make-buffer
+ * */
 struct make_buffer {
   /** @brief The address of the data
    * in the buffer. */
   void *data;
-  /** @brief The size of the buffer. */
+  /** @brief The number of elements
+   * in the buffer. */
   size_t size;
+  /** @brief The size of each element
+   * in the buffer. This is equal to
+   * one by default. */
+  size_t element_size;
 };
 
-/** @brief Initializes the buffer. */
+/** @brief Initializes the buffer.
+ * @ingroup make-buffer
+ * */
 void make_buffer_init(struct make_buffer *buffer);
 
-/** @brief Releases resources allocated by the buffer. */
+/** @brief Releases resources allocated by the buffer.
+ * @ingroup make-buffer
+ * */
 void make_buffer_free(struct make_buffer *buffer);
 
-/** @brief Resizes the buffer. */
+/** @brief Gets the pointer of an element at a
+ * specific index.
+ *@ingroup make-buffer
+ * */
+void *make_buffer_get_element(struct make_buffer *buffer,
+                              size_t element_index);
+
+/** @brief Sets element data at a specific index.
+ * @ingroup make-buffer
+ * */
+void make_buffer_set_element(struct make_buffer *buffer,
+                             size_t element_index,
+                             const void *element_data);
+
+/** @brief Sets the size of each element in the buffer.
+ * The size of existing elements are reduced or expanded,
+ * depending on whether or not the new size is smaller or
+ * larger than the existing one.
+ * @ingroup make-buffer
+ * */
+void make_buffer_set_element_size(struct make_buffer *buffer,
+                                  size_t element_size);
+
+/** @brief Resizes the buffer.
+ * @ingroup make-buffer
+ * */
 int make_buffer_resize(struct make_buffer *buffer,
                        size_t size);
 

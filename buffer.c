@@ -23,6 +23,7 @@
 void make_buffer_init(struct make_buffer *buffer) {
   buffer->data = NULL;
   buffer->size = 0;
+  buffer->element_size = 1;
 }
 
 void make_buffer_free(struct make_buffer *buffer) {
@@ -38,7 +39,7 @@ int make_buffer_resize(struct make_buffer *buffer,
                        size_t size) {
   void *tmp;
 
-  tmp = realloc(buffer->data, size);
+  tmp = realloc(buffer->data, size * buffer->element_size);
   if (tmp == NULL)
     return make_failure;
 
