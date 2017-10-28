@@ -73,9 +73,13 @@ void make_buffer_set_element(struct make_buffer *buffer,
                              const void *element_data);
 
 /** @brief Sets the size of each element in the buffer.
- * The size of existing elements are reduced or expanded,
- * depending on whether or not the new size is smaller or
- * larger than the existing one.
+ * This function does not handle the case where elements
+ * of a different size are already in the buffer. This
+ * function is meant to be called before the buffer is
+ * filled.
+ * @param element_size The size of the elements within
+ * the buffer. If the element is a structure, using the
+ * sizeof operator would be appropriate.
  * @ingroup make-buffer
  * */
 void make_buffer_set_element_size(struct make_buffer *buffer,

@@ -20,6 +20,8 @@
 
 #include <mini-make/error.h>
 
+#include <string.h>
+
 void make_buffer_init(struct make_buffer *buffer) {
   buffer->data = NULL;
   buffer->size = 0;
@@ -49,3 +51,26 @@ int make_buffer_resize(struct make_buffer *buffer,
   return make_success;
 }
 
+void *make_buffer_get_element(struct make_buffer *buffer,
+                              size_t element_index) {
+  if (element_index < buffer->size) {
+    unsigned char *elements = (unsigned char *) buffer->data;
+    return (void *) &elements[element_index];
+  }
+  return NULL;
+}
+
+void make_buffer_set_element(struct make_buffer *buffer,
+                             size_t element_index,
+                             const void *element_data) {
+  if (element_index < buffer->size) {
+    unsigned char *dst = (unsigned char *) buffer->data;
+    memcpy(&dst[element_index * buffer->element_size],
+           element_data, buffer->element_size);
+  }
+}
+
+void make_buffer_set_element_size(struct make_buffer *buffer,
+                                  size_t element_size) {
+  buffer->element_size = element_size;
+}
