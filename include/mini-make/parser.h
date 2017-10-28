@@ -40,7 +40,9 @@ struct make_tree;
 
 /** @brief Used for parsing makefiles. This
  * structure is used by the interpreter to run
- * a makefile.
+ * a makefile.To use the parser directly, initialize
+ * a @ref make-phooks structure with the appropriate
+ * callbacks and then call @ref make_parser_set_hooks.
  * @ingroup make-parser
  * */
 struct make_parser {
@@ -71,7 +73,7 @@ void make_parser_free(struct make_parser *parser);
 int make_parser_build_tree(struct make_parser *parser,
                            struct make_tree *tree);
 
-/** @brief Reads the contents of @filename and
+/** @brief Reads the contents of @p filename and
  * sets the path of the file.
  * @ingroup make-parser
  * */

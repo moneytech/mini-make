@@ -16,6 +16,12 @@
  * along with Mini Make.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/** @file phooks.h */
+
+/** @defgroup make-phooks Make Parser Hooks
+ * @brief Callback functions called by a makefile parser.
+ * */
+
 #ifndef MAKE_PHOOKS_H
 #define MAKE_PHOOKS_H
 
@@ -29,7 +35,9 @@ struct make_include_stmt;
 struct make_location;
 struct make_string;
 
-/** @brief Makefile parser hooks. */
+/** @brief Makefile parser hooks.
+ * @ingroup make-phooks
+ * */
 struct make_phooks {
   /** @brief Used for passing custom data to the
    * callback functions. */
@@ -69,20 +77,30 @@ struct make_phooks {
 
 /** @brief Initializes the hooks with functions
  * that do not do anything. None of the values (except
- * for the data member) are initialized to NULL. */
+ * for the data member) are initialized to NULL.
+ * @ingroup make-phooks
+ * */
 void make_phooks_init(struct make_phooks *phooks);
 
-/** @brief Notifies the hooks of a start of a rule. */
+/** @brief Notifies the hooks of a start of a rule.
+ * @ingroup make-phooks
+ * */
 int make_phooks_notify_rule_start(struct make_phooks *phooks);
 
-/** @brief Notifies the hooks of the end of a rule. */
+/** @brief Notifies the hooks of the end of a rule.
+ * @ingroup make-phooks
+ * */
 int make_phooks_notify_rule_finish(struct make_phooks *phooks);
 
-/** @brief Notifies the hooks that a command was parsed. */
+/** @brief Notifies the hooks that a command was parsed.
+ * @ingroup make-phooks
+ * */
 int make_phooks_notify_command(struct make_phooks *phooks,
                                const struct make_command *command);
 
-/** @brief Notifies the hooks of a comment. */
+/** @brief Notifies the hooks of a comment.
+ * @ingroup make-phooks
+ * */
 int make_phooks_notify_comment(struct make_phooks *phooks,
                                const struct make_string *comment);
 
