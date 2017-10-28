@@ -140,6 +140,7 @@ function(ADD_MAKE_TEST TEST_NAME)
   add_test(${TEST_NAME} ${TEST_NAME})
 endfunction(ADD_MAKE_TEST TEST_NAME)
 
+add_make_test("buffer-test" "buffer-test.c")
 add_make_test("table-test" "table-test.c")
 add_make_test("parser-test" "parser-test.c")
 add_make_test("interpreter-test" "interpreter-test.c")
