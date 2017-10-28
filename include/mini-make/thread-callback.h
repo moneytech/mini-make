@@ -16,6 +16,8 @@
  * along with Mini Make.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/** @file */
+
 #ifndef MAKE_THREAD_CALLBACK_H
 #define MAKE_THREAD_CALLBACK_H
 
@@ -23,8 +25,10 @@
 extern "C" {
 #endif
 
-/** Used for describing what a thread
- * is going to do. */
+/** @brief Used for describing what a
+ * thread is going to do.
+ * @ingroup make-thread
+ * */
 struct make_thread_callback {
   /** @brief The pointer to pass to the
    * function that the thread starts on. */

@@ -16,6 +16,8 @@
  * along with Mini Make.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/** @file */
+
 #ifndef MINI_MAKE_COMMAND_H
 #define MINI_MAKE_COMMAND_H
 
@@ -29,7 +31,9 @@ struct make_string;
  * @brief A command that appears in a makefile rule.
  * */
 
-/** @brief A command in a makefile rule. */
+/** @brief A command in a makefile rule.
+ * @ingroup make-command
+ * */
 struct make_command {
   /** @brief If non-zero, the command should not
    * be printed when it is executed. */

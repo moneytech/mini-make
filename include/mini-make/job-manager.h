@@ -16,6 +16,8 @@
  * along with Mini Make.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/** @file */
+
 #ifndef MINI_MAKE_JOB_MANAGER_H
 #define MINI_MAKE_JOB_MANAGER_H
 

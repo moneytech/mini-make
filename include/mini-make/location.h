@@ -16,6 +16,8 @@
  * along with Mini Make.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/** @file */
+
 #ifndef MINI_MAKE_LOCATION_H
 #define MINI_MAKE_LOCATION_H
 

@@ -18,10 +18,6 @@
 
 /** @file phooks.h */
 
-/** @defgroup make-phooks Make Parser Hooks
- * @brief Callback functions called by a makefile parser.
- * */
-
 #ifndef MAKE_PHOOKS_H
 #define MAKE_PHOOKS_H
 
@@ -34,6 +30,10 @@ struct make_command;
 struct make_include_stmt;
 struct make_location;
 struct make_string;
+
+/** @defgroup make-phooks Make Parser Hooks
+ * @brief Callback functions called by a makefile parser.
+ * */
 
 /** @brief Makefile parser hooks.
  * @ingroup make-phooks

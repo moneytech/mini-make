@@ -16,6 +16,8 @@
  * along with Mini Make.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/** @file */
+
 #ifndef MINI_MAKE_STRING_H
 #define MINI_MAKE_STRING_H
 
@@ -25,8 +27,12 @@
 extern "C" {
 #endif
 
-/** @brief A simple string
- * structure.
+/** @defgroup make-string Make String
+ * @brief A resizeable string.
+ * */
+
+/** @brief A resizeable string structure.
+ * @ingroup make-string
  * */
 struct make_string {
   /** @brief Contains the string characters. */
@@ -44,22 +50,31 @@ struct make_string {
 };
 
 /** @brief Initializes internal members of the
- * string. */
+ * string.
+ * @ingroup make-string
+ * */
 void make_string_init(struct make_string *str);
 
 /** @brief Releases all resources allocated by
  * the string.
+ * @ingroup make-string
  * */
 void make_string_free(struct make_string *str);
 
-/** @brief Appends the contents of @p src to @p dst. */
+/** @brief Appends the contents of @p src to @p dst.
+ * @ingroup make-string
+ * */
 int make_string_append(struct make_string *dst,
                        const struct make_string *src);
 
-/** @brief Appends a single character to the end of @p dst. */
+/** @brief Appends a single character to the end of @p dst.
+ * @ingroup make-string
+ * */
 int make_string_append_char(struct make_string *dst, char c);
 
-/** @brief Creates a copy of the string. */
+/** @brief Creates a copy of the string.
+ * @ingroup make-string
+ * */
 int make_string_copy(const struct make_string *src,
                      struct make_string *dst);
 
@@ -67,32 +82,43 @@ int make_string_copy(const struct make_string *src,
  * equal to one another.
  * @returns One if the strings are equal,
  * zero if they are not.
+ * @ingroup make-string
  * */
 int make_string_equal(const struct make_string *a,
                       const struct make_string *b);
 
 /** @brief Prepends the contents of @p src
- * to @p dst. */
+ * to @p dst.
+ * @ingroup make-string
+ * */
 int make_string_prepend(struct make_string *dst,
                         const struct make_string *src);
 
-/** Prepends a character to the contents of @p dst. */
+/** Prepends a character to the contents of @p dst.
+ * @ingroup make-string
+ * */
 int make_string_prepend_char(struct make_string *dst, char c);
 
 /** @brief Reserves an amount of data so that the
- * string can grow with fewer allocations. */
+ * string can grow with fewer allocations.
+ * @ingroup make-string
+ * */
 int make_string_reserve(struct make_string *str,
                         size_t res);
 
 /** @brief Sets the contents of @p dst
- * to that of @p src. */
+ * to that of @p src.
+ * @ingroup make-string
+ * */
 int make_string_set(struct make_string *dst,
                     const char *src,
                     size_t src_size);
 
 /** @brief Sets the contents of @p dst to
  * that of @p src. The contents of @p src must
- * be null-terminated. */
+ * be null-terminated.
+ * @ingroup make-string
+ * */
 int make_string_set_asciiz(struct make_string *dst,
                            const char *src);
 

@@ -16,6 +16,8 @@
  * along with Mini Make.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/** @file */
+
 #ifndef MINI_MAKE_SERVER_H
 #define MINI_MAKE_SERVER_H
 
@@ -24,24 +26,54 @@ extern "C" {
 #endif
 
 struct make_buffer;
+
+/** @defgroup make-server Make Server
+ * @brief A job server.
+ * */
+
+/** @brief A job server.
+ * @ingroup make-server
+ * */
 struct make_server;
 
+/** @brief A callback that is triggered whenever
+ * the server gets a request from a client.
+ * @ingroup make-server
+ * */
 typedef int (*make_server_callback)(void *data,
                                     const struct make_buffer *request,
                                     struct make_buffer *reply);
 
+/** @brief Creates an instance of a server.
+ * @ingroup make-server
+ * */
 struct make_server *make_server_create(const char *socket_name);
 
+/** @brief Releases all resources allocated by the server.
+ * @ingroup make-server
+ * */
 void make_server_destroy(struct make_server *server);
 
+/** @brief Assigns a new callback to the server.
+ * @ingroup make-server
+ * */
 void make_server_set_callback(struct make_server *server,
                               make_server_callback calback);
 
+/** @brief Assigns data to be passed to the callback.
+ * @ingroup make-server
+ * */
 void make_server_set_callback_data(struct make_server *server,
                                    void *callback_data);
 
+/** @brief Attempts to connect to more clients.
+ * @ingroup make-server
+ * */
 int make_server_discover_clients(struct make_server *server);
 
+/** @brief Checks for and handles requests from all clients.
+ * @ingroup make-server
+ * */
 int make_server_iterate_clients(struct make_server *server);
 
 #ifdef __cplusplus

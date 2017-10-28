@@ -16,6 +16,8 @@
  * along with Mini Make.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/** @file */
+
 #ifndef MINI_MAKE_OPERATION_H
 #define MINI_MAKE_OPERATION_H
 
@@ -23,10 +25,29 @@
 extern "C" {
 #endif
 
+/** @defgroup make-operation Make Operation
+ * @brief An operation within a makefile
+ * assignment statement.
+ * */
+
+/** @brief An operating within a
+ * makefile assignment statement.
+ * @ingroup make-operation
+ * */
 enum make_operation {
+  /** @brief The operation appends content
+   * to a variable. */
   MINI_MAKE_OPERATION_APPEND,
+  /** @brief The operation does not immediately
+   * resolve variable references. */
   MINI_MAKE_OPERATION_RECURSIVE,
+  /** @brief The operation assigns a value to
+   * a variable and immediately resolves the
+   * references. */
   MINI_MAKE_OPERATION_STATIC,
+  /** @brief The operation assigns a value to
+   * a variable only if the variable is not
+   * currently defined. */
   MINI_MAKE_OPERATION_CONDITIONAL
 };
 

@@ -16,6 +16,8 @@
  * along with Mini Make.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/** @file */
+
 #ifndef MINI_MAKE_INTERPRETER_H
 #define MINI_MAKE_INTERPRETER_H
 
@@ -86,24 +88,52 @@ struct make_interpreter {
   FILE *outlog;
 };
 
+/** @brief Initializes an interpreter.
+ * @ingroup make-interpreter
+ * */
 void make_interpreter_init(struct make_interpreter *interpreter);
 
+/** @brief Releases all resources allocated
+ * by the interpreter.
+ * */
 void make_interpreter_free(struct make_interpreter *interpreter);
 
+/** @brief Defines a variable in the interpreter's
+ * table.
+ * @ingroup make-interpreter
+ * */
 int make_interpreter_define(struct make_interpreter *interpreter,
                             const struct make_string *key,
                             const struct make_string *value);
 
+/** @brief Checks if the interpreter
+ * has an assigned target.
+ * @ingroup make-interpreter
+ * */
 int make_interpreter_has_target(const struct make_interpreter *interpreter);
 
+/** @brief Reads a specified makefile.
+ * @ingroup make-interpreter
+ * */
 int make_interpreter_read(struct make_interpreter *interpreter,
                           const char *filename);
 
+/** @brief Executes a makefile.
+ * @ingroup make-interpreter
+ * */
 int make_interpreter_run(struct make_interpreter *interpreter);
 
+/** @brief Assigns the interpreter
+ * hooks to use when the makefile is executed.
+ * @ingroup make-interpreter
+ * */
 void make_interpreter_set_hooks(struct make_interpreter *interpreter,
                                 const struct make_ihooks *hooks);
 
+/** @brief Assigns the target to build
+ * when executing the makefile.
+ * @ingroup make-interpreter
+ * */
 int make_interpreter_set_target(struct make_interpreter *interpreter,
                                 const struct make_string *target);
 

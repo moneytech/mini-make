@@ -16,6 +16,8 @@
  * along with Mini Make.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/** @file */
+
 #ifndef MINI_MAKE_PROTOCOL_H
 #define MINI_MAKE_PROTOCOL_H
 
@@ -25,8 +27,15 @@ extern "C" {
 
 struct make_buffer;
 
+/** @defgroup make-protocol Make Protocol
+ * @brief Protocol used to communicate between client
+ * and server.
+ * */
+
 /** @brief Protocal used to communicate between client
- * and server. */
+ * and server.
+ * @ingroup make protocol
+ * */
 struct make_protocol {
   /** @brief Protocol implementation data. */
   void *data;
@@ -40,16 +49,33 @@ struct make_protocol {
                struct make_buffer *buffer);
 };
 
+/** @brief Initializes a protocol.
+ * @ingroup make-protocol
+ * */
 void make_protocol_init(struct make_protocol *protocol);
 
+/** @brief Releases all resources allocated by
+ * the protocol.
+ * @ingroup make-protocol
+ * */
 void make_protocol_done(struct make_protocol *protocol);
 
+/** @brief Handles a request.
+ * @ingroup make-protocol
+ * */
 int make_protocol_request(struct make_protocol *protocol,
                           const struct make_buffer *buffer);
 
+/** @brief Sends a reply for the last received request.
+ * @ingroup make-protocol
+ * */
 int make_protocol_reply(struct make_protocol *protocol,
                         struct make_buffer *buffer);
 
+/** @brief Sets the version of the protocol
+ * to use.
+ * @ingroup make-protocol
+ * */
 int make_protocol_set_version(struct make_protocol *protocol,
                               unsigned int version);
 

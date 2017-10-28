@@ -16,6 +16,8 @@
  * along with Mini Make.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/** @file */
+
 #ifndef MINI_MAKE_CLIENT_H
 #define MINI_MAKE_CLIENT_H
 
@@ -24,14 +26,38 @@ extern "C" {
 #endif
 
 struct make_buffer;
+
+/** @defgroup make-client Make Client
+ * @brief A client connection to the make server.
+ * */
+
+/** @brief A client connection to the make server.
+ * @ingroup make-client
+ * */
 struct make_client;
 
+/** @brief Creates an instance of a make client.
+ * @param socket_name On Linux systems, this is the
+ * path to the unix domain socket. On Windows systems,
+ * this is the name of the pipe.
+ * @ingroup make-client
+ * */
 struct make_client *make_client_create(const char *socket_name);
 
+/** @brief Releases all resources allocated by the
+ * client.
+ * @ingroup make-client
+ * */
 void make_client_destroy(struct make_client *client);
 
+/** @brief Sends a request to the make server.
+ * @param client A make client.
+ * @param request The request to send to the server.
+ * @returns The reply from the server.
+ * @ingroup make-client
+ * */
 struct make_buffer *make_client_send_request(struct make_client *client,
-                                             const struct make_buffer *buffer);
+                                             const struct make_buffer *request);
 
 #ifdef __cplusplus
 } /* extern "C" { */

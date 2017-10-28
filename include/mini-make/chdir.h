@@ -16,6 +16,8 @@
  * along with Mini Make.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/** @file */
+
 #ifndef MINI_MAKE_CHDIR_H
 #define MINI_MAKE_CHDIR_H
 
@@ -23,6 +25,9 @@
 extern "C" {
 #endif
 
+/** @brief Changes the working directory
+ * of the process.
+ * */
 int make_chdir(const char *path);
 
 #ifdef __cplusplus

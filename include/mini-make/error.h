@@ -16,6 +16,8 @@
  * along with Mini Make.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/** @file */
+
 #ifndef MINI_MAKE_ERROR_H
 #define MINI_MAKE_ERROR_H
 
@@ -23,8 +25,20 @@
 extern "C" {
 #endif
 
+/** @defgroup make-errors Make Errors
+ * @brief Error codes returned from make functions.
+ * */
+
+/** @brief A return code indicating the function
+ * was successful.
+ * @ingroup make-errors
+ * */
 extern const int make_success;
 
+/** @brief A return code indicating the function
+ * has failed.
+ * @ingroup make-errors
+ * */
 extern const int make_failure;
 
 #ifdef __cplusplus

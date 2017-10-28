@@ -16,15 +16,7 @@
  * along with Mini Make.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file parser.h
- * @brief Contains functions and
- * declarations related to the parser.
- * */
-
-/** @defgroup make-parser Make Parser
- * @brief Contains functions and
- * declarations related to the parser.
- * */
+/** @file */
 
 #ifndef MINI_MAKE_PARSER_H
 #define MINI_MAKE_PARSER_H
@@ -37,6 +29,11 @@ extern "C" {
 #endif
 
 struct make_tree;
+
+/** @defgroup make-parser Make Parser
+ * @brief Contains functions and
+ * declarations related to the parser.
+ * */
 
 /** @brief Used for parsing makefiles. This
  * structure is used by the interpreter to run

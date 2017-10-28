@@ -16,7 +16,7 @@
  * along with Mini Make.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file buffer.h */
+/** @file */
 
 /** @defgroup make-buffer Make Buffer
  * @brief Used for storing elements of a resizeable

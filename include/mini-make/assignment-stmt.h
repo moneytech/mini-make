@@ -16,6 +16,8 @@
  * along with Mini Make.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/** @file */
+
 #ifndef MINI_MAKE_ASSIGNMENT_STMT_H
 #define MINI_MAKE_ASSIGNMENT_STMT_H
 
