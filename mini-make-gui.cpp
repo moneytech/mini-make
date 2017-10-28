@@ -389,13 +389,17 @@ void Controller::onBuildRequested() {
 
   make_interpreter_init(&interpreter);
 
+  char make_key_data[] = "MAKE";
+
   make_string make_key;
-  make_key.data = "MAKE";
-  make_key.size = 4;
+  make_key.data = make_key_data;
+  make_key.size = sizeof(make_key_data) - 1;
+
+  char make_value_data[] = "\"mini-make\"";
 
   make_string make_value;
-  make_value.data = "\"mini-make\"";
-  make_value.size = sizeof("\"mini-make\"") - 1;
+  make_value.data = make_value_data;
+  make_value.size = sizeof(make_value_data) - 1;
 
   make_interpreter_define(&interpreter, &make_key, &make_value);
 
