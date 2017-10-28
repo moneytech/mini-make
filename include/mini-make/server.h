@@ -26,12 +26,23 @@ extern "C" {
 struct make_buffer;
 struct make_server;
 
+typedef int (*make_server_callback)(void *data,
+                                    const struct make_buffer *request,
+                                    struct make_buffer *reply);
+
 struct make_server *make_server_create(const char *socket_name);
 
 void make_server_destroy(struct make_server *server);
 
-int make_server_send_reply(struct make_server *server,
-                           const struct make_buffer *buffer);
+void make_server_set_callback(struct make_server *server,
+                              make_server_callback calback);
+
+void make_server_set_callback_data(struct make_server *server,
+                                   void *callback_data);
+
+int make_server_discover_clients(struct make_server *server);
+
+int make_server_iterate_clients(struct make_server *server);
 
 #ifdef __cplusplus
 } /* extern "C" { */
