@@ -32,6 +32,16 @@
 extern "C" {
 #endif
 
+/** @defgroup make-interpreter Make Interpreter
+ * @brief Executes a makefile.
+ * */
+
+/** @brief Executes a makefile.
+ * The interpreter contains a @ref make-ihooks
+ * structure that may be used for setting callbacks
+ * when the interpreter does something.
+ * @ingroup make-interpreter
+ * */
 struct make_interpreter {
   /** Interpreter hooks. */
   struct make_ihooks hooks;
@@ -41,6 +51,7 @@ struct make_interpreter {
   /** @brief The target that the interpreter
    * is building. */
   struct make_target target;
+  /** @brief The parser used by the interpreter. */
   struct make_parser parser;
   /** @brief Stores all the variables
    * from the assignment statements. */

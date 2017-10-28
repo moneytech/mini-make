@@ -77,6 +77,7 @@ void make_buffer_set_element(struct make_buffer *buffer,
  * of a different size are already in the buffer. This
  * function is meant to be called before the buffer is
  * filled.
+ * @param buffer An initialized buffer.
  * @param element_size The size of the elements within
  * the buffer. If the element is a structure, using the
  * sizeof operator would be appropriate.

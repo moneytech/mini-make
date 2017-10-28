@@ -26,7 +26,16 @@ extern "C" {
 struct make_command;
 struct make_target;
 
-/** @brief Makefile interpreter hooks. */
+/** @defgroup make-ihooks Make Interpreter Hooks
+ * @brief Makefile interpreter hooks.
+ * */
+
+/** @brief Makefile interpreter hooks.
+ * This structure contains various callbacks
+ * that are triggered as the interpreter executes
+ * the makefile.
+ * @ingroup make-ihooks
+ * */
 struct make_ihooks {
   /** @brief Used for passing custom data to the
    * callback functions. */
@@ -41,18 +50,26 @@ struct make_ihooks {
   int (*on_target_expired)(void *data, const struct make_target *target);
 };
 
-/** Initializes all hooks. */
+/** @brief Initializes all hooks.
+ * @ingroup make-ihooks
+ * */
 void make_ihooks_init(struct make_ihooks *ihooks);
 
-/** Notifies hooks that the interpreter is building a new target. */
+/** @brief Notifies hooks that the interpreter is building a new target.
+ * @ingroup make-ihooks
+ * */
 int make_ihooks_notify_target(struct make_ihooks *ihooks,
                               const struct make_target *target);
 
-/** Notifies hooks that the target is expired. */
+/** @brief Notifies hooks that the target is expired.
+ * @ingroup make-ihooks
+ * */
 int make_ihooks_notify_target_expired(struct make_ihooks *ihooks,
                                       const struct make_target *target);
 
-/** Notifies hooks that a command should be run. */
+/** @brief Notifies hooks that a command should be run.
+ * @ingroup make-ihooks
+ * */
 int make_ihooks_notify_command(struct make_ihooks *ihooks,
                                const struct make_target *target,
                                const struct make_command *command);

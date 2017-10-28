@@ -25,8 +25,18 @@ extern "C" {
 
 struct make_string;
 
+/** @defgroup make-include-stmt Make Include Statement
+ * @brief An include statement within a makefile.
+ * */
+
+/** @brief An include statement within a makefile.
+ * @ingroup make-include-stmt
+ * */
 struct make_include_stmt {
+  /** @brief If non-zero, the include statement should
+   * not generate an error if the file does not exist. */
   int ignore_error;
+  /** @brief The path to the file in the include statement. */
   struct make_string *path;
 };
 

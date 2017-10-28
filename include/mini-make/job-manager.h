@@ -26,27 +26,62 @@ extern "C" {
 struct make_job;
 struct make_string;
 
+/** @defgroup make-job-manager Make Job Manager
+ * @brief A job manager for commands executed in
+ * a makefile. */
+
+/** @brief A job manager for command executed in
+ * a makefile.
+ * @ingroup make-job-manager
+ * */
 struct make_job_manager {
+  /** @brief An array of active jobs. */
   struct make_job *job_array;
+  /** @brief The number of jobs in the
+   * job array. */
   unsigned long int job_count;
+  /** @brief The maximum jobs to start
+   * before waiting for one to exit. */
   unsigned long int job_max;
 };
 
+/** @brief Initializes a job manager.
+ * @ingroup make-job-manager
+ * */
 void make_job_manager_init(struct make_job_manager *job_manager);
 
+/** @brief Releases all resources allocated
+ * by the job manager. If there are active jobs
+ * in the job array, they are killed. Call @ref make_job_manager_wait_for_all
+ * if jobs must finish before calling this function.
+ * @ingroup make-job-manager
+ * */
 void make_job_manager_free(struct make_job_manager *job_manager);
 
+/** @brief Sets the maximum number of jobs to start
+ * before waiting for one to exit.
+ * @ingroup make-job-manager
+ * */
 void make_job_manager_set_max_jobs(struct make_job_manager *job_manager,
                                    unsigned long int max);
 
 /** @brief Waits for one job to finish.
- * If there are no jobs running, function exits successfully. */
+ * If there are no jobs running, function exits successfully.
+ * @ingroup make-job-manager
+ * */
 int make_job_manager_wait_for_one(struct make_job_manager *job_manager);
 
 /** @brief Waits for all jobs to finish.
- * If there are no jobs running, function exits successfully. */
+ * If there are no jobs running, function exits successfully.
+ * @ingroup make-job-manager
+ * */
 int make_job_manager_wait_for_all(struct make_job_manager *job_manager);
 
+/** @brief Starts another job within the job manager. If the
+ * maximum number of jobs has been reached, the job manager will
+ * wait for one to exit before adding the new one to the queue.
+ * @ingroup make-job-manager
+ * */
 int make_job_manager_queue(struct make_job_manager *job_manager,
                            const struct make_string *cmdline);
 

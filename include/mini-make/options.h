@@ -23,11 +23,27 @@
 extern "C" {
 #endif
 
+/** @defgroup make-options Make Options
+ * @brief Options passed to the make program.
+ * */
+
+/** @brief Options passed to the make program.
+ * @ingroup make-options
+ * */
 struct make_options {
+  /** @brief The directory that the makefile will
+   * be executed in.*/
   char *working_dir;
+  /** @brief The name of the makefile to read. */
   char *filename;
+  /** @brief The maximum number of jobs to have
+   * running at once. */
   unsigned int jobs;
+  /** @brief Set to non-zero if the commands should
+   * just be printed and not executed. */
   int just_print;
+  /** @brief Set to non-zero if the commands should
+   * not be echoed as they are executed. */
   int silent;
 };
 

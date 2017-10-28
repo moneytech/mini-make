@@ -23,21 +23,35 @@
 extern "C" {
 #endif
 
+/** @defgroup make-thread Make Thread
+ * @brief A cross-platform thread wrapper.
+ * */
+
+/** @brief A cross-platform thread wrapper.
+ * @ingroup make-thread
+ * */
 struct make_thread;
+
 struct make_thread_callback;
 
 /** @brief Creates a thread, using the function pointer
  * and data in @p callback.
- * @returns If this function fails, a null pointer is returned.*/
+ * @returns If this function fails, a null pointer is returned.
+ * @ingroup make-thread
+ * */
 struct make_thread *make_thread_create(struct make_thread_callback *callback);
 
 /** @brief Destroys a thread. If the thread is still running,
- * it is canceled and the memory is deallocated. */
+ * it is canceled and the memory is deallocated.
+ * @ingroup make-thread
+ * */
 void make_thread_destroy(struct make_thread *thread);
 
 /** @brief Waits for the thread to exit. If this function
  * exits successfully, @ref make_thread_destroy does not
- * need to be called. */
+ * need to be called.
+ * @ingroup make-thread
+ * */
 int make_thread_join(struct make_thread *thread, void **result);
 
 #ifdef __cplusplus

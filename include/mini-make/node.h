@@ -27,8 +27,14 @@
 extern "C" {
 #endif
 
+/** @defgroup make-node Make Node
+ * @brief An element within a makefile.
+ * */
+
 /** @brief Describes the type of a
- * node. */
+ * node.
+ * @ingroup make-node
+ * */
 enum make_node_type {
   /** @brief The node is an assignment statement. */
   MAKE_ASSIGNMENT_STMT,
@@ -37,12 +43,14 @@ enum make_node_type {
   /** @brief The node is an include statement. */
   MAKE_INCLUDE_STMT,
   /** @brief The node is a rule. */
-  MAKE_RULE,
+  MAKE_RULE
 };
 
 /** @brief A makefile node. A makefile
  * node can be either a rule, assignment
- * statement or an include statement. */
+ * statement or an include statement.
+ * @ingroup make-node
+ * */
 struct make_node {
   /** @brief Indicates the type of the node. */
   enum make_node_type type;
@@ -54,8 +62,17 @@ struct make_node {
   struct make_include_stmt include_stmt;
 };
 
+/** @brief Initializes a makefile node.
+ * When the node is initialized, it is
+ * initialized as a rule.
+ * @ingroup make-node
+ * */
 void make_node_init(struct make_node *node);
 
+/** @brief Releases all resources allocated by
+ * the node.
+ * @ingroup make-node
+ * */
 void make_node_free(struct make_node *node);
 
 #ifdef __cplusplus

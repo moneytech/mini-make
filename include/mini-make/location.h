@@ -25,9 +25,26 @@
 extern "C" {
 #endif
 
+/** @defgroup make-location Make Location
+ * @brief A location within a makefile.
+ * */
+
+/** @brief A location within a makefile.
+ * A location within a makefile. Used for
+ * indicating the location of a error or a
+ * node within a makefile.
+ * @ingroup make-location
+ * */
 struct make_location {
+  /** @brief The name of the file. */
   struct make_string path;
+  /** @brief The line number within the
+   * file. The first line in the file is
+   * equal to one. */
   unsigned long int line;
+  /** @brief The column number within the
+   * line. The first column in the line is
+   * equal to one. */
   unsigned long int column;
 };
 

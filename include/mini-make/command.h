@@ -25,9 +25,19 @@ extern "C" {
 
 struct make_string;
 
+/** @defgroup make-command Make Command
+ * @brief A command that appears in a makefile rule.
+ * */
+
+/** @brief A command in a makefile rule. */
 struct make_command {
+  /** @brief If non-zero, the command should not
+   * be printed when it is executed. */
   int silent;
+  /** @brief If non-zero, the command should not
+   * generate an error if it fails. */
   int ignore_error;
+  /** @brief The command string. */
   struct make_string *source;
 };
 

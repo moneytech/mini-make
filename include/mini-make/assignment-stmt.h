@@ -27,9 +27,20 @@ extern "C" {
 
 struct make_string;
 
+/** @defgroup make-assignment-stmt Make Assignment Statement
+ * @brief Assignment statements that appear within makefiles.
+ * */
+
+/** @brief An assignment statement.
+ * @ingroup make-assignment-stmt
+ * */
 struct make_assignment_stmt {
+  /** @brief The operation of the assignment statement. */
   enum make_operation operation;
+  /** @brief The key of the variable to the assign
+   * the new value to. */
   struct make_string *key;
+  /** @brief The new value to assign to the variable. */
   struct make_string *value;
 };
 
