@@ -65,6 +65,8 @@ struct make_phooks {
   /** @brief Executed when a command is parsed. */
   int (*on_command)(void *user_data,
                     const struct make_command *command);
+  /** @brief Executed when a rule is parsed. */
+  int (*on_rule)(void *user_data, const struct make_rule *rule);
   /** @brief Executed when an unexpected character is found. */
   void (*on_unexpected_char)(void *user_data, char c,
                              const struct make_location *location);
@@ -81,6 +83,12 @@ struct make_phooks {
  * @ingroup make-phooks
  * */
 void make_phooks_init(struct make_phooks *phooks);
+
+/** @brief Notifies the hooks that a rule was parsed.
+ * @ingroup make-phooks
+ * */
+int make_phooks_notify_rule(struct make_phooks *phooks,
+                            const struct make_rule *rule);
 
 /** @brief Notifies the hooks of a start of a rule.
  * @ingroup make-phooks
