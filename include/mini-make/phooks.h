@@ -29,6 +29,7 @@ struct make_assignment_stmt;
 struct make_command;
 struct make_include_stmt;
 struct make_location;
+struct make_rule;
 struct make_string;
 
 /** @defgroup make-phooks Make Parser Hooks
