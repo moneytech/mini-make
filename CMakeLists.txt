@@ -75,6 +75,8 @@ add_library("make" STATIC
   "${INCDIR}/protocol.h"
   "${SRCDIR}/protocol-0.c"
   "${SRCDIR}/protocol-0.h"
+  "${INCDIR}/rule.h"
+  "${SRCDIR}/rule.c"
   "${EXTDIR}/server.c"
   "${INCDIR}/server.h"
   "${SRCDIR}/string.c"
