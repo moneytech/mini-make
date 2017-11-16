@@ -51,7 +51,14 @@ int make_rule_add_target(struct make_rule *rule,
                          const struct make_target *target) {
   (void) rule;
   (void) target;
-  return make_success;
+  return make_failure;
+}
+
+int make_rule_add_prerequisite(struct make_rule *rule,
+                               const struct make_prerequisite *prequisite) {
+  (void) rule;
+  (void) prerequisite;
+  return make_failure;
 }
 
 int make_rule_add_command(struct make_rule *rule,

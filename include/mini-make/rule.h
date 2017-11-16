@@ -72,6 +72,12 @@ void make_rule_free(struct make_rule *rule);
 int make_rule_add_target(struct make_rule *rule,
                          const struct make_target *target);
 
+/** @brief Adds a prerequisite to the rule.
+ * @ingroup make-rule
+ * */
+int make_rule_add_prerequisite(struct make_rule *rule,
+                               const struct make_prerequisite *prerequisite);
+
 /** @brief Adds a command to the rule.
  * @ingroup make-rule
  * */
