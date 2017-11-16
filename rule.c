@@ -49,21 +49,18 @@ void make_rule_free(struct make_rule *rule) {
 
 int make_rule_add_target(struct make_rule *rule,
                          const struct make_target *target) {
-  (void) rule;
-  (void) target;
-  return make_failure;
+
+  return make_buffer_append_element(&rule->targets, target);
 }
 
 int make_rule_add_prerequisite(struct make_rule *rule,
-                               const struct make_prerequisite *prequisite) {
-  (void) rule;
-  (void) prerequisite;
-  return make_failure;
+                               const struct make_prerequisite *prerequisite) {
+
+  return make_buffer_append_element(&rule->prerequisites, prerequisite);
 }
 
 int make_rule_add_command(struct make_rule *rule,
                           const struct make_command *command) {
-  (void) rule;
-  (void) command;
-  return make_failure;
+
+  return make_buffer_append_element(&rule->commands, command);
 }

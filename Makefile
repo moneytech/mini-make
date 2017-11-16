@@ -48,6 +48,7 @@ libmake.a: buffer.o \
            phooks.o \
            mini-make.o \
            parser.o \
+           rule.o \
            string.o \
            table.o \
            target.o \
@@ -75,6 +76,8 @@ mini-make.o: mini-make.c
 parser.o: parser.c parser.h
 
 parser-test.o: parser-test.c
+
+rule.o: rule.c rule.h target.h prerequisite.h command.h string.h
 
 string.o: string.c string.h
 
