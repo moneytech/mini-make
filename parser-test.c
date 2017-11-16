@@ -44,6 +44,8 @@ struct test_data {
   unsigned long int includes_found;
   unsigned long int assignments_found;
   unsigned long int missing_separator_found;
+  unsigned long int ifdefs_found;
+  unsigned long int endifs_found;
 };
 
 static int on_target(void *user_data, const struct make_string *target) {
@@ -288,6 +290,8 @@ int main(int argc, const char **argv) {
   test_data.includes_found = 0;
   test_data.assignments_found = 0;
   test_data.missing_separator_found = 0;
+  test_data.ifdefs_found = 0;
+  test_data.endifs_found = 0;
 
   make_parser_init(&parser);
 
@@ -319,6 +323,8 @@ int main(int argc, const char **argv) {
   assert(test_data.includes_found == 3);
   assert(test_data.assignments_found == 4);
   assert(test_data.missing_separator_found == 1);
+  assert(test_data.ifdefs_found == 2);
+  assert(test_data.endifs_found == 2);
 
   return EXIT_SUCCESS;
 }
