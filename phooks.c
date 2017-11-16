@@ -71,6 +71,17 @@ static int on_command(void *data, const struct make_command *command) {
   return make_success;
 }
 
+static int on_ifdef(void *data, const struct make_ifdef_stmt *ifdef) {
+  (void) data;
+  (void) ifdef;
+  return make_success;
+}
+
+static int on_endif(void *data) {
+  (void) data;
+  return make_success;
+}
+
 static void on_unexpected_char(void *data, char c,
                                const struct make_location *location) {
   (void) data;
@@ -104,6 +115,8 @@ void make_phooks_init(struct make_phooks *phooks) {
   phooks->on_unexpected_char = on_unexpected_char;
   phooks->on_unexpected_eof = on_unexpected_eof;
   phooks->on_missing_separator = on_missing_separator;
+  phooks->on_ifdef = on_ifdef;
+  phooks->on_endif = on_endif;
 }
 
 int make_phooks_notify_rule_start(struct make_phooks *phooks) {

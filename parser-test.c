@@ -21,6 +21,7 @@
 #include <mini-make/assignment-stmt.h>
 #include <mini-make/command.h>
 #include <mini-make/error.h>
+#include <mini-make/ifdef-stmt.h>
 #include <mini-make/include-stmt.h>
 #include <mini-make/phooks.h>
 #include <mini-make/location.h>
@@ -151,6 +152,40 @@ static int on_command(void *user_data, const struct make_command *command) {
   return 0;
 }
 
+static int on_ifdef(void *user_data, const struct make_ifdef_stmt *ifdef_stmt) {
+
+  struct test_data *test_data;
+
+  printf("Found an ifdef statement.\n");
+
+  test_data = (struct test_data *) user_data;
+
+  if (test_data->ifdefs_found == 0) {
+    assert(ifdef_stmt->key.size == (sizeof("MINI_MAKE") - 1));
+    assert(ifdef_stmt->logical_not == 0);
+  } else if (test_data->ifdefs_found == 1) {
+    assert(ifdef_stmt->key.size == (sizeof("MINI_MAKE") - 1));
+    assert(ifdef_stmt->logical_not == 1);
+  }
+
+  test_data->ifdefs_found++;
+
+  return make_success;
+}
+
+static int on_endif(void *user_data) {
+
+  struct test_data *test_data;
+
+  printf("Found an endif statement.\n");
+
+  test_data = (struct test_data *) user_data;
+
+  test_data->endifs_found++;
+
+  return make_success;
+}
+
 static int on_include_stmt(void *user_data, const struct make_include_stmt *include_stmt) {
 
   struct test_data *test_data;
@@ -245,7 +280,7 @@ static void on_missing_separator(void *user_data, const struct make_location *lo
   test_data = (struct test_data *) user_data;
 
   if (test_data->missing_separator_found == 0) {
-    assert(location->line == 25);
+    assert(location->line == 33);
     assert(location->column == 3);
     assert(location->path.size == strlen(test_data->makefile_path));
     assert(strcmp(location->path.data, test_data->makefile_path) == 0);
@@ -306,6 +341,8 @@ int main(int argc, const char **argv) {
   parser.hooks.on_target = on_target;
   parser.hooks.on_prerequisite = on_prerequisite;
   parser.hooks.on_command = on_command;
+  parser.hooks.on_ifdef = on_ifdef;
+  parser.hooks.on_endif = on_endif;
   parser.hooks.on_include_stmt = on_include_stmt;
   parser.hooks.on_assignment_stmt = on_assignment_stmt;
   parser.hooks.on_rule_start = on_rule_start;

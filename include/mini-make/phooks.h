@@ -27,6 +27,7 @@ extern "C" {
 
 struct make_assignment_stmt;
 struct make_command;
+struct make_ifdef_stmt;
 struct make_include_stmt;
 struct make_location;
 struct make_rule;
@@ -68,6 +69,10 @@ struct make_phooks {
                     const struct make_command *command);
   /** @brief Executed when a rule is parsed. */
   int (*on_rule)(void *user_data, const struct make_rule *rule);
+  /** @brief Executed when a 'ifdef' statement is parsed. */
+  int (*on_ifdef)(void *user_data, const struct make_ifdef_stmt *ifdef_stmt);
+  /** @brief Executed when a 'endif' statement is parsed. */
+  int (*on_endif)(void *user_data);
   /** @brief Executed when an unexpected character is found. */
   void (*on_unexpected_char)(void *user_data, char c,
                              const struct make_location *location);

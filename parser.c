@@ -21,6 +21,7 @@
 #include <mini-make/assignment-stmt.h>
 #include <mini-make/command.h>
 #include <mini-make/error.h>
+#include <mini-make/ifdef-stmt.h>
 #include <mini-make/include-stmt.h>
 #include <mini-make/location.h>
 #include <mini-make/phooks.h>
@@ -585,6 +586,88 @@ static int rule(struct make_parser *parser,
   return make_success;
 }
 
+static int endif_stmt(struct make_parser *parser,
+                      unsigned long int i,
+                      unsigned long int *j) {
+
+  char c;
+  struct make_string *source;
+
+  source = &parser->source;
+
+  while (i < source->size) {
+    c = source->data[i];
+    if (!make_is_space(c))
+      break;
+    i++;
+  }
+
+  if (((i + sizeof("endif")) < source->size)
+   && (memcmp(&source->data[i], "endif", 5) == 0)
+   && (make_is_space(source->data[i + 5]))) {
+    *j = i + 5;
+    return parser->hooks.on_endif(parser->hooks.data);
+  }
+
+  return make_success;
+}
+
+static int ifdef_stmt(struct make_parser *parser,
+                      unsigned long int i,
+                      unsigned long int *j) {
+
+  char c;
+  struct make_string *source;
+  struct make_ifdef_stmt ifdef_stmt;
+
+  ifdef_stmt.logical_not = 0;
+  make_string_init(&ifdef_stmt.key);
+
+  source = &parser->source;
+
+  while (i < source->size) {
+    c = source->data[i];
+    if (!make_is_space(c))
+      break;
+    i++;
+  }
+
+  if ((i + sizeof("ifndef") < source->size)
+   && (memcmp(&source->data[i], "ifndef", 6) == 0)
+   && (make_is_space(source->data[i + 6]))) {
+    ifdef_stmt.logical_not = 1;
+    i += 6;
+  } else if ((i + sizeof("ifdef") < source->size)
+   && (memcmp(&source->data[i], "ifdef", 5) == 0)
+   && (make_is_space(source->data[i + 5]))) {
+    ifdef_stmt.logical_not = 0;
+    i += 5;
+  } else {
+    return make_success;
+  }
+
+  while (i < source->size) {
+    c = source->data[i];
+    if (!make_is_space(c) && (c != '\n'))
+      break;
+    i++;
+  }
+
+  ifdef_stmt.key.data = &source->data[i];
+
+  while (i < source->size) {
+    c = source->data[i];
+    if (c == '\n')
+      break;
+    i++;
+    ifdef_stmt.key.size++;
+  }
+
+  *j = i;
+
+  return parser->hooks.on_ifdef(parser->hooks.data, &ifdef_stmt);
+}
+
 void make_parser_init(struct make_parser *parser) {
   make_string_init(&parser->path);
   make_string_init(&parser->source);
@@ -674,6 +757,22 @@ int make_parser_run(struct make_parser *parser) {
     }
 
     err = assignment_stmt(parser, i, &j);
+    if (err)
+      return err;
+    else if (j > i) {
+      i = j;
+      continue;
+    }
+
+    err = ifdef_stmt(parser, i, &j);
+    if (err)
+      return err;
+    else if (j > i) {
+      i = j;
+      continue;
+    }
+
+    err = endif_stmt(parser, i, &j);
     if (err)
       return err;
     else if (j > i) {

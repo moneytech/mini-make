@@ -388,6 +388,7 @@ void make_interpreter_init(struct make_interpreter *interpreter) {
   parser = &interpreter->parser;
 
   phooks = &parser->hooks;
+  make_phooks_init(phooks);
   phooks->data = interpreter;
   phooks->on_rule_start = on_rule_start;
   phooks->on_rule_finish = on_rule_finish;
