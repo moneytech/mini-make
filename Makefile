@@ -29,7 +29,7 @@ clean:
 .PHONY: test
 test: $(tests)
 	./interpreter-test
-	./parser-test --makefile test.mk
+	./parser-test --makefile testing/makefiles/test1/Makefile
 	./table-test
 
 .PHONY: install
