@@ -23,6 +23,7 @@
 
 #include <mini-make/assignment-stmt.h>
 #include <mini-make/include-stmt.h>
+#include <mini-make/rule.h>
 #include <mini-make/string.h>
 
 #ifdef __cplusplus
@@ -62,6 +63,8 @@ struct make_node {
   struct make_string comment;
   /** @brief Valid if the type is @ref MAKE_INCLUDE_STMT */
   struct make_include_stmt include_stmt;
+  /** @brief Valid if the type is @ref MAKE_RULE */
+  struct make_rule rule;
 };
 
 /** @brief Initializes a makefile node.
