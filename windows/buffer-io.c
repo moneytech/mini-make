@@ -16,6 +16,8 @@
  * along with Mini Make.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <windows.h>
+
 #include "buffer-io.h"
 
 #include <mini-make/error.h>
