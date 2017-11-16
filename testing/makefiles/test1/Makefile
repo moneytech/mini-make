@@ -22,5 +22,13 @@ t1 t2: p1\
 t3:
 	cmd6
 
+ifdef MINI_MAKE
+# comment 1
+endif
+
+ifndef MINI_MAKE
+# comment 2
+endif
+
 t4
 
