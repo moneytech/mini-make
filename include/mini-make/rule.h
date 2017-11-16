@@ -66,6 +66,15 @@ void make_rule_init(struct make_rule *rule);
  * */
 void make_rule_free(struct make_rule *rule);
 
+/** @brief Removes all targets, prerequisites
+ * and commands but does not release memory. This
+ * function is useful to call in loops, where it is
+ * not smart performance-wise to allocate the memory
+ * all over again.
+ * @ingroup make-rule
+ * */
+int make_rule_reset(struct make_rule *rule);
+
 /** @brief Adds a target to the rule.
  * @ingroup make-rule
  * */
