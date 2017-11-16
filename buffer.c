@@ -37,6 +37,22 @@ void make_buffer_free(struct make_buffer *buffer) {
   buffer->size = 0;
 }
 
+int make_buffer_append_element(struct make_buffer *buffer,
+                               const void *element_data) {
+
+  int err = make_buffer_resize(buffer, buffer->size + 1);
+  if (err != make_success)
+    return err;
+
+  unsigned char *buffer_data = (unsigned char *) buffer->data;
+
+  memcpy(&buffer_data[(buffer->size - 1) * buffer->element_size],
+         element_data,
+         buffer->element_size);
+
+  return make_success;
+}
+
 int make_buffer_resize(struct make_buffer *buffer,
                        size_t size) {
   void *tmp;

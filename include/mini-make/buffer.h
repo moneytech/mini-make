@@ -58,6 +58,13 @@ void make_buffer_init(struct make_buffer *buffer);
  * */
 void make_buffer_free(struct make_buffer *buffer);
 
+/** @brief Appends a single element to the end of
+ * the buffer.
+ * @ingroup make-buffer
+ * */
+int make_buffer_append_element(struct make_buffer *buffer,
+                               const void *element_data);
+
 /** @brief Gets the pointer of an element at a
  * specific index.
  *@ingroup make-buffer

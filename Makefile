@@ -38,7 +38,8 @@ install: mini-make
 
 mini-make: mini-make.o libmake.a
 
-libmake.a: chdir.o \
+libmake.a: buffer.o \
+           chdir.o \
            error.o \
            interpreter.o \
            ihooks.o \
