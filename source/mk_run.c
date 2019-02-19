@@ -18,6 +18,7 @@ int mk_run(struct mk_state* state, int argc, char** argv) {
   }
 
   const char* filename = "Makefile";
+  const char* working_dir = ".";
 
   for (int i = 1; i < argc; i++) {
 
@@ -30,6 +31,9 @@ int mk_run(struct mk_state* state, int argc, char** argv) {
       if (err) {
         break;
       }
+    } else if (arg[1] == 'C') {
+      working_dir = argv[i + 1];
+      i++;
     } else if (arg[1] == 'f') {
       filename = argv[i + 1];
       i++;
@@ -50,6 +54,16 @@ int mk_run(struct mk_state* state, int argc, char** argv) {
 
   err = mk_state_define(state, "__file__", filename);
   if (err != 0) {
+    return err;
+  }
+
+  if (!working_dir) {
+    mk_report(state, "-C requires directory path");
+    return -1;
+  }
+
+  err = mk_state_define(state, "CURDIR", working_dir);
+  if (err) {
     return err;
   }
 
