@@ -8,6 +8,43 @@
 #include "mk_token.h"
 #include "mk_tree.h"
 
+static struct mk_rule* mk_rule_create(struct mk_state* state) {
+
+  struct mk_rule* rule = mk_malloc(state, sizeof(struct mk_rule));
+  if (!rule) {
+    return NULL;
+  }
+
+  rule->targets = mk_malloc(state, sizeof(char*));
+  if (!rule->targets) {
+    mk_free(state, rule);
+    return NULL;
+  } else {
+    rule->targets[0] = NULL;
+  }
+
+  rule->deps = mk_malloc(state, sizeof(char*));
+  if (!rule->deps) {
+    mk_free(state, rule->targets);
+    mk_free(state, rule);
+    return NULL;
+  } else {
+    rule->deps[0] = NULL;
+  }
+
+  rule->recipe = NULL;
+  if (!rule->recipe) {
+    mk_free(state, rule->deps);
+    mk_free(state, rule->targets);
+    mk_free(state, rule);
+    return NULL;
+  } else {
+    rule->recipe[0] = NULL;
+  }
+
+  return rule;
+}
+
 static void mk_rule_destroy(struct mk_rule* rule, struct mk_state* state) {
 
   for (size_t i = 0; rule->targets[i]; i++) {
@@ -21,6 +58,8 @@ static void mk_rule_destroy(struct mk_rule* rule, struct mk_state* state) {
   for (size_t i = 0; rule->recipe[i]; i++) {
     mk_free(state, rule->recipe[i]);
   }
+
+  mk_free(state, rule);
 }
 
 static void mk_node_destroy(struct mk_node* node, struct mk_state* state) {
@@ -112,7 +151,7 @@ static int mk_unexpected_token(struct mk_parser* parser) {
   return -1;
 }
 
-static int mk_parse_rule(struct mk_parser* parser) {
+static enum mk_parse_match mk_parse_rule(struct mk_parser* parser) {
   (void)parser;
   return MK_MATCH_NONE;
 }
