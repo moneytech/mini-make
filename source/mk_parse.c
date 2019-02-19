@@ -3,7 +3,9 @@
 #include "mk_interpret.h"
 #include "mk_malloc.h"
 #include "mk_node.h"
+#include "mk_report.h"
 #include "mk_rule.h"
+#include "mk_token.h"
 #include "mk_tree.h"
 
 static void mk_rule_destroy(struct mk_rule* rule, struct mk_state* state) {
@@ -68,9 +70,89 @@ static int mk_parser_done(const struct mk_parser* parser) {
   return !parser->token_count;
 }
 
+enum mk_parse_match {
+  MK_MATCH_NONE,
+  MK_MATCH_FAIL,
+  MK_MATCH_GOOD
+};
+
+static int mk_unexpected_token(struct mk_parser* parser) {
+
+  const struct mk_token* token = parser->token_array;
+
+  const char* type_name = "symbol";
+
+  switch (token->type) {
+    case MK_TOKEN_SPACE:
+      type_name = "space";
+      break;
+    case MK_TOKEN_NEWLINE:
+      type_name = "newline";
+      break;
+    case MK_TOKEN_IDENTIFIER:
+      type_name = "identifier";
+      break;
+    case MK_TOKEN_NUMBER:
+      type_name = "number";
+      break;
+    case MK_TOKEN_COMMENT:
+      type_name = "comment";
+      break;
+    default:
+      break;
+  }
+
+  if ((token->type != MK_TOKEN_SPACE)
+   && (token->type != MK_TOKEN_NEWLINE)) {
+    mk_report(parser->state, "unexpected %s '%.*s'", type_name, (int) token->size, token->data);
+  } else {
+    mk_report(parser->state, "unexpected %s", type_name);
+  }
+
+  return -1;
+}
+
+static int mk_parse_rule(struct mk_parser* parser) {
+  (void)parser;
+  return MK_MATCH_NONE;
+}
+
+static enum mk_parse_match mk_parse_unused(struct mk_parser* parser) {
+
+  const struct mk_token* token = parser->token_array;
+
+  switch (token->type) {
+    case MK_TOKEN_COMMENT:
+    case MK_TOKEN_SPACE:
+    case MK_TOKEN_NEWLINE:
+      parser->token_array++;
+      parser->token_count--;
+      return MK_MATCH_GOOD;
+    default:
+      break;
+  }
+
+  return MK_MATCH_NONE;
+}
+
+#define MK_TRY_PARSE(parser, func) \
+  do {                             \
+    switch (func(parser)) {        \
+      case MK_MATCH_NONE:          \
+        break;                     \
+      case MK_MATCH_FAIL:          \
+        return -1;                 \
+      case MK_MATCH_GOOD:          \
+        return 0;                  \
+    }                              \
+  } while (0)
+
 static int mk_parse_node(struct mk_parser* parser) {
-  parser->token_count--;
-  return 0;
+
+  MK_TRY_PARSE(parser, mk_parse_unused);
+  MK_TRY_PARSE(parser, mk_parse_rule);
+
+  return mk_unexpected_token(parser);
 }
 
 int mk_parse(struct mk_state* state,
