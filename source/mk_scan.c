@@ -89,6 +89,7 @@ static int mk_scan_token(struct mk_scanner* scanner, struct mk_token* token) {
     case '#':
       token->type = MK_TOKEN_COMMENT;
       token->size = mk_comment_size(scanner);
+      break;
     default:
       if (mk_isalpha(first_char) || (first_char == '_')) {
         token->type = MK_TOKEN_IDENTIFIER;

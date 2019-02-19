@@ -41,6 +41,11 @@ add_executable("mini-make" "mini-make.c")
 target_link_libraries("mini-make" "make")
 set_target_properties("mini-make" PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}")
 
+if (DEFINED mini_make_CFLAGS)
+  target_compile_options("make" PRIVATE ${mini_make_CFLAGS})
+  target_compile_options("mini-make" PRIVATE ${mini_make_CFLAGS})
+endif (DEFINED mini_make_CFLAGS)
+
 install(TARGETS "mini-make" "make"
   EXPORT "MiniMakeTargets"
   RUNTIME DESTINATION "bin"

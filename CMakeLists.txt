@@ -6,11 +6,11 @@ list (APPEND CMAKE_MODULE_PATH
   "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 if (CMAKE_C_COMPILER_ID STREQUAL "GNU")
-  set (CMAKE_C_FLAGS "-Wall -Wextra -Werror -Wfatal-errors -std=c99")
+  set (mini_make_CFLAGS -Wall -Wextra -Werror -Wfatal-errors -std=c99)
 elseif (CMAKE_C_COMPILER_ID STREQUAL "Clang")
-  set (CMAKE_C_FLAGS "-Wall -Wextra -Werror -Wfatal-errors -std=c99")
+  set (mini_make_CFLAGS -Wall -Wextra -Werror -Wfatal-errors -std=c99 -Wdocumentation)
 elseif (CMAKE_C_COMPILER_ID STREQUAL "MSVC")
-  set (CMAKE_C_FLAGS "/W3 /WX /D_CRT_SECURE_NO_WARNINGS")
+  set (mini_make_CFLAGS /W3 /WX /D_CRT_SECURE_NO_WARNINGS)
 endif (CMAKE_C_COMPILER_ID STREQUAL "GNU")
 
 add_subdirectory("documentation")
