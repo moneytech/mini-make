@@ -42,6 +42,32 @@ static size_t mk_identifier_size(struct mk_scanner* scanner) {
   return size;
 }
 
+static size_t mk_newline_size(struct mk_scanner* scanner) {
+
+  if ((scanner->data_size > 1)
+   && (scanner->data[0] == '\r')
+   && (scanner->data[1] == '\n')) {
+    return 2;
+  }
+
+  return 1;
+}
+
+static size_t mk_space_size(struct mk_scanner* scanner) {
+
+  size_t size = 1;
+
+  while (size < scanner->data_size) {
+    char c = scanner->data[size];
+    if ((c != ' ') && (c != '\t')) {
+      break;
+    }
+    size++;
+  }
+
+  return size;
+}
+
 static size_t mk_comment_size(struct mk_scanner* scanner) {
 
   size_t size = 1;
@@ -83,8 +109,14 @@ static int mk_scan_token(struct mk_scanner* scanner, struct mk_token* token) {
       token->size = 1;
       break;
     case '\n':
+    case '\r':
       token->type = MK_TOKEN_NEWLINE;
-      token->size = 1;
+      token->size = mk_newline_size(scanner);
+      break;
+    case ' ':
+    case '\t':
+      token->type = MK_TOKEN_SPACE;
+      token->size = mk_space_size(scanner);
       break;
     case '#':
       token->type = MK_TOKEN_COMMENT;
@@ -114,7 +146,7 @@ static int mk_scan_token(struct mk_scanner* scanner, struct mk_token* token) {
     }
   }
 
-  scanner->data++;
+  scanner->data += token->size;
   scanner->data_size -= token->size;
 
   return 0;
