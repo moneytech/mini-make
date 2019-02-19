@@ -16,6 +16,22 @@ set (SRCDIR "${CMAKE_CURRENT_SOURCE_DIR}")
 set (INCDIR "${PROJECT_SOURCE_DIR}/include/mini-make")
 
 add_library("make" STATIC
+  "mk_malloc.h"
+  "mk_malloc.c"
+  "mk_open.h"
+  "mk_open.c"
+  "mk_parse.h"
+  "mk_parse.c"
+  "mk_report.h"
+  "mk_report.c"
+  "mk_run.h"
+  "mk_run.c"
+  "mk_scan.h"
+  "mk_scan.c"
+  "mk_state.h"
+  "mk_state.c"
+  "mk_strdup.h"
+  "mk_strdup.c"
   "${INCDIR}/buffer.h"
   "${SRCDIR}/buffer.c"
   "${SRCDIR}/chdir.h"
@@ -55,6 +71,7 @@ target_include_directories("make"
 
 add_executable("mini-make" "mini-make.c")
 target_link_libraries("mini-make" "make")
+set_target_properties("mini-make" PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}")
 
 install(TARGETS "mini-make" "make"
   EXPORT "MiniMakeTargets"
