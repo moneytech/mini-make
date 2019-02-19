@@ -81,6 +81,7 @@ static struct mk_tree* mk_tree_create(struct mk_state* state) {
 
   tree->node_array = NULL;
   tree->node_count = 0;
+  tree->node_max = 0;
 
   return tree;
 }
@@ -103,10 +104,46 @@ struct mk_parser {
   size_t token_count;
   /** The tree being built by the parser. */
   struct mk_tree* tree;
+  /** The current node being built by the parser. */
+  struct mk_node* node;
 };
 
 static int mk_parser_done(const struct mk_parser* parser) {
   return !parser->token_count;
+}
+
+static int mk_push_node(struct mk_parser* parser) {
+
+  if (!parser->node || (parser->node->type == MK_NODE_NULL)) {
+    return 0;
+  }
+
+  struct mk_tree* tree = parser->tree;
+
+  struct mk_node* node_array = tree->node_array;
+
+  size_t node_count = tree->node_count;
+
+  if (node_count >= tree->node_max) {
+
+    node_array = mk_realloc(parser->state, node_array, (tree->node_max + 16) * sizeof(struct mk_node));
+    if (!node_array) {
+      return -1;
+    }
+
+    tree->node_array = node_array;
+    tree->node_max += 16;
+  }
+
+  struct mk_node* node = &tree->node_array[tree->node_count];
+
+  *node = *parser->node;
+
+  parser->node->type = MK_NODE_NULL;
+
+  tree->node_count++;
+
+  return 0;
 }
 
 enum mk_parse_match {
@@ -152,6 +189,12 @@ static int mk_unexpected_token(struct mk_parser* parser) {
 }
 
 static enum mk_parse_match mk_parse_rule(struct mk_parser* parser) {
+
+  struct mk_rule* rule = mk_rule_create(parser->state);
+  if (!rule) {
+    return MK_MATCH_FAIL;
+  }
+
   (void)parser;
   return MK_MATCH_NONE;
 }
@@ -174,16 +217,16 @@ static enum mk_parse_match mk_parse_unused(struct mk_parser* parser) {
   return MK_MATCH_NONE;
 }
 
-#define MK_TRY_PARSE(parser, func) \
-  do {                             \
-    switch (func(parser)) {        \
-      case MK_MATCH_NONE:          \
-        break;                     \
-      case MK_MATCH_FAIL:          \
-        return -1;                 \
-      case MK_MATCH_GOOD:          \
-        return 0;                  \
-    }                              \
+#define MK_TRY_PARSE(parser, func)   \
+  do {                               \
+    switch (func(parser)) {          \
+      case MK_MATCH_NONE:            \
+        break;                       \
+      case MK_MATCH_FAIL:            \
+        return -1;                   \
+      case MK_MATCH_GOOD:            \
+        return mk_push_node(parser); \
+    }                                \
   } while (0)
 
 static int mk_parse_node(struct mk_parser* parser) {
@@ -208,6 +251,7 @@ int mk_parse(struct mk_state* state,
   parser.token_array = token_array;
   parser.token_count = token_count;
   parser.tree = tree;
+  parser.node = NULL;
 
   int err = 0;
 
