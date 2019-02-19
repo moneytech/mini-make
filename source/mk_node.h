@@ -1,6 +1,8 @@
 #ifndef mk_node_h
 #define mk_node_h
 
+struct mk_rule;
+
 /** Enumerates the several types of nodes.
  * @ingroup mk_internals
  * */
@@ -21,7 +23,7 @@ struct mk_node {
   /** Contains data for the several types of node data. */
   union {
     /** Valid if the node is a rule type. */
-    struct mk_rule rule;
+    struct mk_rule* rule;
   } data;
 };
 
