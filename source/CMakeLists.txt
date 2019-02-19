@@ -16,6 +16,8 @@ set (SRCDIR "${CMAKE_CURRENT_SOURCE_DIR}")
 set (INCDIR "${PROJECT_SOURCE_DIR}/include/mini-make")
 
 add_library("make" STATIC
+  "mk_interpret.h"
+  "mk_interpret.c"
   "mk_malloc.h"
   "mk_malloc.c"
   "mk_open.h"

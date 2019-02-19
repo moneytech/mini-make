@@ -1,5 +1,6 @@
 #include "mk_parse.h"
 
+#include "mk_interpret.h"
 #include "mk_malloc.h"
 #include "mk_node.h"
 #include "mk_rule.h"
@@ -101,7 +102,9 @@ int mk_parse(struct mk_state* state,
     return err;
   }
 
+  err = mk_interpret(state, tree);
+
   mk_tree_destroy(tree, state);
 
-  return 0;
+  return err;
 }
