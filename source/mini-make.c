@@ -16,7 +16,6 @@
  * along with Mini Make.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <mini-make/chdir.h>
 #include <mini-make/interpreter.h>
 #include <mini-make/options.h>
 #include <mini-make/parser.h>
@@ -28,6 +27,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <string.h>
+
+#include "chdir.h"
 
 char *argv0 = "mini-make";
 

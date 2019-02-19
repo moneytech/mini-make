@@ -18,13 +18,14 @@
 
 #include <mini-make/interpreter.h>
 
-#include <mini-make/chdir.h>
 #include <mini-make/error.h>
 
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+#include "chdir.h"
 
 #ifndef TESTING_DIR
 #define TESTING_DIR "testing"

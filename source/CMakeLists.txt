@@ -18,7 +18,7 @@ set (INCDIR "${PROJECT_SOURCE_DIR}/include/mini-make")
 add_library("make" STATIC
   "${INCDIR}/buffer.h"
   "${SRCDIR}/buffer.c"
-  "${INCDIR}/chdir.h"
+  "${SRCDIR}/chdir.h"
   "${SRCDIR}/chdir.c"
   "${INCDIR}/error.h"
   "${SRCDIR}/error.c"

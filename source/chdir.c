@@ -16,7 +16,7 @@
  * along with Mini Make.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <mini-make/chdir.h>
+#include "chdir.h"
 
 #include <errno.h>
 
