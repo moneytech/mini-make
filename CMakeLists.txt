@@ -14,7 +14,7 @@ elseif (CMAKE_C_COMPILER_ID STREQUAL "MSVC")
 endif (CMAKE_C_COMPILER_ID STREQUAL "GNU")
 
 add_subdirectory("documentation")
-add_subdirectory("examples")
+# add_subdirectory("examples")
 add_subdirectory("source")
 add_subdirectory("testing")
 

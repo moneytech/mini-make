@@ -31,39 +31,7 @@ add_library("make" STATIC
   "mk_state.h"
   "mk_state.c"
   "mk_strdup.h"
-  "mk_strdup.c"
-  "${INCDIR}/buffer.h"
-  "${SRCDIR}/buffer.c"
-  "${SRCDIR}/chdir.h"
-  "${SRCDIR}/chdir.c"
-  "${INCDIR}/error.h"
-  "${SRCDIR}/error.c"
-  "${INCDIR}/ihooks.h"
-  "${SRCDIR}/ihooks.c"
-  "${INCDIR}/interpreter.h"
-  "${SRCDIR}/interpreter.c"
-  "${INCDIR}/job.h"
-  "${SRCDIR}/job.c"
-  "${INCDIR}/job-manager.h"
-  "${SRCDIR}/job-manager.c"
-  "${INCDIR}/node.h"
-  "${SRCDIR}/node.c"
-  "${INCDIR}/phooks.h"
-  "${SRCDIR}/phooks.c"
-  "${INCDIR}/parser.h"
-  "${SRCDIR}/parser.c"
-  "${INCDIR}/rule.h"
-  "${SRCDIR}/rule.c"
-  "${INCDIR}/string.h"
-  "${SRCDIR}/string.c"
-  "${INCDIR}/table.h"
-  "${SRCDIR}/table.c"
-  "${INCDIR}/target.h"
-  "${SRCDIR}/target.c"
-  "${INCDIR}/tree.h"
-  "${SRCDIR}/tree.c"
-  "${INCDIR}/var.h"
-  "${SRCDIR}/var.c")
+  "mk_strdup.c")
 
 target_include_directories("make"
 	PUBLIC $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
@@ -82,19 +50,3 @@ install(TARGETS "mini-make" "make"
 
 install(EXPORT "MiniMakeTargets"
   DESTINATION "lib/mini-make")
-
-function(ADD_MAKE_TEST TEST_NAME)
-  add_executable(${TEST_NAME} ${ARGN})
-  target_link_libraries(${TEST_NAME} "make")
-  target_include_directories(${TEST_NAME} PRIVATE "include")
-  target_compile_definitions(${TEST_NAME} PRIVATE
-    "-DTESTING_DIR=\"${PROJECT_SOURCE_DIR}/testing\"")
-  add_test(${TEST_NAME} ${TEST_NAME})
-endfunction(ADD_MAKE_TEST TEST_NAME)
-
-add_make_test("buffer-test" "buffer-test.c")
-add_make_test("table-test" "table-test.c")
-add_make_test("parser-test" "parser-test.c")
-add_make_test("interpreter-test" "interpreter-test.c")
-
-enable_testing()
