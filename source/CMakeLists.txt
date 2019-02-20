@@ -16,16 +16,22 @@ set (SRCDIR "${CMAKE_CURRENT_SOURCE_DIR}")
 set (INCDIR "${PROJECT_SOURCE_DIR}/include/mini-make")
 
 add_library("make" STATIC
+  "mk_arena.h"
+  "mk_arena.c"
   "mk_interpret.h"
   "mk_interpret.c"
   "mk_malloc.h"
   "mk_malloc.c"
+  "mk_node.h"
+  "mk_node.c"
   "mk_open.h"
   "mk_open.c"
   "mk_parse.h"
   "mk_parse.c"
   "mk_report.h"
   "mk_report.c"
+  "mk_rule.h"
+  "mk_rule.c"
   "mk_run.h"
   "mk_run.c"
   "mk_scan.h"
@@ -33,7 +39,11 @@ add_library("make" STATIC
   "mk_state.h"
   "mk_state.c"
   "mk_strdup.h"
-  "mk_strdup.c")
+  "mk_strdup.c"
+  "mk_strlist.h"
+  "mk_strlist.c"
+  "mk_tree.h"
+  "mk_tree.c")
 
 target_include_directories("make"
 	PUBLIC $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>

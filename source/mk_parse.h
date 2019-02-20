@@ -6,10 +6,8 @@
 struct mk_state;
 struct mk_token;
 
-/** Parses a set of tokens
- * for assignment statements,
- * include statements, conditional
- * statements, and nodes.
+/** Parses a set of tokens for assignment statements,
+ * include statements, conditional statements, and nodes.
  * @param state The interpreter state.
  * @param token_array The array of tokens to parse.
  * @param token_count The number of tokens in @p token_array.

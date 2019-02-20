@@ -1,21 +1,29 @@
 #ifndef mk_tree_h
 #define mk_tree_h
 
-#include <stddef.h>
+struct mk_rule;
+struct mk_tree;
 
-struct mk_node;
-
-/** A tree is a fully parsed Makefile.
- * @ingroup mk_internal
+/** Creates a new tree instance.
+ * @returns A pointer to a new tree.
+ * @ingroup mk_internals
  * */
-struct mk_tree
-{
-  /** The array of nodes that make up the tree. */
-  struct mk_node* node_array;
-  /** The number of nodes in the tree. */
-  size_t node_count;
-  /** The number of slots allocated in the node array. */
-  size_t node_max;
-};
+struct mk_tree* mk_tree_create();
+
+/** Releases memory allocated by a tree.
+ * @param tree The tree to release the memory for.
+ * @ingroup mk_internals
+ * */
+void mk_tree_destroy(struct mk_tree* tree);
+
+/** Adds a rule to the tree.
+ * @param tree The tree to add the rule to.
+ * @param rule The rule to add to the tree.
+ * After calling this function, the tree has
+ * ownership of the rule.
+ * @returns Zero on success, non-zero on failure.
+ * @ingroup mk_internals
+ * */
+int mk_tree_push_rule(struct mk_tree* tree, struct mk_rule* rule);
 
 #endif /* mk_tree_h */

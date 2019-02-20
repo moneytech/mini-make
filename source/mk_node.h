@@ -13,18 +13,20 @@ enum mk_node_type {
   MK_NODE_RULE
 };
 
-/** This structure contains data related to a node.
- * A node can be either a rule, assignment statement,
- * include statement, or a pattern.
+struct mk_node;
+
+/** Creates a new node.
+ * @param data The data associated with the node.
+ * @param type The type associated with the node.
+ * @returns A new node instance.
+ * @ingroup mk_internals
  * */
-struct mk_node {
-  /** Indicates the type of this node. */
-  enum mk_node_type type;
-  /** Contains data for the several types of node data. */
-  union {
-    /** Valid if the node is a rule type. */
-    struct mk_rule* rule;
-  } data;
-};
+struct mk_node* mk_node_create(void* data, enum mk_node_type type);
+
+/** Releases memory allocated by a node.
+ * @param node The node to release the memory for.
+ * @ingroup mk_internals
+ * */
+void mk_node_destroy(struct mk_node* node);
 
 #endif /* mk_node_h */
