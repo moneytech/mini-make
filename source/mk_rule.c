@@ -46,3 +46,7 @@ void mk_rule_destroy(struct mk_rule* rule) {
 int mk_rule_add_target(struct mk_rule* rule, char* target) {
   return mk_strlist_push(rule->targets, target);
 }
+
+int mk_rule_add_dep(struct mk_rule* rule, char* dep) {
+  return mk_strlist_push(rule->deps, dep);
+}

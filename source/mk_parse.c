@@ -29,7 +29,25 @@ static int mk_at_end(struct mk_token_iterator* iterator) {
   return iterator->it == iterator->end;
 }
 
-static char* mk_parse_target(struct mk_token_iterator* iterator) {
+static void mk_skip_space(struct mk_token_iterator* iterator) {
+  while (!mk_at_end(iterator)) {
+    int terminated = 0;
+    switch (iterator->it->type) {
+      case MK_TOKEN_COMMENT:
+      case MK_TOKEN_SPACE:
+        mk_next_token(iterator);
+        break;
+      default:
+        terminated = 1;
+        break;
+    }
+    if (terminated) {
+      break;
+    }
+  }
+}
+
+static int mk_parse_target(struct mk_rule* rule, struct mk_token_iterator* iterator) {
 
   struct mk_token_iterator iterator_copy = *iterator;
 
@@ -50,12 +68,9 @@ static char* mk_parse_target(struct mk_token_iterator* iterator) {
       case MK_TOKEN_COMMENT:
       case MK_TOKEN_SPACE:
       case MK_TOKEN_COLON:
+      case MK_TOKEN_NEWLINE:
         terminated = 1;
         break;
-      case MK_TOKEN_NEWLINE:
-        free(target);
-        *iterator = iterator_copy;
-        return NULL;
       default:
         break;
     }
@@ -68,7 +83,7 @@ static char* mk_parse_target(struct mk_token_iterator* iterator) {
     if (!tmp) {
       free(target);
       *iterator = iterator_copy;
-      return NULL;
+      return -1;
     }
 
     target = tmp;
@@ -82,7 +97,7 @@ static char* mk_parse_target(struct mk_token_iterator* iterator) {
     mk_next_token(iterator);
   }
 
-  return target;
+  return mk_rule_add_target(rule, target);
 }
 
 static size_t mk_parse_targets(struct mk_rule* rule, struct mk_token_iterator* iterator) {
@@ -91,38 +106,90 @@ static size_t mk_parse_targets(struct mk_rule* rule, struct mk_token_iterator* i
 
   while (!mk_at_end(iterator)) {
 
-    char* target = mk_parse_target(iterator);
-    if (!target) {
+    if (mk_parse_target(rule, iterator) != 0) {
       break;
-    }
-
-    if (mk_rule_add_target(rule, target) != 0) {
-      return 0;
     }
 
     target_count++;
 
-    int terminated = 0;
+    mk_skip_space(iterator);
 
-    switch (iterator->it->type) {
-      case MK_TOKEN_SPACE:
-      case MK_TOKEN_COMMENT:
-        mk_next_token(iterator);
-        break;
-      case MK_TOKEN_NEWLINE:
-      case MK_TOKEN_COLON:
-        terminated = 1;
-        break;
-      default:
-        break;
-    }
-
-    if (terminated) {
+    if (mk_at_end(iterator)) {
       break;
+    } else if (iterator->it->type == MK_TOKEN_COLON) {
+      mk_next_token(iterator);
+      break;
+    } else if (iterator->it->type == MK_TOKEN_NEWLINE) {
+      return 0;
     }
   }
 
   return target_count;
+}
+
+static int mk_parse_dep(struct mk_rule* rule, struct mk_token_iterator* iterator) {
+
+  struct mk_token_iterator iterator_copy = *iterator;
+
+  char* dep = NULL;
+
+  size_t dep_size = 0;
+
+  while (!mk_at_end(iterator)) {
+
+    mk_skip_space(iterator);
+
+    if (mk_at_end(iterator)) {
+      break;
+    }
+
+    const struct mk_token* token = iterator->it;
+
+    if (token->type == MK_TOKEN_NEWLINE) {
+      break;
+    }
+
+    char* tmp = realloc(dep, dep_size + token->size + 1);
+    if (!tmp) {
+      free(dep);
+      *iterator = iterator_copy;
+      return -1;
+    }
+
+    dep = tmp;
+
+    memcpy(dep + dep_size, token->data, token->size);
+
+    dep_size += token->size;
+
+    dep[dep_size] = 0;
+
+    mk_next_token(iterator);
+  }
+
+  return mk_rule_add_dep(rule, dep);
+}
+
+static int mk_parse_deps(struct mk_rule* rule, struct mk_token_iterator* iterator) {
+
+  while (!mk_at_end(iterator)) {
+
+    int err = mk_parse_dep(rule, iterator);
+    if (err) {
+      return err;
+    }
+
+    mk_skip_space(iterator);
+
+    if (mk_at_end(iterator)) {
+      break;
+    } else if (iterator->it->type == MK_TOKEN_NEWLINE) {
+      mk_next_token(iterator);
+      break;
+    }
+  }
+
+  return 0;
 }
 
 static struct mk_rule* mk_parse_rule(struct mk_token_iterator* iterator) {
@@ -136,6 +203,13 @@ static struct mk_rule* mk_parse_rule(struct mk_token_iterator* iterator) {
 
   size_t target_count = mk_parse_targets(rule, iterator);
   if (!target_count) {
+    *iterator = iterator_copy;
+    mk_rule_destroy(rule);
+    return NULL;
+  }
+
+  int err = mk_parse_deps(rule, iterator);
+  if (err) {
     *iterator = iterator_copy;
     mk_rule_destroy(rule);
     return NULL;
@@ -182,7 +256,7 @@ int mk_parse(struct mk_state* state,
   while (!mk_at_end(&iterator)) {
     err = mk_parse_any(tree, &iterator);
     if (err) {
-      mk_report(state, "missing ':' separator");
+      mk_syntax_report(state, iterator.it->line, "missing ':' separator");
       break;
     }
   }
