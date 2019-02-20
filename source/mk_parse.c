@@ -85,6 +85,46 @@ static char* mk_parse_target(struct mk_token_iterator* iterator) {
   return target;
 }
 
+static size_t mk_parse_targets(struct mk_rule* rule, struct mk_token_iterator* iterator) {
+
+  size_t target_count = 0;
+
+  while (!mk_at_end(iterator)) {
+
+    char* target = mk_parse_target(iterator);
+    if (!target) {
+      break;
+    }
+
+    if (mk_rule_add_target(rule, target) != 0) {
+      return 0;
+    }
+
+    target_count++;
+
+    int terminated = 0;
+
+    switch (iterator->it->type) {
+      case MK_TOKEN_SPACE:
+      case MK_TOKEN_COMMENT:
+        mk_next_token(iterator);
+        break;
+      case MK_TOKEN_NEWLINE:
+      case MK_TOKEN_COLON:
+        terminated = 1;
+        break;
+      default:
+        break;
+    }
+
+    if (terminated) {
+      break;
+    }
+  }
+
+  return target_count;
+}
+
 static struct mk_rule* mk_parse_rule(struct mk_token_iterator* iterator) {
 
   struct mk_token_iterator iterator_copy = *iterator;
@@ -94,18 +134,11 @@ static struct mk_rule* mk_parse_rule(struct mk_token_iterator* iterator) {
     return NULL;
   }
 
-  for (;;) {
-
-    char* target = mk_parse_target(iterator);
-    if (!target) {
-      break;
-    }
-
-    if (mk_rule_add_target(rule, target) != 0) {
-      mk_rule_destroy(rule);
-      *iterator = iterator_copy;
-      return NULL;
-    }
+  size_t target_count = mk_parse_targets(rule, iterator);
+  if (!target_count) {
+    *iterator = iterator_copy;
+    mk_rule_destroy(rule);
+    return NULL;
   }
 
   return rule;

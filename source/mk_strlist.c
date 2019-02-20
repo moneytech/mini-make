@@ -54,7 +54,7 @@ int mk_strlist_push(struct mk_strlist* strlist, char* str) {
 
   if (strlist->str_count >= strlist->str_max) {
     int err = mk_strlist_expand(strlist);
-    if (!err) {
+    if (err) {
       return err;
     }
   }
